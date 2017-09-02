@@ -8,7 +8,7 @@ $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $idValue = filter_input(INPUT_POST, 'idValue', FILTER_DEFAULT);
 $column = filter_input(INPUT_POST, 'column', FILTER_DEFAULT);
 
-$bancoBB = new tableStructBasic();
+$bancoBB = new TableStructBasic();
 $bancoBB->setTable($banco);
 $title = $bancoBB->getTitle();
 

@@ -6,6 +6,9 @@
  * Date: 26/12/2016
  * Time: 20:08
  */
+
+namespace FormCrud;
+
 class InputSave {
 
     private $result;
@@ -178,7 +181,7 @@ class InputSave {
 
     private function checkStructTable() {
         if (!$this->structTable && $this->table):
-            $banco = new tableStruct();
+            $banco = new TableStruct();
             $banco->setTable($this->table);
             $this->structTable = $banco->getResult()[$this->table];
         endif;

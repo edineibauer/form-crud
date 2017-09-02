@@ -6,7 +6,10 @@
  * Date: 03/07/2017
  * Time: 20:51
  */
-class tableStructBasic {
+
+namespace FormCrud;
+
+class TableStructBasic {
 
     private $table;
     private $result;
@@ -54,9 +57,9 @@ class tableStructBasic {
 
     private function start() {
         if ($this->table && !$this->result):
-            $db = DBSA;
+            $db = DATA;
             $keys = array();
-            $readI = new ReadInfo();
+            $readI = new \ConnCrud\InfoTable();
             $readI->ExeRead("COLUMNS", "WHERE TABLE_SCHEMA = :nb && TABLE_NAME = :nt", "nb={$db}&nt={$this->table}");
             if ($readI->getResult()):
                 foreach ($readI->getResult() as $g):

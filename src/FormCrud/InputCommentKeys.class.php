@@ -6,6 +6,9 @@
  * Date: 12/05/2017
  * Time: 10:47
  */
+
+namespace FormCrud;
+
 class InputCommentKeys {
     private $dado;
     private $data;

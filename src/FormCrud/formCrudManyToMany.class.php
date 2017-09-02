@@ -6,7 +6,10 @@
  * Date: 26/12/2016
  * Time: 20:08
  */
-class formCrudManyToMany {
+
+namespace FormCrud;
+
+class FormCrudManyToMany {
 
     private $tableStruct;
     private $result;
@@ -48,7 +51,7 @@ class formCrudManyToMany {
 
         if ($this->isEditable($dados)):
 
-            $banco = new tableStructBasic();
+            $banco = new TableStructBasic();
             $banco->setTable($this->tableStruct['dados_value']['tableTarget']);
             $dadosTitle = $banco->getTitle();
 

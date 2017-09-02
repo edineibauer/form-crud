@@ -1,0 +1,14 @@
+{
+  "icon": [
+    "materialize"
+  ],
+  "css": [
+    "materialize",
+    "materialize-form"
+  ],
+  "js": [
+    "jquery",
+    "materialize",
+    "materialize-form"
+  ]
+}

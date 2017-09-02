@@ -6,6 +6,9 @@
  * Date: 16/07/2017
  * Time: 18:34
  */
+
+namespace FormCrud;
+
 class CreateFromStructTable {
 
     private $result = false;

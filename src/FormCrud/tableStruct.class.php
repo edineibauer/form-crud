@@ -9,7 +9,13 @@
  * Retorna o modelo da tabela de um banco mysql.
  * exemplo: retorna quais os campos uma tabela possui, o nome, o tipo e os limites
  */
-class tableStruct {
+
+namespace FormCrud;
+
+use ConnCrud\ForeignKey;
+use ConnCrud\InfoTable;
+
+class TableStruct {
 
     private $table;
     private $id;
@@ -47,9 +53,9 @@ class tableStruct {
     }
 
     private function getTableInfo($table, $id = 0) {
-        $db = DBSA;
+        $db = DATABASE;
         $keys = array();
-        $readI = new ReadInfo();
+        $readI = new InfoTable();
         $readI->ExeRead("COLUMNS", "WHERE TABLE_SCHEMA = :nb && TABLE_NAME = :nt", "nb={$db}&nt={$table}");
         if ($readI->getResult()):
             foreach ($readI->getResult() as $g):

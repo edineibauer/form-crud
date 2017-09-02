@@ -6,7 +6,10 @@
  * Date: 26/12/2016
  * Time: 20:08
  */
-class formCrudOneToMany {
+
+namespace FormCrud;
+
+class FormCrudOneToMany {
 
     private $tableStruct;
     private $table;

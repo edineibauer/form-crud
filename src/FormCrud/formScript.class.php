@@ -6,7 +6,10 @@
  * Date: 19/05/2017
  * Time: 20:23
  */
-abstract class formScript {
+
+namespace FormCrud;
+
+abstract class FormScript {
 
     private $script;
     private $table;

@@ -6,13 +6,33 @@
  * Date: 26/12/2016
  * Time: 20:08
  */
-class formCrud extends formScript {
+
+namespace FormCrud;
+
+class FormCrud extends FormScript {
 
     private $tableStruct;
     private $id;
+    private $entity;
 
     private $pk;
     private $input;
+
+    public function __construct($entity = null)
+    {
+        if($entity) {
+            $this->setEntity($entity);
+        }
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    public function setEntity($entity)
+    {
+        $this->entity = $entity;
+        $this->startEntity();
+    }
 
     /**
      * @param mixed $id
@@ -41,7 +61,7 @@ class formCrud extends formScript {
     /**
      * @return mixed
      */
-    public function getformCrud() {
+    public function getFormCrud() {
         $this->checkStart();
 
         return $this->getInputs() . $this->getActionButtons();
@@ -61,7 +81,7 @@ class formCrud extends formScript {
         if (parent::getTable() && !$this->tableStruct):
             parent::setTable(parent::getTable());
 
-            $bancoInfo = new tableStruct();
+            $bancoInfo = new TableStruct();
             $bancoInfo->setTable(parent::getTable());
             $bancoInfo->setId($this->id);
             $this->tableStruct = $bancoInfo->getResult();
@@ -97,7 +117,7 @@ class formCrud extends formScript {
     private function checkDadosValue($dados) {
         if (isset($dados['oneToMany'])):
             foreach ($dados['oneToMany'] as $table => $dado):
-                $many = new formCrudOneToMany();
+                $many = new FormCrudOneToMany();
                 $many->setPk(array("name" => $dados['oneToMany'][$table]['dados_value']['column_link'], "id" => $this->pk['id']));
                 $many->setTableStruct($dado);
                 $many->setTable($table);
@@ -108,7 +128,7 @@ class formCrud extends formScript {
 
         if (isset($dados['manyToMany'])):
             foreach ($dados['manyToMany'] as $table => $dado):
-                $many = new formCrudManyToMany();
+                $many = new FormCrudManyToMany();
                 $many->setPk($this->pk);
                 $many->setTableStruct($dado);
                 $this->input[] = $many->getResult();

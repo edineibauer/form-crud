@@ -1,5 +1,33 @@
 <?php
 
+/**
+ * FromCrud (Class)
+ *
+ * Esta classe tem como objetivo linkar uma entidade a um conjunto de templates para disponibilizar um
+ * formulário para operações de edição e criação de uma entidade existente ou nova.
+ *
+ * Localização das templates, por padrão na pasta "tpl"
+ *
+ * Os templates são selecionado com base no atributo "input" dos campos de uma entidade.
+ *
+ * Os Template selecionados devem conter a extensão "tpl" para funcionamento com a biblioteca Smarty
+ *      tpl (folder default) ->
+ *          input.tpl
+ *
+ * Templates podem recebem uma personalização "tpl_personalizado" (folder), sendo assim
+ * necessário evidenciar a personalização ao instanciar a classe:
+ *      $form = new Form('personalizado');
+ *
+ * ou então setando o design desejado logo após instanciar:
+ *      $form = new Form();
+ *      $form->setDesign('personalizado');
+ *
+ * Requer as dependências:
+ * Conn-Crud -> para manipulação do Banco
+ * Entity -> para controle da entidade
+ * Smarty -> motor de template
+*/
+
 namespace FormCrud;
 
 use ConnCrud\Read;
@@ -10,14 +38,9 @@ class Form
 {
     private $entity;
     private $design;
-    private $js;
-    private $css;
-    private $form;
 
     public function __construct($entity = null)
     {
-        $this->css = "";
-        $this->js = "";
         if ($entity) {
             $this->setEntity($entity);
         }
@@ -29,7 +52,6 @@ class Form
     public function setDesign($design)
     {
         $this->design = $design;
-        $this->preSetCssJsDesign();
     }
 
     /**
@@ -38,33 +60,48 @@ class Form
     public function setEntity($entity)
     {
         $this->entity = $entity;
-        $this->form = "<form action='" . HOME . "formCrud' name='form-{$this->entity}' id='form-{$this->entity}' method='post'";
     }
 
-    public function getForm()
+    public function getForm($design = null)
     {
-        $inputs = $this->prepareInputs();
-        $inputs .= $this->getButtons();
+        if($design) {
+            $this->setDesign($design);
+        }
 
-        return $this->form . ">" . $inputs . "</form>" . $this->getCss() . $this->getJs();
+        $template = new TemplateEngine($this->design);
+        $form['inputs'] = $this->prepareInputs();
+        $form['actions'] = $this->getButtons();
+        $form['entity'] = $this->entity;
+        $form['home'] = defined("HOME") ? HOME : "";
+
+        return $template->getShow("form", $form);
     }
 
-    public function showForm()
+    public function showForm($design = null)
     {
+        if($design) {
+            $this->setDesign($design);
+        }
         echo $this->getForm();
     }
 
-    private function prepareInputs()
+    /**
+     * @return array
+    */
+    private function prepareInputs() :array
     {
-        $dados = "";
+        $dados = array();
 
-        $template = new TemplateEngine();
         $entity = new Entity($this->entity);
+        $template = new TemplateEngine($this->design);
+
         foreach ($entity->getJsonStructEntity() as $column => $values) {
             if (!isset($values['edit']) || $values['edit']) {
-                $dados .= $template->getShow($values['input'], $values);
+
+                $dados[] = $template->getShow($values['input'], $values);
+
                 if($values["key"] === "fk") {
-                    $this->setJsAutoComplete($values["table"], $values["column"]);
+                    $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";
                 }
             }
         }
@@ -72,28 +109,21 @@ class Form
         return $dados;
     }
 
-    private function setJsAutoComplete($table, $column)
+    private function setAutocompleteData($table)
     {
-        $results = $this->getResultsFrom($table);
+        $results = $this->getDataBaseResultsFrom($table);
         if($results) {
-            $resultJs = "";
+            $data = array();
             foreach ($results as $result) {
-                $resultJs .= (!empty($resultJs) ? ", " : "") . "'{$result['title']}': " . (isset($result['image']) ? "'{$result['image']}'" : "null");
+                $data[$result['title']] = (isset($result['image']) ? "'{$result['image']}'" : null);
             }
-
-            $this->js .= "
-                $('#{$column}').autocomplete({
-                data: {{$resultJs}},
-                limit: 20,
-                onAutocomplete: function(val) {
-                  // Callback function when value is autcompleted.
-                },
-                minLength: 1
-              });";
+            return json_encode($data);
         }
+
+        return "";
     }
 
-    private function getResultsFrom($table)
+    private function getDataBaseResultsFrom($table)
     {
         $entity = new EntityInfo($table);
         $entity = $entity->getJsonInfoEntity();
@@ -110,71 +140,9 @@ class Form
         }
     }
 
-    private function preSetCssJsDesign()
-    {
-        if($this->design === "materialize") {
-            $this->setForm("class='row' ");
-            $this->setCss(".autocomplete-content{position: absolute}");
-            $this->setJs("$('select').material_select();");
-            $this->setJs("$('.datepicker').pickadate({
-                monthsFull: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                weekdaysFull: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sabádo'],
-                weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
-                today: 'Hoje',
-                clear: 'Limpar',
-                close: 'Pronto',
-                labelMonthNext: 'Próximo mês',
-                labelMonthPrev: 'Mês anterior',
-                labelMonthSelect: 'Selecione um mês',
-                labelYearSelect: 'Selecione um ano',
-                format: 'dd/mm/yyyy',
-                selectMonths: true,
-                selectYears: 15
-          });");
-        }
-    }
-
-    private function setForm($form)
-    {
-        $this->form .= $form;
-    }
-
-    /**
-     * @param mixed $css
-     */
-    private function setCss($css)
-    {
-        $this->css .= $css;
-    }
-
-    /**
-     * @param string $js
-     */
-    private function setJs(string $js)
-    {
-        $this->js .= $js;
-    }
-
-    /**
-     * @return string
-     */
-    private function getCss()
-    {
-        return "<style>{$this->css}</style>";
-    }
-
-    /**
-     * @return string
-     */
-    private function getJs()
-    {
-        return "<script>$(function (){{$this->js}});</script>";
-    }
-
     private function getButtons()
     {
-        $view = new TemplateEngine();
+        $view = new TemplateEngine($this->design);
         return $view->getShow("saveButton", array("title" => "Salvar", "funcao" => "save"));
     }
 }

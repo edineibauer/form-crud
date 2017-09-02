@@ -2,18 +2,32 @@
 
 namespace FormCrud;
 
-use ConnCrud\Read;
-use Entity\EntityInfo;
-
 class TemplateEngine
 {
+    private $design;
     private $smart;
 
-    public function __construct()
+    public function __construct($design = null)
     {
+        if($design) {
+            $this->setDesign($design);
+        }
         $this->start();
     }
 
+    /**
+     * @param mixed $design
+     */
+    public function setDesign($design)
+    {
+        $this->design = $design;
+    }
+
+    /**
+     * @param string $template
+     * @param array $data
+     * @return string
+    */
     public function getShow(string $template, array $data = null) :string
     {
         if ($data) {
@@ -60,6 +74,6 @@ class TemplateEngine
         //        $this->smart->caching = true;
         //        $this->smart->cache_lifetime = 120;
 
-        $this->smart->setTemplateDir("src/FormCrud/tplMaterialize");
+        $this->smart->setTemplateDir("src/FormCrud/tpl" . ($this->design ? "_{$this->design}" : ""));
     }
 }
