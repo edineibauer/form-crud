@@ -1,0 +1,13 @@
+{
+  "css": [
+    "conn-reboot",
+    "conn-grid",
+    "conn-font",
+    "conn-helper"
+  ],
+  "js": [
+    "jquery",
+    "conn",
+    "conn-form"
+  ]
+}
