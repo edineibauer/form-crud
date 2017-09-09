@@ -33,6 +33,7 @@ namespace FormCrud;
 use ConnCrud\Read;
 use Entity\Entity;
 use Entity\EntityInfo;
+use Helpers\Template;
 
 class Form
 {
@@ -68,7 +69,8 @@ class Form
             $this->setDesign($design);
         }
 
-        $template = new TemplateEngine($this->design);
+        $template = new Template("form-crud");
+        $template->setDesign($this->design);
         $form['inputs'] = $this->prepareInputs();
         $form['actions'] = $this->getButtons();
         $form['entity'] = $this->entity;
@@ -93,7 +95,8 @@ class Form
         $dados = array();
 
         $entity = new Entity($this->entity);
-        $template = new TemplateEngine($this->design);
+        $template = new Template("form-crud");
+        $template->setDesign($this->design);
 
         foreach ($entity->getJsonStructEntity() as $column => $values) {
             if (!isset($values['edit']) || $values['edit']) {
@@ -142,7 +145,8 @@ class Form
 
     private function getButtons()
     {
-        $view = new TemplateEngine($this->design);
+        $view = new Template("form-crud");
+        $view->setDesign($this->design);
         return $view->getShow("saveButton", array("title" => "Salvar", "funcao" => "save"));
     }
 }
