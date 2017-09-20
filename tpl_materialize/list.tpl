@@ -1,4 +1,4 @@
-<div class="{$row}">
+<div class="{$col}">
     <div class="input-field col s12">
         <i class="material-icons prefix">insert_drive_file</i>
         <input type="text" id="{$column}" class="autocomplete">

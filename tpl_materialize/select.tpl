@@ -1,4 +1,4 @@
-<div class="{$row}">
+<div class="{$col}">
     <div class="input-field col s12">
         <select>
             {section name=index loop=$allow}
