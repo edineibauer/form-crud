@@ -99,9 +99,26 @@ class Form
         $template->setDesign($this->design);
 
         foreach ($entity->getJsonStructEntity() as $column => $values) {
-            if (!isset($values['edit']) || $values['edit']) {
+            if ($values['edit']) {
 
-                $dados[] = $template->getShow($values['input'], $values);
+                if($values['input'] === "extend") {
+                    $entidade = $this->entity;
+                    $this->setEntity($values['table']);
+
+                    $templateExt = new Template("form-crud");
+                    $templateExt->setDesign($this->design);
+                    $form['inputs'] = $this->prepareInputs();
+                    $form['actions'] = "";
+                    $form['entity'] = $this->entity;
+                    $form['home'] = defined("HOME") ? HOME : "";
+
+                    $dados[] = $templateExt->getShow("form", $form);
+
+                    $this->setEntity($entidade);
+                    unset($entidade, $form, $templateExt);
+                } else {
+                    $dados[] = $template->getShow($values['input'], $values);
+                }
 
                 if($values["key"] === "fk") {
                     $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";

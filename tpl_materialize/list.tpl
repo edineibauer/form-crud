@@ -4,9 +4,9 @@
         <input type="text" id="{$column}" class="autocomplete">
         <label for="{$column}">{$title}</label>
     </div>
-</div>{*
+</div>
 
-
+{*
 <div class='box box-2 s11box-1 pd-small {$class}' rel="FK {$title}">
     <label style='width:65%;padding-top:1px; min-height: 30px;' class='fl-left'>
         <input type="text" id="{$column}">
