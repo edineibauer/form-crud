@@ -9,7 +9,5 @@
 $dados = $_POST['dados'];
 $entity = filter_input(INPUT_POST, 'entity', FILTER_DEFAULT);
 
-var_dump($dados);die;
-
 $ent = new \Entity\Entity($entity);
 $ent->insertDataEntity($dados);
