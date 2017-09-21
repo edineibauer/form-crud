@@ -1,4 +1,4 @@
-<form class="row" id='form-{$entity}' method='post' ng-app="formcrud" ng-controller="formcrud-controller" ng-cloak="">
+<form class="row" id='parent_{$entity}' method='post' ng-app="formcrud" ng-controller="formcrud-controller" ng-cloak="">
     {foreach $inputs as $input}
         {$input}
     {/foreach}
@@ -20,11 +20,16 @@
                     entity: "{$entity}",
                     dados: $scope.dados
                 }, function (g) {
+                    console.log(g);
                     g = $.parseJSON(g);
                     Materialize.toast(g['mensagem'], 3000);
 
                     if(g['response'] === 2) {
-                        console.log(g['erros']);
+                        $.each(g['erros'], function (entity, dados) {
+                            $.each(dados, function (column, erro) {
+                                $("#parent_" + entity).find("#" + column).append(erro);
+                            });
+                        });
                     }
                 });
             };

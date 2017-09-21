@@ -6,8 +6,12 @@
  * Time: 16:10
  */
 
-$dados = $_POST['dados'];
+$dados = $_POST['dados'] ?? null;
 $entity = filter_input(INPUT_POST, 'entity', FILTER_DEFAULT);
 
-$ent = new \Entity\Entity($entity);
-$ent->insertDataEntity($dados);
+if($entity && $dados) {
+    $ent = new \Entity\Entity($entity);
+    $ent->insertDataEntity($dados);
+} else {
+    echo json_encode(array("response" => 3));
+}

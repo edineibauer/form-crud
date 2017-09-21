@@ -90,7 +90,7 @@ class Form
     /**
      * @return array
      */
-    private function prepareInputs($extend = false, $ngmodel = null): array
+    private function prepareInputs($ngmodel = null): array
     {
         $dados = array();
         $ngmodel = $ngmodel ?? "dados.";
@@ -100,9 +100,8 @@ class Form
         $template->setDesign($this->design);
 
         foreach ($entity->getJsonStructEntity() as $column => $values) {
-            if ($values['edit'] && (!$extend || $values['key'] !== "primary")) {
+            if ($values['edit']) {
 
-                $values['class'] .= " " . ($extend ? "extend_formcrud" : "formcrud");
                 $values['ngmodel'] = $ngmodel . $values['column'];
 
                 if ($values['input'] === "extend") {
@@ -128,8 +127,8 @@ class Form
 
         $templateExt = new Template("form-crud");
         $templateExt->setDesign($this->design);
-        $form['inputs'] = $this->prepareInputs(1, $ngmodel . $column . ".");
-        $form['column'] = $column;
+        $form['inputs'] = $this->prepareInputs($ngmodel . $column . ".");
+        $form['entity'] = $column;
 
         $this->setEntity($entidade);
 
