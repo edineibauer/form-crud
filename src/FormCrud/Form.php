@@ -26,7 +26,7 @@
  * Conn-Crud -> para manipulação do Banco
  * Entity -> para controle da entidade
  * Smarty -> motor de template
-*/
+ */
 
 namespace FormCrud;
 
@@ -65,7 +65,7 @@ class Form
 
     public function getForm($design = null)
     {
-        if($design) {
+        if ($design) {
             $this->setDesign($design);
         }
 
@@ -81,7 +81,7 @@ class Form
 
     public function showForm($design = null)
     {
-        if($design) {
+        if ($design) {
             $this->setDesign($design);
         }
         echo $this->getForm();
@@ -89,38 +89,30 @@ class Form
 
     /**
      * @return array
-    */
-    private function prepareInputs() :array
+     */
+    private function prepareInputs($extend = false, $ngmodel = null): array
     {
         $dados = array();
+        $ngmodel = $ngmodel ?? "dados.";
 
         $entity = new Entity($this->entity);
         $template = new Template("form-crud");
         $template->setDesign($this->design);
 
         foreach ($entity->getJsonStructEntity() as $column => $values) {
-            if ($values['edit']) {
+            if ($values['edit'] && (!$extend || $values['key'] !== "primary")) {
 
-                if($values['input'] === "extend") {
-                    $entidade = $this->entity;
-                    $this->setEntity($values['table']);
+                $values['class'] .= " " . ($extend ? "extend_formcrud" : "formcrud");
+                $values['ngmodel'] = $ngmodel . $values['column'];
 
-                    $templateExt = new Template("form-crud");
-                    $templateExt->setDesign($this->design);
-                    $form['inputs'] = $this->prepareInputs();
-                    $form['actions'] = "";
-                    $form['entity'] = $this->entity;
-                    $form['home'] = defined("HOME") ? HOME : "";
+                if ($values['input'] === "extend") {
+                    $dados[] = $this->getExtended($values['column'], $values['table'], $ngmodel);
 
-                    $dados[] = $templateExt->getShow("form", $form);
-
-                    $this->setEntity($entidade);
-                    unset($entidade, $form, $templateExt);
                 } else {
                     $dados[] = $template->getShow($values['input'], $values);
                 }
 
-                if($values["key"] === "fk") {
+                if ($values["key"] === "fk") {
                     $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";
                 }
             }
@@ -129,10 +121,25 @@ class Form
         return $dados;
     }
 
+    private function getExtended($column, $table, $ngmodel)
+    {
+        $entidade = $this->entity;
+        $this->setEntity($table);
+
+        $templateExt = new Template("form-crud");
+        $templateExt->setDesign($this->design);
+        $form['inputs'] = $this->prepareInputs(1, $ngmodel . $column . ".");
+        $form['column'] = $column;
+
+        $this->setEntity($entidade);
+
+        return $templateExt->getShow("extend", $form);
+    }
+
     private function setAutocompleteData($table)
     {
         $results = $this->getDataBaseResultsFrom($table);
-        if($results) {
+        if ($results) {
             $data = array();
             foreach ($results as $result) {
                 $data[$result['title']] = (isset($result['image']) ? "'{$result['image']}'" : null);
@@ -148,7 +155,7 @@ class Form
         $entity = new EntityInfo($table);
         $entity = $entity->getJsonInfoEntity();
 
-        if(!empty($entity['title'])) {
+        if (!empty($entity['title'])) {
             $table = (defined('PRE') && !preg_match('/^' . PRE . '/i', $table) ? PRE : "") . $table;
 
             $read = new Read();

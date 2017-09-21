@@ -1,1 +1,1 @@
-<input type='hidden' id='{$column}' />
+<input type='hidden' id="{$column}" ng-model="{$ngmodel}" class="{$class}" />

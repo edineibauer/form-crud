@@ -1,3 +1,3 @@
 <div class="{$col}">
-<input type="text" class="timepicker" id='{$column}' required="{!$null}">
+<input type="text" class="{$class} timepicker" id="{$column}" ng-model="{$ngmodel}" required="{!$null}">
 </div>

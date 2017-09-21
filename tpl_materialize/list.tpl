@@ -1,7 +1,7 @@
 <div class="{$col}">
     <div class="input-field col s12">
         <i class="material-icons prefix">insert_drive_file</i>
-        <input type="text" id="{$column}" class="autocomplete">
+        <input type="text" id="{$column}" ng-model="{$ngmodel}" class="{$class} autocomplete">
         <label for="{$column}">{$title}</label>
     </div>
 </div>
@@ -9,7 +9,7 @@
 {*
 <div class='box box-2 s11box-1 pd-small {$class}' rel="FK {$title}">
     <label style='width:65%;padding-top:1px; min-height: 30px;' class='fl-left'>
-        <input type="text" id="{$column}">
+        <input type="text" id="{$column}" ng-model="{$ngmodel}">
         <span class='font-light'>
 
         </span>

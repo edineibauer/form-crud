@@ -1,1 +1,0 @@
-<input type='hidden' rel='url' maxlength='#tamanho#' value='#value#' id='#id#' class="#class#" />

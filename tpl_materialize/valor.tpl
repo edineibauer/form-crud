@@ -1,4 +1,4 @@
 <label>
-    <input type='number' min='1' step='any' maxlength='#tamanho#' value='#value#' id='#id#' class='pd-small #class#' />
+    <input type='number' min='1' step='any' maxlength='{$size}' id="{$column}" ng-model="{$ngmodel}" class='{$class}' />
     <span class='font-light'> Preço</span>
 </label>
