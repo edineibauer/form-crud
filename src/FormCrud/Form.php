@@ -32,15 +32,16 @@ namespace FormCrud;
 
 use ConnCrud\Read;
 use Entity\Entity;
-use Entity\EntityInfo;
+use Entity\Metadados;
 use Helpers\Template;
 
 class Form
 {
     private $entity;
+    private $id;
     private $design;
 
-    public function __construct($entity = null)
+    public function __construct(String $entity = null)
     {
         if ($entity) {
             $this->setEntity($entity);
@@ -56,11 +57,20 @@ class Form
     }
 
     /**
-     * @param mixed $entity
+     * @param String $entity
      */
-    public function setEntity($entity)
+    public function setEntity(String $entity)
     {
-        $this->entity = $entity;
+        $this->entity = new Entity($entity);
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        $this->entity->load($id);
     }
 
     public function getForm($design = null)
@@ -73,7 +83,7 @@ class Form
         $template->setDesign($this->design);
         $form['inputs'] = $this->prepareInputs();
         $form['actions'] = $this->getButtons();
-        $form['entity'] = $this->entity;
+        $form['entity'] = $this->entity->getEntity();
         $form['home'] = defined("HOME") ? HOME : "";
 
         return $template->getShow("form", $form);
@@ -95,25 +105,26 @@ class Form
         $dados = array();
         $ngmodel = $ngmodel ?? "dados.";
 
-        $entity = new Entity($this->entity);
         $template = new Template("form-crud");
         $template->setDesign($this->design);
 
-        foreach ($entity->getJsonStructEntity() as $column => $values) {
+        foreach ($this->entity->getMetadados()['struct'] as $column => $values) {
             if ($values['edit']) {
 
-                $values['ngmodel'] = $ngmodel . $values['column'];
+                $values['column'] = $ngmodel . $values['column'];
+                $values['value'] = "";
 
                 if ($values['input'] === "extend") {
-                    $dados[] = $this->getExtended($values['column'], $values['table'], $ngmodel);
+                    $dados[] = $this->getExtended($column, $values['table'], $ngmodel);
 
                 } else {
+                    $values['value'] = $this->entity->get($values['column']);
                     $dados[] = $template->getShow($values['input'], $values);
                 }
 
-                if ($values["key"] === "fk") {
-                    $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";
-                }
+//                if ($values["key"] === "fk") {
+//                    $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";
+//                }
             }
         }
 
@@ -130,7 +141,7 @@ class Form
         $form['inputs'] = $this->prepareInputs($ngmodel . $column . ".");
         $form['entity'] = $column;
 
-        $this->setEntity($entidade);
+        $this->entity = $entidade;
 
         return $templateExt->getShow("extend", $form);
     }
@@ -151,8 +162,7 @@ class Form
 
     private function getDataBaseResultsFrom($table)
     {
-        $entity = new EntityInfo($table);
-        $entity = $entity->getJsonInfoEntity();
+        $entity = Metadados::getInfo($table);
 
         if (!empty($entity['title'])) {
             $table = (defined('PRE') && !preg_match('/^' . PRE . '/i', $table) ? PRE : "") . $table;
