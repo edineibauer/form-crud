@@ -39,9 +39,9 @@ class Form
 {
     private $entity;
     private $id;
-    private $design;
+    private $design = "input";
 
-    public function __construct(String $entity = null)
+    public function __construct($entity = null)
     {
         if ($entity) {
             $this->setEntity($entity);
@@ -57,11 +57,25 @@ class Form
     }
 
     /**
-     * @param String $entity
+     * @param mixed $entity
      */
-    public function setEntity(String $entity)
+    public function setEntity($entity)
     {
-        $this->entity = new Entity($entity);
+        if (is_string($entity)) {
+            $this->entity = new Entity($entity);
+        } elseif (is_object($entity) && is_a($entity, "Entity\Entity")) {
+            $this->entity = $entity;
+        }
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data)
+    {
+        if ($this->entity) {
+            $this->entity->setData($data);
+        }
     }
 
     /**
@@ -82,7 +96,7 @@ class Form
         $template = new Template("form-crud");
         $template->setDesign($this->design);
         $form['inputs'] = $this->prepareInputs();
-        $form['actions'] = $this->getButtons();
+        $form['id'] = $this->id;
         $form['entity'] = $this->entity->getEntity();
         $form['home'] = defined("HOME") ? HOME : "";
 
@@ -118,23 +132,42 @@ class Form
                     $dados[] = $this->getExtended($column, $values['table'], $ngmodel);
 
                 } else {
-                    $values['value'] = $this->entity->get($values['column']);
+                    if (!empty($this->entity->get($column))) {
+                        if ($values['input'] === "list") {
+                            $entidadeList = $this->entity->get($column);
+                            $values['value'] = $entidadeList->get($entidadeList->getMetadados()['info']['title']);
+
+                        } else if ($values['input'] === "list_mult") {
+                            foreach ($this->entity->get($column) as $entidadeListMmult) {
+                                $values['value'][] = $entidadeListMmult->get($entidadeListMmult->getMetadados()['info']['title']);
+                            }
+                        } else {
+                            $values['value'] = $this->entity->get($column);
+                        }
+                    } else {
+                        $values['value'] = '';
+                    }
                     $dados[] = $template->getShow($values['input'], $values);
                 }
-
-//                if ($values["key"] === "fk") {
-//                    $dados[] = "<input type='hidden' for='{$column}' class='autoCompleteData' value='" . $this->setAutocompleteData($values["table"]) . "' />";
-//                }
             }
         }
 
         return $dados;
     }
 
+    private function getList($column, $table, $ngmodel)
+    {
+
+    }
+
     private function getExtended($column, $table, $ngmodel)
     {
         $entidade = $this->entity;
-        $this->setEntity($table);
+        if (!empty($this->entity->get($column)) && is_a($this->entity->get($column), "Entity\Entity")) {
+            $this->entity = $this->entity->get($column);
+        } else {
+            $this->setEntity($table);
+        }
 
         $templateExt = new Template("form-crud");
         $templateExt->setDesign($this->design);
@@ -174,12 +207,5 @@ class Form
                 return $read->getResult();
             }
         }
-    }
-
-    private function getButtons()
-    {
-        $view = new Template("form-crud");
-        $view->setDesign($this->design);
-        return $view->getShow("saveButton", array("title" => "Salvar", "funcao" => "save"));
     }
 }

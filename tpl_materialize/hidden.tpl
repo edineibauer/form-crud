@@ -1,1 +1,0 @@
-<input type='hidden' id="{$column}" ng-model="{$ngmodel}" class="{$class}" />
