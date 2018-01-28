@@ -32,20 +32,32 @@ namespace FormCrud;
 
 use ConnCrud\Read;
 use Entity\Entity;
-use Entity\Metadados;
+use EntityForm\Metadados;
 use Helpers\Template;
 
 class Form
 {
     private $entity;
+    private $value;
     private $id;
     private $design = "input";
 
-    public function __construct($entity = null)
+    /**
+     *
+     * @param string $entity
+    */
+    public function __construct(string $entity = null)
     {
-        if ($entity) {
+        if ($entity)
             $this->setEntity($entity);
-        }
+    }
+
+    /**
+     * @param string $entity
+     */
+    public function setEntity(string $entity)
+    {
+        $this->entity = $entity;
     }
 
     /**
@@ -57,25 +69,12 @@ class Form
     }
 
     /**
-     * @param mixed $entity
-     */
-    public function setEntity($entity)
-    {
-        if (is_string($entity)) {
-            $this->entity = new Entity($entity);
-        } elseif (is_object($entity) && is_a($entity, "Entity\Entity")) {
-            $this->entity = $entity;
-        }
-    }
-
-    /**
      * @param array $data
      */
     public function setData(array $data)
     {
-        if ($this->entity) {
-            $this->entity->setData($data);
-        }
+//        if ($this->entity)
+//            $this->entity->setData($data);
     }
 
     /**
@@ -84,20 +83,18 @@ class Form
     public function setId($id)
     {
         $this->id = $id;
-        $this->entity->load($id);
+        $this->value = Entity::read($this->entity, $id);
     }
 
     public function getForm($design = null)
     {
-        if ($design) {
+        if ($design)
             $this->setDesign($design);
-        }
 
         $template = new Template("form-crud");
-        $template->setDesign($this->design);
         $form['inputs'] = $this->prepareInputs();
         $form['id'] = $this->id;
-        $form['entity'] = $this->entity->getEntity();
+        $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
 
         return $template->getShow("form", $form);
@@ -105,11 +102,47 @@ class Form
 
     public function showForm($design = null)
     {
-        if ($design) {
+        if ($design)
             $this->setDesign($design);
-        }
+
         echo $this->getForm();
     }
+
+    /*
+     *
+        <option value="text">Texto</option>
+        <option value="textarea">Área de Texto</option>
+        <option value="int">Inteiro</option>
+        <option value="float">Float</option>
+        <option value="boolean">Boleano</option>
+        <option value="select">Select</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">CheckBox</option>
+        <option value="range">Range</option>
+        <option value="color">Cor</option>
+        <option value="source">Arquivo</option>
+
+        <option value="title">Título</option>
+        <option value="link">Link</option>
+        <option value="status">Status</option>
+        <option value="valor">R$ Valor</option>
+        <option value="url">Url</option>
+        <option value="email">Email</option>
+        <option value="password">Password</option>
+        <option value="tel">Telefone</option>
+        <option value="cpf">Cpf</option>
+        <option value="cnpj">Cnpj</option>
+        <option value="cep">Cep</option>
+        <option value="time">Hora</option>
+        <option value="week">Semana</option>
+        <option value="month">Mês</option>
+        <option value="year">Ano</option>
+
+        <option value="extend">Extensão</option>
+        <option value="extend_mult">Extensão Multipla</option>
+        <option value="list">Lista</option>
+        <option value="list_mult">Lista Multipla</option>
+     * */
 
     /**
      * @return array
@@ -120,34 +153,34 @@ class Form
         $ngmodel = $ngmodel ?? "dados.";
 
         $template = new Template("form-crud");
-        $template->setDesign($this->design);
 
-        foreach ($this->entity->getMetadados()['struct'] as $column => $values) {
-            if ($values['edit']) {
+        foreach (Metadados::getDicionario($this->entity) as $i => $data) {
+            if ($data['form']) {
 
-                $values['column'] = $ngmodel . $values['column'];
-                $values['value'] = "";
+                $data['ngmodel'] = $ngmodel . $data['column'];
+                $data['value'] = "";
 
-                if ($values['input'] === "extend") {
-                    $dados[] = $this->getExtended($column, $values['table'], $ngmodel);
+                if ($data['key'] === "extend") {
+                    $dados[] = $this->getExtended($data['column'], $data['relation'], $ngmodel);
 
                 } else {
-                    if (!empty($this->entity->get($column))) {
-                        if ($values['input'] === "list") {
-                            $entidadeList = $this->entity->get($column);
-                            $values['value'] = $entidadeList->get($entidadeList->getMetadados()['info']['title']);
+                    if (!empty($this->value[$data['column']])) {
+                        if ($data['key'] === "list") {
+//                            $entidadeList = $this->entity->get($data['column']);
+//                            $data['value'] = $entidadeList->get($entidadeList->getMetadados()['info']['title']);
 
-                        } else if ($values['input'] === "list_mult") {
-                            foreach ($this->entity->get($column) as $entidadeListMmult) {
-                                $values['value'][] = $entidadeListMmult->get($entidadeListMmult->getMetadados()['info']['title']);
-                            }
+                        } else if ($data['key'] === "list_mult") {
+//                            foreach ($this->entity->get($data['column']) as $entidadeListMmult)
+//                                $data['value'][] = $entidadeListMmult->get($entidadeListMmult->getMetadados()['info']['title']);
+
                         } else {
-                            $values['value'] = $this->entity->get($column);
+                            $data['value'] = $this->value[$data['column']];
                         }
-                    } else {
-                        $values['value'] = '';
                     }
-                    $dados[] = $template->getShow($values['input'], $values);
+
+                    $dados[] = '<div class="col ' . $data['form']['cols'] . ' ' . $data['form']['colm'] . ' ' . $data['form']['coll'] . '">'
+                        . $template->getShow($data['form']['input'], $data)
+                        .'</div>';
                 }
             }
         }
@@ -163,16 +196,11 @@ class Form
     private function getExtended($column, $table, $ngmodel)
     {
         $entidade = $this->entity;
-        if (!empty($this->entity->get($column)) && is_a($this->entity->get($column), "Entity\Entity")) {
-            $this->entity = $this->entity->get($column);
-        } else {
-            $this->setEntity($table);
-        }
+        $this->entity = $table;
 
         $templateExt = new Template("form-crud");
-        $templateExt->setDesign($this->design);
         $form['inputs'] = $this->prepareInputs($ngmodel . $column . ".");
-        $form['entity'] = $column;
+        $form['column'] = $column;
 
         $this->entity = $entidade;
 
