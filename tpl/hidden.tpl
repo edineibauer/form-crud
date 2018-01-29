@@ -1,5 +1,5 @@
 <input type='hidden'
-        {($value && $value !== "")? 'value="' + {$value} + '"' : ''}
-        {($size !== false)? 'maxlength="' + {$size} + '" ' : ''}
-       style="{$form['style']}"
-       id="formcrud-identificador-entity"  data-model="{$ngmodel}" id="{$column}" style="{$form['style']}" class="{$form['class']}" />
+        {($value !== false && $value === 1) ? "value='{$value}' " : "" }
+        {($size !== false)? "maxlength='{$size}' " : ''}
+        {($default === false)? 'required="required" ' : ''}
+       style="{$form['style']}" data-model="{$ngmodel}" style="{$form['style']}" class="{$form['class']}" />

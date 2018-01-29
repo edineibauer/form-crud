@@ -88,6 +88,10 @@ class Form
 
     public function getForm($design = null)
     {
+        if(!$this->value)
+            $this->value = Entity::read($this->entity);
+        $this->fixValues();
+
         if ($design)
             $this->setDesign($design);
 
@@ -108,41 +112,13 @@ class Form
         echo $this->getForm();
     }
 
-    /*
-     *
-        <option value="text">Texto</option>
-        <option value="textarea">Área de Texto</option>
-        <option value="int">Inteiro</option>
-        <option value="float">Float</option>
-        <option value="boolean">Boleano</option>
-        <option value="select">Select</option>
-        <option value="radio">Radio</option>
-        <option value="checkbox">CheckBox</option>
-        <option value="range">Range</option>
-        <option value="color">Cor</option>
-        <option value="source">Arquivo</option>
-
-        <option value="title">Título</option>
-        <option value="link">Link</option>
-        <option value="status">Status</option>
-        <option value="valor">R$ Valor</option>
-        <option value="url">Url</option>
-        <option value="email">Email</option>
-        <option value="password">Password</option>
-        <option value="tel">Telefone</option>
-        <option value="cpf">Cpf</option>
-        <option value="cnpj">Cnpj</option>
-        <option value="cep">Cep</option>
-        <option value="time">Hora</option>
-        <option value="week">Semana</option>
-        <option value="month">Mês</option>
-        <option value="year">Ano</option>
-
-        <option value="extend">Extensão</option>
-        <option value="extend_mult">Extensão Multipla</option>
-        <option value="list">Lista</option>
-        <option value="list_mult">Lista Multipla</option>
-     * */
+    private function fixValues()
+    {
+        foreach ($this->value as $column => $value) {
+            if(is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/i',$value))
+                $this->value[$column] = str_replace(' ', 'T', $value);
+        }
+    }
 
     /**
      * @return array
@@ -157,27 +133,13 @@ class Form
         foreach (Metadados::getDicionario($this->entity) as $i => $data) {
             if ($data['form']) {
 
+                $data['value'] = $this->value[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
-                $data['value'] = "";
 
                 if ($data['key'] === "extend") {
                     $dados[] = $this->getExtended($data['column'], $data['relation'], $ngmodel);
 
                 } else {
-                    if (!empty($this->value[$data['column']])) {
-                        if ($data['key'] === "list") {
-//                            $entidadeList = $this->entity->get($data['column']);
-//                            $data['value'] = $entidadeList->get($entidadeList->getMetadados()['info']['title']);
-
-                        } else if ($data['key'] === "list_mult") {
-//                            foreach ($this->entity->get($data['column']) as $entidadeListMmult)
-//                                $data['value'][] = $entidadeListMmult->get($entidadeListMmult->getMetadados()['info']['title']);
-
-                        } else {
-                            $data['value'] = $this->value[$data['column']];
-                        }
-                    }
-
                     $dados[] = '<div class="col ' . $data['form']['cols'] . ' ' . $data['form']['colm'] . ' ' . $data['form']['coll'] . '">'
                         . $template->getShow($data['form']['input'], $data)
                         .'</div>';
