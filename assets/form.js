@@ -318,185 +318,144 @@ $(function ($) {
 
     $.fn.model = function () {
 
-        var saveTime, keyupTime;
+        var saveTime;
         var entity = this.attr("data-table") || "null";
         var callback = this.attr("action") || "null";
 
-        if (entity !== null && callback !== null) {
-            var model = {
-                dados: {},
-                setDados: function ($this) {
-                    var mode = $this.attr("data-model");
-                    if (typeof(mode) !== "undefined") {
-                        if ($this.attr("type") === "checkbox") {
-                            checkBox($this, mode);
+        if (entity === null || callback === null)
+            return this;
 
-                        } else if ($this.attr("type") === "radio") {
-                            if ($this.prop("checked"))
-                                model.dados[mode] = $this.val();
+        var model = {
+            dados: {},
+            setDados: function ($this) {
+                var mode = $this.attr("data-model");
+                if (typeof(mode) !== "undefined") {
+                    if ($this.attr("type") === "checkbox") {
+                        checkBox($this, mode);
 
-                        } else if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time')) {
-                            model.dados[mode] = $this.cleanVal();
-
-                        } else {
+                    } else if ($this.attr("type") === "radio") {
+                        if ($this.prop("checked"))
                             model.dados[mode] = $this.val();
-                        }
 
-                        model.save($this);
+                    } else if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time')) {
+                        model.dados[mode] = $this.cleanVal();
+
+                    } else {
+                        model.dados[mode] = $this.val();
                     }
-                },
-                setModelData: function (data, t) {
-                    var t = t || "dados.";
-                    $.each(data, function (i, e) {
-                        if(typeof(e) === "object")
-                            model.setModelData(e, t + i + '.');
-                        else
-                            model.dados[t + i] = e;
-                    });
 
-                    console.log(model.dados);
-                },
-                update: function ($this) {
-                    $this.find("input, textarea, select").each(function () {
-                        model.setDados($(this));
-                    });
-                },
-                save: function ($this) {
-                    window.onbeforeunload = function () {
-                        clearTimeout(saveTime);
-                        save($this);
-                        return true;
-                    };
+                    model.save($this);
+                }
+            },
+            save: function ($this) {
+                window.onbeforeunload = function () {
                     clearTimeout(saveTime);
-                    saveTime = setTimeout(function () {
-                        save($this);
-                    }, 400);
-                },
-                showError: function (erro, t) {
-                    var t = t || "dados.";
-                    $.each(erro, function (c, mensagem) {
-                        if (typeof (mensagem) === "object") {
-                            model.showError(mensagem, t + c + '.');
-                        } else {
-                            var column = t + c;
-                            var $radio = $("input[type=radio][data-model='" + column + "']");
-                            $radio.siblings(".md-radio--fake").css("border-color", "red");
-                            $radio.parent().siblings(".radio-title").addClass("error-span");
-                            var $inputs = $("input[data-model='" + column + "']:not([type='radio']), select[data-model='" + column + "'], textarea[data-model='" + column + "']");
-                            $inputs.siblings('label').addClass("error-span");
-                            $inputs.siblings('.error-message').remove();
-                            $inputs.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
-                        }
-                    });
-                }
-            };
+                    save($this);
+                    return true;
+                };
+                clearTimeout(saveTime);
+                saveTime = setTimeout(function () {
+                    save($this);
+                }, 400);
+            },
+            showError: function (erro, $this, t) {
+                var t = t || "dados.";
+                var $form = $this.closest("form");
+                $.each(erro, function (c, mensagem) {
+                    if (typeof (mensagem) === "object") {
+                        model.showError(mensagem, $this, t + c + '.');
+                    } else {
+                        var column = t + c;
 
-            function checkBox($this, mode) {
-                if ($this.hasClass("switchCheck")) {
-                    model.dados[mode] = $this.prop("checked") ? 1 : 0;
-                } else {
-                    if (typeof (model.dados[mode]) === "undefined")
-                        model.dados[mode] = [];
+                        var $radio = $form.find("input[type=radio][data-model='" + column + "']");
+                        $radio.siblings(".md-radio--fake").css("border-color", "red");
+                        $radio.parent().siblings(".radio-title").addClass("error-span");
 
-                    if ($this.prop("checked"))
-                        model.dados[mode].push(parseInt($this.val()));
-                    else
-                        model.dados[mode].removeItem($this.val());
-                }
-            }
-
-            function save($this) {
-                // console.log(model.dados);
-
-                post('form-crud', callback, {
-                    entity: entity,
-                    dados: model.dados
-                }, function (data) {
-                    console.log(data);
-                    if (isNaN(data)) {
-                        model.showError(data[entity]);
-                    } else if(typeof ($this) !== "undefined") {
-                        if($this.attr("type") === "radio") {
-                            $this.parent().parent().find(".md-radio--fake").css("border-color", "initial");
-                            $this.parent().siblings(".radio-title").removeClass("error-span");
-                            $this.parent().parent().find(".error-message").remove();
-                        } else {
-                            $this.removeClass("subErro").siblings('.error-message').remove();
-                            $this.siblings('label').removeClass("error-span");
-                        }
+                        var $inputs = $form.find("input[data-model='" + column + "']:not([type='radio']), select[data-model='" + column + "'], textarea[data-model='" + column + "']");
+                        $inputs.siblings('label').addClass("error-span");
+                        $inputs.siblings('.error-message').remove();
+                        $inputs.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
                     }
                 });
-
-                window.onbeforeunload = null;
             }
+        };
 
-            model.update(this);
+        function checkBox($this, mode) {
+            if ($this.hasClass("switchCheck")) {
+                model.dados[mode] = $this.prop("checked") ? 1 : 0;
+            } else {
+                if (typeof (model.dados[mode]) === "undefined")
+                    model.dados[mode] = [];
 
-            this.on("keyup change", "input, select", function (e) {
-                if (e.which !== 13)
-                    model.setDados($(this));
-            });
+                if ($this.prop("checked"))
+                    model.dados[mode].push(parseInt($this.val()));
+                else
+                    model.dados[mode].removeItem($this.val());
+            }
         }
+
+        function save($this) {
+            console.log(model.dados);
+
+            post('form-crud', callback, {
+                entity: entity,
+                dados: model.dados
+            }, function (data) {
+                console.log(data);
+                if (isNaN(data)) {
+                    model.showError(data[entity], $this);
+                } else {
+                    if (typeof ($this) !== "undefined")
+                        hideError($this);
+
+                    model.dados['dados.id'] = data;
+                    $this.closest('form').find("input[data-model='dados.id']").val(data);
+                    sessionStorage.setItem("edit-" + entity, data);
+                }
+            });
+
+            window.onbeforeunload = null;
+        }
+
+        function hideError($this) {
+            if ($this.attr("type") === "radio") {
+                $this.parent().parent().find(".md-radio--fake").css("border-color", "initial");
+                $this.parent().siblings(".radio-title").removeClass("error-span");
+                $this.parent().parent().find(".error-message").remove();
+            } else {
+                $this.removeClass("subErro").siblings('.error-message').remove();
+                $this.siblings('label').removeClass("error-span");
+            }
+        }
+
+        function openPanel($this) {
+            var entity = $this.attr("data-entity");
+            $("#list-" + entity).panel(themeWindow('Editar ' + entity, {
+                lib: 'form-crud',
+                file: 'form/list',
+                entity: entity,
+                id: $this.siblings("input[type=hidden]").val()
+            }, function () {
+                var $id = $this.siblings('input[type=hidden]');
+                var id = parseInt(sessionStorage.getItem("edit-" + entity));
+                if(typeof (id) !== "undefined" && id > 0)
+                    model.setDados($id.val(id));
+            }));
+        }
+
+        $(".listButton").off("click").on("click", function () {
+            openPanel($(this));
+        });
+
+        this.find("input, textarea, select").each(function () {
+            model.setDados($(this));
+        });
+
+        this.off("keyup change", "input, select").on("keyup change", "input, select", function (e) {
+            if (e.which !== 13)
+                model.setDados($(this));
+        });
 
         return this;
     };
 }(jQuery));
-
-
-var form = {
-    setDados: function ($this, value) {
-        if (typeof($this.attr("data-model")) !== "undefined") {
-
-            $this.removeClass("subErro").siblings('.error-span').remove();
-
-            var $form = $this.parents("form").first();
-            var id = $form.find("#formcrud-identificador-entity").val();
-            var entity = $form.attr("data-table");
-
-            if (!isNaN(id) && id > 0) {
-                if ($this.hasClass("autocomplete-mult")) form.createAssociation(entity, id, $this.attr("data-entity"), value);
-                else form.update(entity, id, $this.attr("data-model"), value);
-            } else {
-                dados = addDados(dados, $this.attr("data-model"), value);
-                form.save(entity, dados);
-            }
-        }
-    },
-    slidNave: function ($this, title, button) {
-        var id = $this.attr("data-entity") + "-" + Math.floor((Math.random() * 1000000));
-        button.panel({
-            header: {
-                html: title,
-                class: "color-indigo"
-            },
-            id: id,
-            css: {
-                width: 550,
-                left: 'center'
-            },
-            body: {
-                ajax: {
-                    param: {
-                        lib: 'form-crud',
-                        file: 'formCrud',
-                        entity: $this.attr("data-entity"),
-                        title: title
-                    }
-                }
-            },
-            control: {
-                onClose: function () {
-                    form.save();
-                },
-                onMinimize: function () {
-                    form.save();
-                }
-            }
-        });
-    },
-    fireChange: function ($this) {
-        clearTimeout(keyupTime);
-        $(window).off("mousemove beforeunload");
-        form.setDados($this, value);
-    }
-};

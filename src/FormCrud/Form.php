@@ -144,6 +144,8 @@ class Form
             if ($data['form']) {
                 $data['value'] = $values[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
+                $data = $this->checkListData($data);
+                $data = $this->checkDateValue($data);
                 $dados[] = $this->processaInput($data, $ngmodel);
             }
         }
@@ -151,16 +153,37 @@ class Form
         return $dados;
     }
 
+    private function checkDateValue($data)
+    {
+        if($data['format'] === "datetime")
+            $data['value'] = str_replace(' ', 'T', $data['value']);
+
+        return $data;
+    }
+
+    private function checkListData(array $data)
+    {
+        if($data['key'] === "list") {
+            $dic = Metadados::getDicionario($data['relation']);
+            $info = Metadados::getInfo($data['relation']);
+            $data['title'] = $info['title'] && $data['value'] ? $data['value'][$dic[$info['title']]['column']] : "";
+            $data['id'] = $data['value'] ? $data['value']['id'] : "";
+        }
+
+        return $data;
+    }
+
     private function processaInput($data, $ngmodel)
     {
         $template = new Template("form-crud");
+
         if ($data['key'] === "extend") {
             return $this->getExtended($data['column'], $data['relation'], $ngmodel);
 
         } else {
-            return '<div class="col ' . $data['form']['cols'] . ' ' . $data['form']['colm'] . ' ' . $data['form']['coll'] . ' margin-bottom">'
+            return '<div class="row"><div class="col ' . $data['form']['cols'] . ' ' . $data['form']['colm'] . ' ' . $data['form']['coll'] . ' margin-bottom">'
                 . $template->getShow($data['form']['input'], $data)
-                . '</div>';
+                . '</div></div>';
         }
     }
 
