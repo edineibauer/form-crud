@@ -1,5 +1,5 @@
 <label for="{$column}">{$nome} {($default === false) ? "*" : ""}</label>
-<input type="color" data-model="{$ngmodel}"
+<input type="color" data-model="{$ngmodel}" id="{$column}"
         {($value !== false && $value !== "") ? "value='{$value}' " : "" }
         {($size !== false)? "maxlength='{$size}' " : ''}
         {($default === false)? 'required="required" ' : ''}

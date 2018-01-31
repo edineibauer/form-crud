@@ -1,0 +1,14 @@
+.subErro {
+    border-bottom-color: red !important;
+}
+
+.error-span {
+    color: red !important;
+}
+
+.error-message {
+    margin-top: -13px;
+    float: left;
+    font-size: 12px;
+    height: 1px;
+}

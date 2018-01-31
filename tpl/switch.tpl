@@ -4,6 +4,6 @@
             {($value !== false && $value === 1) ? "checked='checked' " : "" }
             {($size !== false)? "maxlength='{$size}' " : ''}
             {($default === false)? 'required="required" ' : ''}
-           style="{$form['style']}"  class="{$form['class']}" />
+           style="{$form['style']}"  class="switchCheck {$form['class']}" />
     <div class="slider"></div>
 </label>

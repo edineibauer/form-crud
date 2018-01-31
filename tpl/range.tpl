@@ -1,5 +1,5 @@
 <label for="{$column}">{$nome} {($default === false) ? "*" : ""}</label>
-<input type="radio" data-model="{$ngmodel}" id="{$column}"
+<input type="range" data-model="{$ngmodel}" id="{$column}"
         {($value !== false && $value === 1) ? "value='{$value}' " : "" }
         {($size !== false)? "maxlength='{$size}' " : ''}
         {($default === false)? 'required="required" ' : ''}
