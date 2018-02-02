@@ -362,7 +362,7 @@ if (typeof formGetData !== 'function') {
             } else if ($this.attr("type") === "radio") {
                 if ($this.prop("checked"))
                     return $this.val();
-                else if(valor)
+                else if (valor)
                     return valor;
             } else if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time') && $this.val() !== "") {
                 return $this.cleanVal();
@@ -383,6 +383,7 @@ if (typeof formGetData !== 'function') {
 
 if (typeof formSubmit !== 'function') {
     var saveTime;
+
     function formSubmit($form, $idReturn) {
 
         function setError($form, erro, t) {
@@ -419,9 +420,10 @@ if (typeof formSubmit !== 'function') {
             $("#form_" + entity).loading();
             post('form-crud', 'read/form', {entity: entity, id: id}, function (data) {
                 if (data) {
-                    var $form = $("#form_" + entity);
-                    $form.after(data);
-                    $form.remove();
+                    var $form = $("#form_" + entity).closest(".form-control");
+                    $form.replaceWith(data);
+                    loadMask();
+                    formAutoSubmit(".form-control");
                 }
             });
         }
@@ -440,12 +442,20 @@ if (typeof formSubmit !== 'function') {
                 else if (dados['dados.id'] === "")
                     reloadForm($form.attr("data-entity"), data);
 
-                window.onbeforeunload = null;
+                if (!saveTime)
+                    window.onbeforeunload = null;
             });
         }
 
         clearTimeout(saveTime);
-        if(typeof ($idReturn) !== "undefined") {
+
+        window.onbeforeunload = function () {
+            clearTimeout(saveTime);
+            formSave($form);
+            return true;
+        };
+
+        if (typeof ($idReturn) !== "undefined") {
             var dados = formGetData($form);
             post('form-crud', $form.attr("action"), {
                 entity: $form.attr("data-entity"),
@@ -453,16 +463,15 @@ if (typeof formSubmit !== 'function') {
             }, function (data) {
                 if (!isNaN(data) && data > 0 && $idReturn.val() !== data)
                     $idReturn.val(data).trigger("change");
+                else if ($idReturn.val() === "" && $form.find("input[type=hidden][data-model='dados.id']").val() !== "")
+                    $idReturn.val($form.find("input[type=hidden][data-model='dados.id']").val()).trigger("change");
+
+                window.onbeforeunload = null;
             });
+
         } else {
-
-            window.onbeforeunload = function () {
-                clearTimeout(saveTime);
-                formSave($form);
-                return true;
-            };
-
             saveTime = setTimeout(function () {
+                saveTime = null;
                 formSave($form);
             }, 400);
         }
@@ -470,21 +479,19 @@ if (typeof formSubmit !== 'function') {
 }
 
 if (typeof formAutoSubmit !== 'function') {
-    function formAutoSubmit() {
-        $("body").find("form").each(function () {
-            var $form = $(this);
-            $form.off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
-                if (e.which !== 13)
-                    formSubmit($form);
-            });
+    function formAutoSubmit(element) {
+        $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
+            if (e.which !== 13)
+                formSubmit($(this).closest("form"));
+        }).off("click", ".listButton").on("click", ".listButton", function () {
+            openPanel($(this));
+        }).off("submit", "form").on("submit", "form", function (e) {
+            e.preventDefault();
         });
     }
 }
 
 $(function () {
     loadMask();
-    $("body").off("click", ".listButton").on("click", ".listButton", function () {
-        openPanel($(this));
-    });
-    formAutoSubmit();
+    formAutoSubmit(".form-control");
 });

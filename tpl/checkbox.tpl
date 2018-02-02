@@ -3,7 +3,7 @@
 {foreach key=key item=item from=$allow['values']}
     <label class="col s12">
         <input type="checkbox" data-model="{$ngmodel}" value="{$item}"
-                {($item|in_array:$value) ? "checked='checked' " : "" }
+                {($value && $item|in_array:$value) ? "checked='checked' " : "" }
                 {($size !== false)? "maxlength='{$size}' " : ''}
                 {($default === false)? 'required="required" ' : ''}
                style="{$form['style']}" class="{$form['class']}"/>

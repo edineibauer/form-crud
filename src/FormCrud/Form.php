@@ -38,9 +38,7 @@ use Helpers\Template;
 class Form
 {
     private $entity;
-    private $value;
     private $children;
-    private $id;
     private $design = "input";
 
     /**
@@ -74,24 +72,6 @@ class Form
         $this->design = $design;
     }
 
-    /**
-     * @param array $data
-     */
-    public function setData(array $data)
-    {
-        //        if ($this->entity)
-        //            $this->entity->setData($data);
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        $this->readValues($id);
-    }
-
     public function getFormChildren($id = null) {
         $this->setChildren();
         return $this->getForm($id);
@@ -104,18 +84,15 @@ class Form
 
     public function getForm($id = null)
     {
-        if($id)
-            $this->setId($id);
-        elseif (!$this->value)
-            $this->readValues();
-
         $template = new Template("form-crud");
-        $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->value);
-        $form['id'] = $this->id;
+        $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($id));
+        $form['id'] = $id;
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
 
-        return $template->getShow($this->children ? "form-children" : "form", $form);
+        return "<div class='form-control row'>" . $template->getShow($this->children ? "form-children" : "form", $form) . "</div>"
+//            ."<script src='" . HOME . "vendor/conn/form-crud/assets/form.min.js' defer ></script>"
+        ;
     }
 
     public function showForm($id = null)
@@ -125,36 +102,35 @@ class Form
 
     private function readValues($id = null)
     {
-        $this->value = Entity::read($this->entity, $id);
+        Entity::setError(null);
+        $value = Entity::read($this->entity, $id);
         if(Entity::getError())
-            $this->value = Entity::read($this->entity);
-        $this->fixValues();
+            $value = Entity::read($this->entity);
+
+        return Entity::getError() ? null : $this->fixValues($value);
     }
 
-    private function fixValues()
+    private function fixValues($value)
     {
         foreach (Metadados::getDicionario($this->entity) as $i => $data) {
-            if ($data['format'] === "datetime" && is_string($this->value[$data['column']])) {
-                $this->value[$data['column']] = str_replace(' ', 'T', $this->value[$data['column']]);
-            } elseif ($data['type'] === "json") {
-                if(is_string($this->value[$data['column']]))
-                    $this->value[$data['column']] = json_decode($this->value[$data['column']], true);
-                elseif(!is_array($this->value[$data['column']]))
-                    $this->value[$data['column']] = [];
-            }
+            if ($data['format'] === "datetime" && is_string($value[$data['column']]))
+                $value[$data['column']] = str_replace(' ', 'T', $value[$data['column']]);
         }
+
+        return $value;
     }
 
     /**
      * @param string $entity
      * @param string $ngmodel
-     * @param array $values
+     * @param mixed $values
      *
      * @return array
      */
-    private function prepareInputs(string $entity, string $ngmodel, array $values): array
+    private function prepareInputs(string $entity, string $ngmodel, $values = null): array
     {
-        $dados = array();
+        $dados = [];
+        $values = $values ?? [];
 
         foreach (Metadados::getDicionario($entity, true) as $i => $data) {
             if ($data['form']) {
@@ -162,7 +138,7 @@ class Form
                 $data['ngmodel'] = $ngmodel . $data['column'];
                 $data = $this->checkListData($data);
                 $data = $this->checkDateValue($data);
-                $dados[] = $this->processaInput($data, $ngmodel);
+                $dados[] = $this->processaInput($data, $ngmodel, $values);
             }
         }
 
@@ -189,12 +165,12 @@ class Form
         return $data;
     }
 
-    private function processaInput($data, $ngmodel)
+    private function processaInput($data, $ngmodel, $value)
     {
         $template = new Template("form-crud");
 
         if ($data['key'] === "extend") {
-            return $this->getExtended($data['column'], $data['relation'], $ngmodel);
+            return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value);
 
         } else {
             return '<div class="row"><div class="col '
@@ -207,15 +183,10 @@ class Form
         }
     }
 
-    private function getList($column, $table, $ngmodel)
-    {
-
-    }
-
-    private function getExtended($column, $table, $ngmodel)
+    private function getExtended($column, $table, $ngmodel, $value)
     {
         $templateExt = new Template("form-crud");
-        $form['inputs'] = $this->prepareInputs($table,$ngmodel . $column . ".", $this->value[$column]);
+        $form['inputs'] = $this->prepareInputs($table,$ngmodel . $column . ".", $value[$column] ?? []);
         $form['column'] = $column;
 
         return $templateExt->getShow("extend", $form);

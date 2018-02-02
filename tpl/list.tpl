@@ -8,7 +8,7 @@
 </div>
 <div class="rest container">
     <input type="text" id="{$column}" placeholder="{$nome}"
-            {($title !== "")? "value='{$title}'" : ''}
+            {($title != "")? "value='{$title}'" : ''}
             {($size !== false)? "maxlength='{$size}' " : ''}
             {($default === false)? 'required="required" ' : ''}
            data-entity="{$relation}" style="{$form['style']}" class="rest {$form['class']}"/>

@@ -4,5 +4,4 @@
             {$input}
         {/foreach}
     </div>
-    <script src="{$home}vendor/conn/form-crud/assets/form.js" defer ></script>
 </form>
