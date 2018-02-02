@@ -39,6 +39,7 @@ class Form
 {
     private $entity;
     private $value;
+    private $children;
     private $id;
     private $design = "input";
 
@@ -50,6 +51,11 @@ class Form
     {
         if ($entity)
             $this->setEntity($entity);
+    }
+
+    public function setChildren()
+    {
+        $this->children = true;
     }
 
     /**
@@ -86,6 +92,16 @@ class Form
         $this->readValues($id);
     }
 
+    public function getFormChildren($id = null) {
+        $this->setChildren();
+        return $this->getForm($id);
+    }
+
+    public function showFormChildren($id = null)
+    {
+        echo $this->getFormChildren($id);
+    }
+
     public function getForm($id = null)
     {
         if($id)
@@ -99,7 +115,7 @@ class Form
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
 
-        return $template->getShow("form", $form);
+        return $template->getShow($this->children ? "form-children" : "form", $form);
     }
 
     public function showForm($id = null)
@@ -167,7 +183,7 @@ class Form
             $dic = Metadados::getDicionario($data['relation']);
             $info = Metadados::getInfo($data['relation']);
             $data['title'] = $info['title'] && $data['value'] ? $data['value'][$dic[$info['title']]['column']] : "";
-            $data['id'] = $data['value'] ? $data['value']['id'] : "";
+            $data['id'] = isset($data['value']['id']) ? $data['value']['id'] : "";
         }
 
         return $data;
@@ -181,7 +197,11 @@ class Form
             return $this->getExtended($data['column'], $data['relation'], $ngmodel);
 
         } else {
-            return '<div class="row"><div class="col ' . $data['form']['cols'] . ' ' . $data['form']['colm'] . ' ' . $data['form']['coll'] . ' margin-bottom">'
+            return '<div class="row"><div class="col '
+            . (!empty($data['form']['cols']) ? 's' . $data['form']['cols'] : "") . ' '
+            . (!empty($data['form']['colm']) ? 'm' . $data['form']['colm'] : "") . ' '
+            . (!empty($data['form']['coll']) ? 'l' . $data['form']['coll'] : "") . ' '
+                . 'margin-bottom">'
                 . $template->getShow($data['form']['input'], $data)
                 . '</div></div>';
         }

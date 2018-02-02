@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nenab
- * Date: 30/01/2018
- * Time: 14:12
- */
-
-$nome = filter_input(INPUT_POST, 'entity', FILTER_DEFAULT);
+$nome = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
 $dados = filter_input(INPUT_POST, 'dados', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+$cont = [];
 
 foreach ($dados as $c => $v) {
     $c = explode(".", $c);
