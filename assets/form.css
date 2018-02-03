@@ -12,3 +12,13 @@
     font-size: 12px;
     height: 1px;
 }
+
+.error-btn {
+    background: #ff00008f!important;
+    color: white!important;
+}
+
+.list-result-itens li.active {
+    background: #f5f5f5;
+    opacity: 1;
+}

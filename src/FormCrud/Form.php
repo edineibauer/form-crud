@@ -90,9 +90,10 @@ class Form
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
 
-        return "<div class='form-control row'>" . $template->getShow($this->children ? "form-children" : "form", $form) . "</div>"
+        return "<div class='form-control row'>"
+            . $template->getShow($this->children ? "form-children" : "form", $form)
+            . "</div>";
 //            ."<script src='" . HOME . "vendor/conn/form-crud/assets/form.min.js' defer ></script>"
-        ;
     }
 
     public function showForm($id = null)
@@ -173,7 +174,11 @@ class Form
             return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value);
 
         } else {
-            return '<div class="row"><div class="col '
+            $info = "";
+            if(in_array($data['format'], ["title", "source"]))
+                $info = "<input type='hidden' rel='{$data['format']}' value='{$data['ngmodel']}' />";
+
+            return $info . '<div class="row"><div class="col '
             . (!empty($data['form']['cols']) ? 's' . $data['form']['cols'] : "") . ' '
             . (!empty($data['form']['colm']) ? 'm' . $data['form']['colm'] : "") . ' '
             . (!empty($data['form']['coll']) ? 'l' . $data['form']['coll'] : "") . ' '

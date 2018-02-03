@@ -392,17 +392,17 @@ if (typeof formSubmit !== 'function') {
                 if (typeof (mensagem) === "object") {
                     setError($form, mensagem, t + c + '.');
                 } else {
-                    var column = t + c;
-
-                    var $radio = $form.find("input[type=radio][data-model='" + column + "']");
-                    if (typeof ($radio.attr("data-model")) === "string") {
-                        $radio.siblings(".md-radio--fake").css("border-color", "red");
-                        $radio.parent().siblings(".radio-title").addClass("error-span");
+                    var $input = $form.find("[data-model='" + (t + c) + "']");
+                    if ($input.attr("data-format") === "radio") {
+                        $input.siblings(".md-radio--fake").css("border-color", "red");
+                        $input.parent().siblings(".radio-title").addClass("error-span");
+                    } else if ($input.attr("data-format") === "list") {
+                        $input.siblings(".listButton").addClass("error-btn").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
+                        $input.parent().siblings(".rest").append('<span class="error-span error-message">' + mensagem + '</span>');
                     } else {
-                        var $inputs = $form.find("input[data-model='" + column + "'], select[data-model='" + column + "'], textarea[data-model='" + column + "']");
-                        $inputs.siblings('label').addClass("error-span");
-                        $inputs.siblings('.error-message').remove();
-                        $inputs.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
+                        $input.siblings('label').addClass("error-span");
+                        $input.siblings('.error-message').remove();
+                        $input.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
                     }
                 }
             });
@@ -411,6 +411,7 @@ if (typeof formSubmit !== 'function') {
         function cleanError($form) {
             $form.find(".md-radio--fake").css("border-color", "initial");
             $form.find(".radio-title").removeClass("error-span");
+            $form.find(".listButton").removeClass('error-btn');
             $form.find(".error-message").remove();
             $form.find("input,textarea,select").removeClass("subErro").siblings('label').removeClass("error-span").siblings('.error-message').remove();
         }
@@ -466,6 +467,9 @@ if (typeof formSubmit !== 'function') {
                 else if ($idReturn.val() === "" && $form.find("input[type=hidden][data-model='dados.id']").val() !== "")
                     $idReturn.val($form.find("input[type=hidden][data-model='dados.id']").val()).trigger("change");
 
+                if ($idReturn.val() !== "" && typeof ($form.find("input[type=hidden][rel='title']").val()) === "string")
+                    $idReturn.parent().siblings(".rest").find("input[type=text]").val($form.find("[data-model='" + $form.find("input[type=hidden][rel='title']").val() + "']").val());
+
                 window.onbeforeunload = null;
             });
 
@@ -478,16 +482,71 @@ if (typeof formSubmit !== 'function') {
     }
 }
 
+if (typeof choseList !== 'function') {
+    function choseList(id, nome) {
+
+    }
+}
+
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit(element) {
         $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
-            if (e.which !== 13)
+            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
                 formSubmit($(this).closest("form"));
+            else if ($(this).val() === "" && $(this).hasClass("form-list"))
+                $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
+
         }).off("click", ".listButton").on("click", ".listButton", function () {
             openPanel($(this));
+        }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
+            e.preventDefault();
         }).off("submit", "form").on("submit", "form", function (e) {
             e.preventDefault();
+        }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
+            var $this = $(this);
+            if ([38, 40, 13].indexOf(e.which) > -1) {
+                var $list = $("#list-complete-" + $this.attr("id"));
+                if (e.which === 38) {
+                    if ($list.find("li.active").prev().length)
+                        $list.find("li.active").removeClass("active").prev().addClass("active");
+                } else if (e.which === 40) {
+                    if ($list.find("li.active").next().length)
+                        $list.find("li.active").removeClass("active").next().addClass("active");
+                } else if (e.which === 13) {
+                    selectList($("#list-complete-" + $this.attr("id")));
+                }
+            } else if ([37, 39].indexOf(e.which) < 0) {
+                if ($this.val() !== "")
+                    readList($this.attr("data-entity"), $this.val(), $this.attr("id"));
+                else
+                    $("#list-complete-" + $this.attr("id")).html("");
+            }
+        }).off("dblclick", ".form-list").on("dblclick", ".form-list", function () {
+            readList($(this).attr("data-entity"), $(this).val(), $(this).attr("id"));
         });
+    }
+
+    function readList(entity, search, id) {
+        post('form-crud', 'read/list', {
+            search: search,
+            entity: entity
+        }, function (data) {
+            var $list = $("#list-complete-" + id);
+            $list.html(data);
+
+            $(".list-option").off("click").on("click", function () {
+                $(".list-option").removeClass("active");
+                $(this).addClass("active");
+                selectList($list);
+            });
+        });
+    }
+
+    function selectList($list) {
+        var $active = $list.find("li.active");
+        $list.siblings("input[type=text]").val($active.text().trim());
+        $list.parent().prev().find("input[type=hidden]").val(parseInt($active.attr("rel"))).trigger("change");
+        $list.html("");
     }
 }
 

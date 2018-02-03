@@ -1,8 +1,9 @@
 <div class="col s12"><br></div>
 <div class="radio-title">{$nome} {($default === false) ? "*" : ""}</div>
 {foreach key=key item=item from=$allow['values']}
-    <label class="md-radio left" style="{$form['style']}" class="{$form['class']}">
-        <input type="radio" name="{$column}" data-model="{$ngmodel}" value="{$item}"
+    <label class="md-radio left {$form['class']}" style="{$form['style']}">
+        <input type="radio" name="{$ngmodel}" data-model="{$ngmodel}" value="{$item}"
+               {($key === 0)? "id='{$ngmodel}' data-format='radio'" : ''}
                 {($item === $value) ? "checked='checked' " : "" } />
         <span class="md-radio--fake">
             <span></span>

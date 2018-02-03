@@ -3,6 +3,7 @@
 {foreach key=key item=item from=$allow['values']}
     <label class="col s12">
         <input type="checkbox" data-model="{$ngmodel}" value="{$item}"
+                {($key === 0)? "id='{$ngmodel}' data-format='checkbox' " : ''}
                 {($value && $item|in_array:$value) ? "checked='checked' " : "" }
                 {($size !== false)? "maxlength='{$size}' " : ''}
                 {($default === false)? 'required="required" ' : ''}

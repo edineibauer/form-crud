@@ -1,15 +1,16 @@
 <div class="col container" style="width:60px">
-    <button class="col btn-floating color-grey-light listButton" id="list-{$relation}" data-entity="{$relation}"
+    <div class="col btn-floating color-grey-light listButton" id="list-{$relation}" data-entity="{$relation}"
             style="width:41px">
         <i class="material-icons prefix pointer editList">folder</i>
-    </button>
-    <input type="hidden" data-model="{$ngmodel}"
+    </div>
+    <input type="hidden" data-model="{$ngmodel}" id="{$ngmodel}" data-format="list"
             {($id !== "")? "value='{$id}'" : ''} />
 </div>
-<div class="rest container">
-    <input type="text" id="{$column}" placeholder="{$nome}"
+<div class="rest container relative">
+    <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
             {($title != "")? "value='{$title}'" : ''}
             {($size !== false)? "maxlength='{$size}' " : ''}
             {($default === false)? 'required="required" ' : ''}
-           data-entity="{$relation}" style="{$form['style']}" class="rest {$form['class']}"/>
+           data-entity="{$relation}" style="{$form['style']}" class="form-list rest {$form['class']}"/>
+    <div class="col s12" id="list-complete-{$column}"></div>
 </div>
