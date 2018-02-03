@@ -332,13 +332,13 @@ if (typeof openPanel !== 'function') {
             entity: entity,
             id: $this.siblings("input[type=hidden]").val()
         }, function (idOntab) {
-            formSubmit($("#" + idOntab).find(".ontab-content").find("form"), $id);
+            formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
         }));
     }
 }
 
 if (typeof formGetData !== 'function') {
-    function formGetData($this) {
+    function formGetData($form) {
 
         function checkBox($this, valor) {
             if ($this.hasClass("switchCheck")) {
@@ -372,7 +372,7 @@ if (typeof formGetData !== 'function') {
         }
 
         var dados = {};
-        $this.find("input, textarea, select").each(function () {
+        $form.find("input, textarea, select").each(function () {
             if (typeof ($(this).attr("data-model")) !== "undefined")
                 dados[$(this).attr("data-model")] = setDados($(this), typeof(dados[$(this).attr("data-model")]) !== "undefined" ? dados[$(this).attr("data-model")] : null);
         });
@@ -432,7 +432,7 @@ if (typeof formSubmit !== 'function') {
         function formSave($form) {
             var dados = formGetData($form);
             console.log(dados);
-            post('form-crud', $form.attr("action"), {
+            post('form-crud', $form.attr("data-action"), {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
@@ -453,12 +453,13 @@ if (typeof formSubmit !== 'function') {
         window.onbeforeunload = function () {
             clearTimeout(saveTime);
             formSave($form);
+            window.onbeforeunload = null;
             return true;
         };
 
         if (typeof ($idReturn) !== "undefined") {
             var dados = formGetData($form);
-            post('form-crud', $form.attr("action"), {
+            post('form-crud', $form.attr("data-action"), {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
@@ -492,16 +493,16 @@ if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit(element) {
         $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
             if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
-                formSubmit($(this).closest("form"));
+                formSubmit($(this).closest(".form-crud"));
             else if ($(this).val() === "" && $(this).hasClass("form-list"))
                 $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
 
         }).off("click", ".listButton").on("click", ".listButton", function () {
             openPanel($(this));
+
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault();
-        }).off("submit", "form").on("submit", "form", function (e) {
-            e.preventDefault();
+
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
             var $this = $(this);
             if ([38, 40, 13].indexOf(e.which) > -1) {
@@ -521,8 +522,15 @@ if (typeof formAutoSubmit !== 'function') {
                 else
                     $("#list-complete-" + $this.attr("id")).html("");
             }
+
         }).off("dblclick", ".form-list").on("dblclick", ".form-list", function () {
             readList($(this).attr("data-entity"), $(this).val(), $(this).attr("id"));
+
+        }).off("focusout", ".form-list").on("focusout", ".form-list", function () {
+            $this = $(this);
+            setTimeout(function () {
+                $("#list-complete-" + $this.attr("id")).html("");
+            },50);
         });
     }
 
@@ -534,7 +542,7 @@ if (typeof formAutoSubmit !== 'function') {
             var $list = $("#list-complete-" + id);
             $list.html(data);
 
-            $(".list-option").off("click").on("click", function () {
+            $(".list-option").off("mousedown").on("mousedown", function () {
                 $(".list-option").removeClass("active");
                 $(this).addClass("active");
                 selectList($list);
@@ -550,7 +558,34 @@ if (typeof formAutoSubmit !== 'function') {
     }
 }
 
+Dropzone.autoDiscover = false;
 $(function () {
     loadMask();
     formAutoSubmit(".form-control");
+
+    var myDropzone = new Dropzone(".dropzone", {
+        dictDefaultMessage: "Selecione ou Arraste Arquivos",
+        uploadMultiple: false,
+        maxFiles: 1,
+        maxFilesize: 500
+    });
+
+    myDropzone.on("success", function(file, response){
+        response = $.parseJSON(response);
+        if(response.response === 1) {
+            $(response.id).val(response.data).trigger("change");
+        }
+    });
+
+    var myDropzones = new Dropzone(".dropzones", {
+        dictDefaultMessage: "Selecione ou Arraste Arquivos",
+        maxFilesize: 500
+    });
+
+    myDropzones.on("success", function(file, response){
+        response = $.parseJSON(response);
+        if(response.response === 1) {
+            $(response.id).val(response.data).trigger("change");
+        }
+    });
 });
