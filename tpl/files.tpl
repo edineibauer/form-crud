@@ -8,6 +8,6 @@
     <input type="hidden" name="entity" value="{$entity}" />
     <input type="hidden" name="column" value="{$column}" />
 </form>
-<input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="file"
-        {($value != "")? "value='{$value}'" : ''}
+<input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="files"
+        {*{($value != "")? "value='{$value}'" : ''}*}
         {($size !== false)? "maxlength='{$size}' " : ''} />

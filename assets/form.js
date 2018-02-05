@@ -445,7 +445,7 @@ if (typeof formSubmit !== 'function') {
 
                 if (!saveTime)
                     window.onbeforeunload = null;
-            });
+            },true);
         }
 
         clearTimeout(saveTime);
@@ -562,30 +562,64 @@ Dropzone.autoDiscover = false;
 $(function () {
     loadMask();
     formAutoSubmit(".form-control");
+    
+    if($(".dropzone").length) {
+        $(".dropzone").each(function () {
+            var $this = $(this);
+            var $file = $this.siblings("input[type=hidden]");
+            var type = $file.attr("data-format");
+            new Dropzone("#" + $this.attr("id"), {
+                acceptedFiles: $this.find("input[type=file]").attr("accept"),
+                uploadMultiple: type === "files",
+                maxFiles: type === "files" ? 20 : 1,
+                addRemoveLinks: true,
+                maxFilesize: 500,
+                dictDefaultMessage: "Selecione ou Arraste Arquivos",
+                dictCancelUpload: "Cancelar",
+                dictRemoveFile: "Excluir",
+                dictInvalidFileType: "Tipo não Permitido",
+                dictFileTooBig: "Máximo de 500MB",
+                dictResponseError: "Erro ao Salvar",
+                dictMaxFilesExceeded: "Máximo de Uploads Atingido",
+                init: function () {
+                    this.on("success", function(file, response) {
+                        console.log(response);
+                        response = $.parseJSON(response);
+                        var data = $.parseJSON(response.data);
+                        var t = [];
+                        $.each(data, function (i, e) {
+                            if (e.response === 1)
+                                t.push(e.data);
+                            else
+                                $("body").panel(themeNotify(e.data, "warning"));
+                        });
+                        $(response.id).val(JSON.stringify(t)).trigger("change");
 
-    var myDropzone = new Dropzone(".dropzone", {
-        dictDefaultMessage: "Selecione ou Arraste Arquivos",
-        uploadMultiple: false,
-        maxFiles: 1,
-        maxFilesize: 500
-    });
+                    }).on("removedfile", function (file) {
+                        post('form-crud', 'delete/source', {entity: $this.find("input[name=entity]").val(), column: $this.find("input[name=column]").val(), source: (typeof (file.url) !== "undefined" ? file.url : null), name: file.name}, function(data) {
+                            console.log(data);
+                        });
+                    });
 
-    myDropzone.on("success", function(file, response){
-        response = $.parseJSON(response);
-        if(response.response === 1) {
-            $(response.id).val(response.data).trigger("change");
-        }
-    });
+                    //Populate any existing thumbnails
+                    if ($file.val() !== "") {
+                        var name = $file.val().split('\\')[4].split('.')[0].replace('-', ' ');
+                            var mockFile = {
+                                name: name,
+                                size: 12345,
+                                status: Dropzone.ADDED,
+                                url: $file.val(),
+                                accepted: true
+                            };
 
-    var myDropzones = new Dropzone(".dropzones", {
-        dictDefaultMessage: "Selecione ou Arraste Arquivos",
-        maxFilesize: 500
-    });
+                            this.emit("addedfile", mockFile);
+                            this.emit("complete", mockFile);
 
-    myDropzones.on("success", function(file, response){
-        response = $.parseJSON(response);
-        if(response.response === 1) {
-            $(response.id).val(response.data).trigger("change");
-        }
-    });
+                            this.files.push(mockFile);
+                    }
+
+                }
+            });
+        });
+    }
 });

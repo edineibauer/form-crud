@@ -135,6 +135,9 @@ class Form
 
         foreach (Metadados::getDicionario($entity, true) as $i => $data) {
             if ($data['form']) {
+                $data['path'] = PATH_HOME;
+                $data['home'] = HOME;
+                $data['entity'] = $entity;
                 $data['value'] = $values[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
                 $data = $this->checkListData($data);
@@ -166,7 +169,13 @@ class Form
         return $data;
     }
 
-    private function processaInput($data, $ngmodel, $value)
+    /**
+     * @param array $data
+     * @param string $ngmodel
+     * @param mixed $value
+     * @return mixed
+    */
+    private function processaInput(array $data, string $ngmodel, $value)
     {
         $template = new Template("form-crud");
 
