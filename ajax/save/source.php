@@ -24,7 +24,7 @@ function addFile(string $entity, string $column, array $dicionario, array $info,
 
                 $name = "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m") . DIRECTORY_SEPARATOR . \Helpers\Check::name(str_replace(".{$extensao}", "", $file['name'])) . "." . strtolower($extensao);
 
-                if ($dicionario[$i]["size"] !== false && strlen($name) > $dicionario[$i]["size"]) {
+                if ($dicionario[$i]["size"] && strlen($name) > $dicionario[$i]["size"]) {
                     $dados['data'] = "nome do arquivo muito grande";
                     $dados['response'] = 2;
                 } else {

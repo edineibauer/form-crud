@@ -1,18 +1,18 @@
 <?php
 $entity = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
 $column = trim(strip_tags(filter_input(INPUT_POST, 'column', FILTER_DEFAULT)));
-$file = trim(strip_tags(filter_input(INPUT_POST, 'source', FILTER_DEFAULT)));
 $name = trim(strip_tags(filter_input(INPUT_POST, 'name', FILTER_DEFAULT)));
+$data['data'] = trim(strip_tags(filter_input(INPUT_POST, 'files', FILTER_DEFAULT)));
+$files = json_decode($data['data'], true);
 
-if(!$file) {
-    $read = new \ConnCrud\Read();
-    $read->exeRead(PRE . $entity, "WHERE {$column} LIKE '%{$name}' ORDER BY id DESC LIMIT 1");
-    if ($read->getResult())
-        $file = $read->getResult()[0][$column];
-}
+if($name && !empty($name)) {
+    foreach ($files as $i => $file) {
+        if ($name === $file['name']) {
+            unset($files[$i]);
+            $data['data'] = empty($files) ? null : json_encode(array_values($files));
 
-if($file){
-    $up = new \ConnCrud\Update();
-    $up->exeUpdate(PRE . $entity, [$column => null], "WHERE {$column} = :c", "c={$file}");
-    unlink(PATH_HOME . $file);
+            unlink(PATH_HOME . $file['url']);
+            break;
+        }
+    }
 }

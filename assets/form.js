@@ -445,7 +445,7 @@ if (typeof formSubmit !== 'function') {
 
                 if (!saveTime)
                     window.onbeforeunload = null;
-            },true);
+            });
         }
 
         clearTimeout(saveTime);
@@ -530,7 +530,7 @@ if (typeof formAutoSubmit !== 'function') {
             $this = $(this);
             setTimeout(function () {
                 $("#list-complete-" + $this.attr("id")).html("");
-            },50);
+            }, 50);
         });
     }
 
@@ -562,8 +562,8 @@ Dropzone.autoDiscover = false;
 $(function () {
     loadMask();
     formAutoSubmit(".form-control");
-    
-    if($(".dropzone").length) {
+
+    if ($(".dropzone").length) {
         $(".dropzone").each(function () {
             var $this = $(this);
             var $file = $this.siblings("input[type=hidden]");
@@ -582,42 +582,52 @@ $(function () {
                 dictResponseError: "Erro ao Salvar",
                 dictMaxFilesExceeded: "Máximo de Uploads Atingido",
                 init: function () {
-                    this.on("success", function(file, response) {
-                        console.log(response);
+                    this.on("success", function (file, response) {
                         response = $.parseJSON(response);
-                        var data = $.parseJSON(response.data);
-                        var t = [];
-                        $.each(data, function (i, e) {
-                            if (e.response === 1)
+                        var t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
+                        t = $.grep(t, function () { return true;});
+                        console.log(t);
+                        $.each($.parseJSON(response.data), function (i, e) {
+                            if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
+                                    return n.name === file.name;
+                                }).length === 0)
                                 t.push(e.data);
-                            else
+                            else if(typeof (e.data) === "string")
                                 $("body").panel(themeNotify(e.data, "warning"));
                         });
                         $(response.id).val(JSON.stringify(t)).trigger("change");
 
                     }).on("removedfile", function (file) {
-                        post('form-crud', 'delete/source', {entity: $this.find("input[name=entity]").val(), column: $this.find("input[name=column]").val(), source: (typeof (file.url) !== "undefined" ? file.url : null), name: file.name}, function(data) {
-                            console.log(data);
+                        post('form-crud', 'delete/source', {
+                            entity: $this.find("input[name=entity]").val(),
+                            column: $this.find("input[name=column]").val(),
+                            name: file.name,
+                            files: $file.val()
+                        }, function (data) {
+                            $file.val(data).trigger("change");
                         });
                     });
 
-                    //Populate any existing thumbnails
                     if ($file.val() !== "") {
-                        var name = $file.val().split('\\')[4].split('.')[0].replace('-', ' ');
+                        var myDropzone = this;
+                        $.each($.parseJSON($file.val()), function (i, e) {
                             var mockFile = {
-                                name: name,
-                                size: 12345,
+                                name: e.name,
+                                size: e.size,
+                                type: e.type,
                                 status: Dropzone.ADDED,
-                                url: $file.val(),
+                                url: e.url,
                                 accepted: true
                             };
 
-                            this.emit("addedfile", mockFile);
-                            this.emit("complete", mockFile);
+                            myDropzone.emit("addedfile", mockFile);
+                            if (e.type.match(/image.*/))
+                                myDropzone.emit("thumbnail", mockFile, e.url);
+                            myDropzone.emit("complete", mockFile);
 
-                            this.files.push(mockFile);
+                            myDropzone.files.push(mockFile);
+                        });
                     }
-
                 }
             });
         });
