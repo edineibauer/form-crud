@@ -4,5 +4,5 @@
             {$input}
         {/foreach}
     </div>
-    <script src="{$home}assets/form-child.js" defer ></script>
+    <script src="{$home}vendor/conn/entity-form/assets/form-child.min.js" defer ></script>
 </div>

@@ -172,7 +172,7 @@ class Form
 
     private function checkListMultData(array $data)
     {
-        if($data['key'] === "list_mult") {
+        if($data['key'] === "list_mult" || $data['key'] === "extend_mult") {
             $dic = Metadados::getDicionario($data['relation']);
             $info = Metadados::getInfo($data['relation']);
             $data['info']['title'] = $dic[$info['title']]['column'];
