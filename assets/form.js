@@ -323,14 +323,12 @@ if (typeof loadMask !== 'function') {
 }
 
 if (typeof openPanel !== 'function') {
-    function openPanel($this) {
-        var entity = $this.attr("data-entity");
-        var $id = $this.siblings('input[type=hidden]');
-        $("#list-" + entity).panel(themeWindow('Editar ' + entity, {
+    function openPanel(entity, $id, value, $this) {
+        $this.panel(themeWindow('Editar ' + entity, {
             lib: 'form-crud',
             file: 'children/form',
             entity: entity,
-            id: $this.siblings("input[type=hidden]").val()
+            id: value
         }, function (idOntab) {
             formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
         }));
@@ -463,13 +461,20 @@ if (typeof formSubmit !== 'function') {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
-                if (!isNaN(data) && data > 0 && $idReturn.val() !== data)
-                    $idReturn.val(data).trigger("change");
-                else if ($idReturn.val() === "" && $form.find("input[type=hidden][data-model='dados.id']").val() !== "")
-                    $idReturn.val($form.find("input[type=hidden][data-model='dados.id']").val()).trigger("change");
+                var title = $form.find("[data-model='" + $form.find("input[type=hidden][rel='title']").val() + "']").val();
+                if ($idReturn.attr("data-format") === "list_mult") {
+                    if (!isNaN(data) && data > 0)
+                        setListMultValue($idReturn, data, title);
+                } else {
+                    if (!isNaN(data) && data > 0 && $idReturn.val() !== data)
+                        $idReturn.val(data).trigger("change");
 
-                if ($idReturn.val() !== "" && typeof ($form.find("input[type=hidden][rel='title']").val()) === "string")
-                    $idReturn.parent().siblings(".rest").find("input[type=text]").val($form.find("[data-model='" + $form.find("input[type=hidden][rel='title']").val() + "']").val());
+                    else if ($idReturn.val() === "" && $form.find("input[type=hidden][data-model='dados.id']").val() !== "")
+                        $idReturn.val($form.find("input[type=hidden][data-model='dados.id']").val()).trigger("change");
+
+                    if ($idReturn.val() !== "" && typeof ($form.find("input[type=hidden][rel='title']").val()) === "string")
+                        $idReturn.parent().siblings(".rest").find("input[type=text]").val(title);
+                }
 
                 window.onbeforeunload = null;
             });
@@ -498,7 +503,7 @@ if (typeof formAutoSubmit !== 'function') {
                 $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
 
         }).off("click", ".listButton").on("click", ".listButton", function () {
-            openPanel($(this));
+            openPanel($(this).attr("data-entity"), $(this).siblings('input[type=hidden]'), $(this).siblings('input[type=hidden]').val(), $(this));
 
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault();
@@ -514,7 +519,7 @@ if (typeof formAutoSubmit !== 'function') {
                     if ($list.find("li.active").next().length)
                         $list.find("li.active").removeClass("active").next().addClass("active");
                 } else if (e.which === 13) {
-                    selectList($("#list-complete-" + $this.attr("id")));
+                    selectList($list);
                 }
             } else if ([37, 39].indexOf(e.which) < 0) {
                 if ($this.val() !== "")
@@ -532,6 +537,108 @@ if (typeof formAutoSubmit !== 'function') {
                 $("#list-complete-" + $this.attr("id")).html("");
             }, 50);
         });
+
+        if ($(".dropzone").length) {
+            $(".dropzone").each(function () {
+                var $this = $(this);
+                var $file = $this.siblings("input[type=hidden]");
+                var type = $file.attr("data-format");
+                new Dropzone("#" + $this.attr("id"), {
+                    acceptedFiles: $this.find("input[type=file]").attr("accept"),
+                    uploadMultiple: type === "files",
+                    maxFiles: type === "files" ? 20 : 1,
+                    addRemoveLinks: true,
+                    maxFilesize: 500,
+                    dictDefaultMessage: "Selecione ou Arraste Arquivos",
+                    dictCancelUpload: "Cancelar",
+                    dictRemoveFile: "Excluir",
+                    dictInvalidFileType: "Tipo não Permitido",
+                    dictFileTooBig: "Máximo de 500MB",
+                    dictResponseError: "Erro ao Salvar",
+                    dictMaxFilesExceeded: "Máximo de Uploads Atingido",
+                    init: function () {
+                        this.on("success", function (file, response) {
+                            response = $.parseJSON(response);
+
+                            var t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
+                            t = $.grep(t, function () {
+                                return true;
+                            });
+
+                            $.each($.parseJSON(response.data), function (i, e) {
+                                if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
+                                        return n.name === file.name;
+                                    }).length === 0)
+                                    t.push(e.data);
+
+                                else if (typeof (e.data) === "string")
+                                    $("body").panel(themeNotify(e.data, "warning"));
+                            });
+                            $(response.id).val(JSON.stringify(t)).trigger("change");
+
+                        }).on("removedfile", function (file) {
+                            post('form-crud', 'delete/source', {
+                                entity: $this.find("input[name=entity]").val(),
+                                column: $this.find("input[name=column]").val(),
+                                name: file.name,
+                                files: $file.val()
+                            }, function (data) {
+                                $file.val(data).trigger("change");
+                            });
+                        });
+
+                        if ($file.val() !== "") {
+                            var myDropzone = this;
+                            $.each($.parseJSON($file.val()), function (i, e) {
+                                var mockFile = {
+                                    name: e.name,
+                                    size: e.size,
+                                    type: e.type,
+                                    status: Dropzone.ADDED,
+                                    url: e.url,
+                                    accepted: true
+                                };
+
+                                myDropzone.emit("addedfile", mockFile);
+                                if (e.type.match(/image.*/))
+                                    myDropzone.emit("thumbnail", mockFile, e.url);
+                                myDropzone.emit("complete", mockFile);
+
+                                myDropzone.files.push(mockFile);
+                            });
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+    function setJsonValue($id, value) {
+        var dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
+            return true;
+        });
+
+        if ($.inArray(value, dataRecovery) === -1)
+            dataRecovery.push(value);
+
+        $id.val(JSON.stringify(dataRecovery)).trigger("change");
+    }
+
+    function removeJsonValue($id, value) {
+        var dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
+            return true;
+        });
+        dataRecovery.removeItem(value);
+        $id.val(JSON.stringify(dataRecovery)).trigger("change");
+    }
+
+    function removerListMult(id, value) {
+        removeJsonValue($(id), value);
+        $(".listmult-card[rel=" + value + "]").remove();
+    }
+
+    function editListMult(entity, id, value) {
+        openPanel(entity, $(id), value, $(id + "-btn"));
     }
 
     function readList(entity, search, id) {
@@ -552,9 +659,29 @@ if (typeof formAutoSubmit !== 'function') {
 
     function selectList($list) {
         var $active = $list.find("li.active");
+        $list.html("");
+        if ($list.attr("rel") === "mult")
+            setListMultValue($list.parent().prev().find("input[type=hidden]"), parseInt($active.attr("rel")), $active.text().trim());
+        else
+            selectListOne($list, $active);
+    }
+
+    function setListMultValue($id, value, title) {console.log(title);
+        var isNew = true;
+        $.each($("#listmult-content").find(".listmult-title"), function () {
+            if ($(this).text().trim() === title)
+                isNew = false;
+        });
+
+        if (isNew) {
+            copy("#tpl-listmult", "#listmult-content", [value, title], "append");
+            setJsonValue($id, value);
+        }
+    }
+
+    function selectListOne($list, $active) {
         $list.siblings("input[type=text]").val($active.text().trim());
         $list.parent().prev().find("input[type=hidden]").val(parseInt($active.attr("rel"))).trigger("change");
-        $list.html("");
     }
 }
 
@@ -562,74 +689,4 @@ Dropzone.autoDiscover = false;
 $(function () {
     loadMask();
     formAutoSubmit(".form-control");
-
-    if ($(".dropzone").length) {
-        $(".dropzone").each(function () {
-            var $this = $(this);
-            var $file = $this.siblings("input[type=hidden]");
-            var type = $file.attr("data-format");
-            new Dropzone("#" + $this.attr("id"), {
-                acceptedFiles: $this.find("input[type=file]").attr("accept"),
-                uploadMultiple: type === "files",
-                maxFiles: type === "files" ? 20 : 1,
-                addRemoveLinks: true,
-                maxFilesize: 500,
-                dictDefaultMessage: "Selecione ou Arraste Arquivos",
-                dictCancelUpload: "Cancelar",
-                dictRemoveFile: "Excluir",
-                dictInvalidFileType: "Tipo não Permitido",
-                dictFileTooBig: "Máximo de 500MB",
-                dictResponseError: "Erro ao Salvar",
-                dictMaxFilesExceeded: "Máximo de Uploads Atingido",
-                init: function () {
-                    this.on("success", function (file, response) {
-                        response = $.parseJSON(response);
-                        var t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
-                        t = $.grep(t, function () { return true;});
-                        console.log(t);
-                        $.each($.parseJSON(response.data), function (i, e) {
-                            if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
-                                    return n.name === file.name;
-                                }).length === 0)
-                                t.push(e.data);
-                            else if(typeof (e.data) === "string")
-                                $("body").panel(themeNotify(e.data, "warning"));
-                        });
-                        $(response.id).val(JSON.stringify(t)).trigger("change");
-
-                    }).on("removedfile", function (file) {
-                        post('form-crud', 'delete/source', {
-                            entity: $this.find("input[name=entity]").val(),
-                            column: $this.find("input[name=column]").val(),
-                            name: file.name,
-                            files: $file.val()
-                        }, function (data) {
-                            $file.val(data).trigger("change");
-                        });
-                    });
-
-                    if ($file.val() !== "") {
-                        var myDropzone = this;
-                        $.each($.parseJSON($file.val()), function (i, e) {
-                            var mockFile = {
-                                name: e.name,
-                                size: e.size,
-                                type: e.type,
-                                status: Dropzone.ADDED,
-                                url: e.url,
-                                accepted: true
-                            };
-
-                            myDropzone.emit("addedfile", mockFile);
-                            if (e.type.match(/image.*/))
-                                myDropzone.emit("thumbnail", mockFile, e.url);
-                            myDropzone.emit("complete", mockFile);
-
-                            myDropzone.files.push(mockFile);
-                        });
-                    }
-                }
-            });
-        });
-    }
 });

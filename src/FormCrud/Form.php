@@ -141,6 +141,7 @@ class Form
                 $data['value'] = $values[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
                 $data = $this->checkListData($data);
+                $data = $this->checkListMultData($data);
                 $data = $this->checkDateValue($data);
                 $dados[] = $this->processaInput($data, $ngmodel, $values);
             }
@@ -164,6 +165,17 @@ class Form
             $info = Metadados::getInfo($data['relation']);
             $data['title'] = $info['title'] && $data['value'] ? $data['value'][$dic[$info['title']]['column']] : "";
             $data['id'] = isset($data['value']['id']) ? $data['value']['id'] : "";
+        }
+
+        return $data;
+    }
+
+    private function checkListMultData(array $data)
+    {
+        if($data['key'] === "list_mult") {
+            $dic = Metadados::getDicionario($data['relation']);
+            $info = Metadados::getInfo($data['relation']);
+            $data['info']['title'] = $dic[$info['title']]['column'];
         }
 
         return $data;

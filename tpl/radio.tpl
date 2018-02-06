@@ -4,7 +4,7 @@
     <label class="md-radio left {$form['class']}" style="{$form['style']}">
         <input type="radio" name="{$ngmodel}" data-model="{$ngmodel}" value="{$item}"
                {($key === 0)? "id='{$ngmodel}' data-format='radio'" : ''}
-                {($item === $value) ? "checked='checked' " : "" } />
+                {($value !== "" && $item === $value) ? "checked='checked' " : "" } />
         <span class="md-radio--fake">
             <span></span>
         </span>
