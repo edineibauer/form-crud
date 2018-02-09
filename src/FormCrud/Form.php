@@ -199,13 +199,13 @@ class Form
             if(in_array($data['format'], ["title", "source"]))
                 $info = "<input type='hidden' rel='{$data['format']}' value='{$data['ngmodel']}' />";
 
-            return $info . '<div class="row"><div class="col '
+            return $info . '<div class="col '
             . (!empty($data['form']['cols']) ? 's' . $data['form']['cols'] : "") . ' '
             . (!empty($data['form']['colm']) ? 'm' . $data['form']['colm'] : "") . ' '
             . (!empty($data['form']['coll']) ? 'l' . $data['form']['coll'] : "") . ' '
                 . 'margin-bottom">'
                 . $template->getShow($data['form']['input'], $data)
-                . '</div></div>';
+                . '</div>';
         }
     }
 
