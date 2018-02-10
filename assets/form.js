@@ -429,12 +429,10 @@ if (typeof formSubmit !== 'function') {
 
         function formSave($form) {
             var dados = formGetData($form);
-            console.log(dados);
             post('form-crud', $form.attr("data-action"), {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
-                console.log(data);
                 cleanError($form);
                 if (isNaN(data))
                     setError($form, data[$form.attr("data-entity")]);
@@ -666,7 +664,7 @@ if (typeof formAutoSubmit !== 'function') {
             selectListOne($list, $active);
     }
 
-    function setListMultValue($id, value, title) {console.log(title);
+    function setListMultValue($id, value, title) {
         var isNew = true;
         $.each($("#listmult-content").find(".listmult-title"), function () {
             if ($(this).text().trim() === title)
