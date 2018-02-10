@@ -1,4 +1,4 @@
-<div class="row pd-mediumb color-text-grey font-size09">{$nome}</div>
+<div class="row padding-medium color-text-grey font-small">{$nome}</div>
 <div class="row">
     <div class="col container" style="width:60px">
         <div class="col btn-floating color-grey-light listButton" id="list-{$relation}" data-entity="{$relation}"

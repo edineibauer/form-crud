@@ -38,8 +38,8 @@ use Helpers\Template;
 class Form
 {
     private $entity;
-    private $children;
     private $fields;
+    private $children;
     private $design = "input";
 
     /**
@@ -81,15 +81,15 @@ class Form
         $this->design = $design;
     }
 
-    public function getFormChildren($id = null)
+    public function getFormChildren($id = null, $fields = null)
     {
         $this->setChildren();
-        return $this->getForm($id);
+        return $this->getForm($id, $fields);
     }
 
-    public function showFormChildren($id = null)
+    public function showFormChildren($id = null, $fields = null)
     {
-        echo $this->getFormChildren($id);
+        echo $this->getFormChildren($id, $fields);
     }
 
     public function getForm($id = null, $fields = null)
@@ -107,10 +107,20 @@ class Form
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
 
-        return "<div class='form-control row'>"
-            . $template->getShow($this->children ? "form-children" : "form", $form)
-            . "</div>";
-        //            ."<script src='" . HOME . "vendor/conn/form-crud/assets/form.min.js' defer ></script>"
+        return $this->scripts() . "<div class='form-control row'>" . $template->getShow("form", $form) . "</div>";
+
+    }
+
+    /**
+     * Retorna os Scripts do form
+     * @return string
+     */
+    private function scripts(): string
+    {
+        if (!$this->children)
+            return "<input type='hidden' id='fields-{$this->entity}' value='" . ($this->fields ? json_encode($this->fields) : "") . "' />";
+
+        return "";
     }
 
     public function showForm($id = null, $fields = null)

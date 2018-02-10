@@ -1,4 +1,4 @@
-<div class="row pd-mediumb color-text-grey font-size09">{$nome}</div>
+<div class="row padding-medium color-text-grey font-small">{$nome}</div>
 <div class="row">
     <div class="col container" style="width:60px">
         <div class="col btn-floating color-grey-light listButton" id="list-{$relation}" data-entity="{$relation}"
@@ -20,14 +20,14 @@
         {if $value}
             {foreach item=data key=i from=$value}
                 <div class="card listmult-card" style="margin-bottom: 2px!important;" rel="{$data.id}">
-                    <div class="col pd-small container" style="width:60px">
+                    <div class="col padding-small container" style="width:60px">
                     </div>
-                    <div class="rest pd-small relative">
+                    <div class="rest padding-small relative">
                         <div class="right" style="width: 100px; height: 45px">
                             <button id="{$entity}-{$column}-btn" onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})" class="btn-floating color-white opacity hover-opacity-off"><i class="material-icons">edit</i></button>
                             <button onclick="removerListMult('#{$entity}-{$column}', {$data.id})" class="btn-floating color-white opacity hover-opacity-off"><i class="material-icons">delete</i></button>
                         </div>
-                        <div class="right container pd-mediumb listmult-title">{$data[$info.title]}</div>
+                        <div class="right container padding-medium listmult-title">{$data[$info.title]}</div>
                     </div>
                 </div>
             {/foreach}
@@ -35,14 +35,14 @@
     </div>
 
     <div id="tpl-listmult" class="hide card listmult-card" style="margin-bottom: 2px!important;" rel="__$0__">
-        <div class="col pd-small container" style="width:60px">
+        <div class="col padding-small container" style="width:60px">
         </div>
-        <div class="rest pd-small relative">
+        <div class="rest padding-small relative">
             <div class="right" style="width: 100px; height: 45px">
                 <button id="{$entity}-{$column}-btn" onclick="editListMult('{$relation}', '#{$entity}-{$column}', __$0__)" class="btn-floating color-white opacity hover-opacity-off"><i class="material-icons">edit</i></button>
                 <button onclick="removerListMult('#{$entity}-{$column}', __$0__)" class="btn-floating color-white opacity hover-opacity-off"><i class="material-icons">delete</i></button>
             </div>
-            <div class="right container pd-mediumb listmult-title">__$1__</div>
+            <div class="right container padding-medium listmult-title">__$1__</div>
         </div>
     </div>
 </div>

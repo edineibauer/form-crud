@@ -8,6 +8,6 @@
                 {($size !== false)? "maxlength='{$size}' " : ''}
                 {($default === false)? 'required="required" ' : ''}
                style="{$form['style']}" class="{$form['class']}"/>
-        <div class="font-size13 padding-medium pointer">{$allow['names'][$key]}</div>
+        <div class="font-large padding-medium pointer">{$allow['names'][$key]}</div>
     </label>
 {/foreach}

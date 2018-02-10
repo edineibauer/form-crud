@@ -326,7 +326,7 @@ if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
         $this.panel(themeWindow('Editar ' + entity, {
             lib: 'form-crud',
-            file: 'children/form',
+            file: 'read/form',
             entity: entity,
             id: value
         }, function (idOntab) {
@@ -417,12 +417,11 @@ if (typeof formSubmit !== 'function') {
         function reloadForm(entity, id) {
             id = id || null;
             $("#form_" + entity).loading();
-            post('form-crud', 'read/form', {entity: entity, id: id}, function (data) {
+            var fields = $("#fields-" + entity).val();
+            post('form-crud', 'children/form', {entity: entity, id: id, fields: fields}, function (data) {
                 if (data) {
                     var $form = $("#form_" + entity).closest(".form-control");
                     $form.replaceWith(data);
-                    loadMask();
-                    formAutoSubmit(".form-control");
                 }
             });
         }
@@ -684,7 +683,3 @@ if (typeof formAutoSubmit !== 'function') {
 }
 
 Dropzone.autoDiscover = false;
-$(function () {
-    loadMask();
-    formAutoSubmit(".form-control");
-});
