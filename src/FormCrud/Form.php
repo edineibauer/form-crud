@@ -167,6 +167,9 @@ class Form
                 $data['entity'] = $entity;
                 $data['value'] = $values[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
+                if(!$data['form'])
+                    $data['form'] = ['input' => "text", "style" => "", "class" => "", "cols" => "12", "colm" => "", "coll" => ""];
+                
                 $data = $this->checkListData($data);
                 $data = $this->checkListMultData($data);
                 $data = $this->checkDateValue($data);
