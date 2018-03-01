@@ -432,6 +432,7 @@ if (typeof formSubmit !== 'function') {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
+                console.log(data);
                 cleanError($form);
                 if (isNaN(data))
                     setError($form, data[$form.attr("data-entity")]);
@@ -440,7 +441,7 @@ if (typeof formSubmit !== 'function') {
 
                 if (!saveTime)
                     window.onbeforeunload = null;
-            });
+            }, true);
         }
 
         clearTimeout(saveTime);
@@ -630,8 +631,9 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function removerListMult(id, value) {
+        var $content = $(id).parent().siblings(".listmult-content");
         removeJsonValue($(id), value);
-        $(".listmult-card[rel=" + value + "]").remove();
+        $content.find(".listmult-card[rel=" + value + "]").remove();
     }
 
     function editListMult(entity, id, value) {
@@ -665,13 +667,14 @@ if (typeof formAutoSubmit !== 'function') {
 
     function setListMultValue($id, value, title) {
         var isNew = true;
-        $.each($("#listmult-content").find(".listmult-title"), function () {
+        $content = $id.parent().siblings(".listmult-content");
+        $.each($(".listmult-content").find(".listmult-title"), function () {
             if ($(this).text().trim() === title)
                 isNew = false;
         });
 
         if (isNew) {
-            copy("#tpl-listmult", "#listmult-content", [value, title], "append");
+            copy("#tpl-" + $id.attr("data-format"), $content, [value, title], "append");
             setJsonValue($id, value);
         }
     }

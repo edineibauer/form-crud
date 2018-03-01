@@ -1,7 +1,7 @@
 <div class="clear"><br></div>
 <div class="row">
     <div class="col container padding-small right" style="width:135px">
-        <button class="btn color-blue listButton" id="list-{$relation}" data-entity="{$relation}"><i class="material-icons left padding-small">add</i> <span class="left pd-small">Novo</span></button>
+        <button class="btn color-blue listButton" id="list-{$relation}" data-entity="{$relation}"><i class="material-icons left padding-right">add</i> <span class="left pd-small">Novo</span></button>
 
         <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="list_mult"
                 {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
