@@ -160,16 +160,22 @@ class Form
         $dados = [];
         $values = $values ?? [];
 
-        foreach (Metadados::getDicionario($entity, true) as $i => $data) {
+        $info = "";
+        $rel = Metadados::getRelevant($this->entity);
+        $dic = Metadados::getDicionario($entity, true);
+        if (!empty($rel))
+            $dados[] = "<input type='hidden' rel='title' value='{$dic[$rel]['column']}'>";
+
+        foreach ($dic as $i => $data) {
             if ($data['key'] === "identifier" || (!$this->fields && $data['form']) || ($this->fields && in_array($data['column'], $this->fields))) {
                 $data['path'] = PATH_HOME;
                 $data['home'] = HOME;
                 $data['entity'] = $entity;
                 $data['value'] = $values[$data['column']] ?? null;
                 $data['ngmodel'] = $ngmodel . $data['column'];
-                if(!$data['form'])
+                if (!$data['form'])
                     $data['form'] = ['input' => "text", "style" => "", "class" => "", "cols" => "12", "colm" => "", "coll" => ""];
-                
+
                 $data = $this->checkListData($data);
                 $data = $this->checkListMultData($data);
                 $data = $this->checkDateValue($data);
@@ -190,10 +196,15 @@ class Form
 
     private function checkListData(array $data)
     {
-        if ($data['key'] === "list") {
+        if ($data['key'] === "list" || $data['key'] === "selecao") {
             $dic = Metadados::getDicionario($data['relation']);
             $info = Metadados::getInfo($data['relation']);
-            $data['title'] = $info['title'] && $data['value'] ? $data['value'][$dic[$info['title']]['column']] : "";
+            $rel = Metadados::getRelevant($data['relation'], true);
+            $type = $rel[1];
+            $rel = $rel[0];
+
+            $data['icon'] = '<i class="material-icons padding-medium">' . $this->getIcons($type) . '</i>';
+            $data['title'] = !empty($rel) && $data['value'] ? $data['value'][$dic[$rel]['column']] : "";
             $data['id'] = isset($data['value']['id']) ? $data['value']['id'] : "";
         }
 
@@ -202,13 +213,34 @@ class Form
 
     private function checkListMultData(array $data)
     {
-        if ($data['key'] === "list_mult" || $data['key'] === "extend_mult") {
+        if ($data['key'] === "list_mult" || $data['key'] === "extend_mult" || $data['key'] === "selecao_mult") {
             $dic = Metadados::getDicionario($data['relation']);
             $info = Metadados::getInfo($data['relation']);
-            $data['info']['title'] = $dic[$info['title']]['column'];
+            $rel = Metadados::getRelevant($data['relation'], true);
+            $type = $rel[1];
+            $rel = $rel[0];
+
+            $data['icon'] = '<i class="material-icons padding-medium">' . $this->getIcons($type) . '</i>';
+            $data['info']['title'] = (!empty($rel) ? $dic[$rel]['column'] : "");
         }
 
         return $data;
+    }
+
+    private function getIcons($type) {
+        switch ($type) {
+            case 'email':
+                return "email";
+                break;
+            case 'tel':
+                return "settings_phone";
+                break;
+            case 'cep':
+                return "location_on";
+                break;
+            default:
+                return "folder";
+        }
     }
 
     /**
@@ -225,11 +257,8 @@ class Form
             return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value);
 
         } else {
-            $info = "";
-            if (in_array($data['format'], ["title", "source"]))
-                $info = "<input type='hidden' rel='{$data['format']}' value='{$data['ngmodel']}' />";
 
-            return $info . '<div class="col '
+            return '<div class="col '
                 . (!empty($data['form']['cols']) ? 's' . $data['form']['cols'] : "") . ' '
                 . (!empty($data['form']['colm']) ? 'm' . $data['form']['colm'] : "") . ' '
                 . (!empty($data['form']['coll']) ? 'l' . $data['form']['coll'] : "") . ' '

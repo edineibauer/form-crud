@@ -330,6 +330,9 @@ if (typeof openPanel !== 'function') {
             entity: entity,
             id: value
         }, function (idOntab) {
+            if(ISDEVFORM)
+                console.log("id ontab retorno: \n" + idOntab);
+
             formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
         }));
     }
@@ -395,7 +398,8 @@ if (typeof formSubmit !== 'function') {
                         $input.siblings(".md-radio--fake").css("border-color", "red");
                         $input.parent().siblings(".radio-title").addClass("error-span");
                     } else if ($input.attr("data-format") === "list") {
-                        $input.siblings(".listButton").addClass("error-btn").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
+                        $input.parent().parent().prev().addClass("error-span");
+                        $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
                         $input.parent().siblings(".rest").append('<span class="error-span error-message">' + mensagem + '</span>');
                     } else {
                         $input.siblings('label').addClass("error-span");
@@ -407,6 +411,7 @@ if (typeof formSubmit !== 'function') {
         }
 
         function cleanError($form) {
+            $form.find(".error-span").removeClass("error-span");
             $form.find(".md-radio--fake").css("border-color", "initial");
             $form.find(".radio-title").removeClass("error-span");
             $form.find(".listButton").removeClass('error-btn');
@@ -428,11 +433,14 @@ if (typeof formSubmit !== 'function') {
 
         function formSave($form) {
             var dados = formGetData($form);
+
+            if(ISDEVFORM)
+                console.log(dados);
+
             post('form-crud', $form.attr("data-action"), {
                 entity: $form.attr("data-entity"),
                 dados: dados
             }, function (data) {
-                console.log(data);
                 cleanError($form);
                 if (isNaN(data))
                     setError($form, data[$form.attr("data-entity")]);
@@ -441,7 +449,7 @@ if (typeof formSubmit !== 'function') {
 
                 if (!saveTime)
                     window.onbeforeunload = null;
-            }, true);
+            }, ISDEVFORM ? true : "undefined");
         }
 
         clearTimeout(saveTime);
@@ -454,13 +462,13 @@ if (typeof formSubmit !== 'function') {
         };
 
         if (typeof ($idReturn) !== "undefined") {
-            var dados = formGetData($form);
             post('form-crud', $form.attr("data-action"), {
                 entity: $form.attr("data-entity"),
-                dados: dados
+                dados: formGetData($form)
             }, function (data) {
-                var title = $form.find("[data-model='" + $form.find("input[type=hidden][rel='title']").val() + "']").val();
-                if ($idReturn.attr("data-format") === "list_mult") {
+                var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
+
+                if ($idReturn.attr("data-format") === "list_mult" || $idReturn.attr("data-format") === "extend_mult") {
                     if (!isNaN(data) && data > 0)
                         setListMultValue($idReturn, data, title);
                 } else {
@@ -475,7 +483,7 @@ if (typeof formSubmit !== 'function') {
                 }
 
                 window.onbeforeunload = null;
-            });
+            }, ISDEVFORM ? true : "undefined");
 
         } else {
             saveTime = setTimeout(function () {
@@ -520,19 +528,21 @@ if (typeof formAutoSubmit !== 'function') {
                     selectList($list);
                 }
             } else if ([37, 39].indexOf(e.which) < 0) {
-                if ($this.val() !== "")
-                    readList($this.attr("data-entity"), $this.val(), $this.attr("id"));
-                else
+                if ($this.val() !== "") {
+                    readList($this, $this.attr("data-entity"), $this.attr("data-parent"), $this.val(), $this.attr("id"));
+                } else {
                     $("#list-complete-" + $this.attr("id")).html("");
+                    $("#list-" + $this.attr("id")).removeClass("color-white").addClass("color-teal").find("i").html("add");
+                }
             }
 
         }).off("dblclick", ".form-list").on("dblclick", ".form-list", function () {
-            readList($(this).attr("data-entity"), $(this).val(), $(this).attr("id"));
+            readList($(this), $(this).attr("data-entity"), $(this).attr("data-parent"), $(this).val(), $(this).attr("id"));
 
         }).off("focusout", ".form-list").on("focusout", ".form-list", function () {
             $this = $(this);
             setTimeout(function () {
-                $("#list-complete-" + $this.attr("id")).html("");
+                $(".list-complete").html("");
             }, 50);
         });
 
@@ -640,12 +650,14 @@ if (typeof formAutoSubmit !== 'function') {
         openPanel(entity, $(id), value, $(id + "-btn"));
     }
 
-    function readList(entity, search, id) {
+    function readList($input, entity, parent, search, id) {
         post('form-crud', 'read/list', {
             search: search,
-            entity: entity
+            entity: entity,
+            parent: parent,
+            column: id
         }, function (data) {
-            var $list = $("#list-complete-" + id);
+            var $list = $input.siblings(".list-complete");
             $list.html(data);
 
             $(".list-option").off("mousedown").on("mousedown", function () {
@@ -653,12 +665,13 @@ if (typeof formAutoSubmit !== 'function') {
                 $(this).addClass("active");
                 selectList($list);
             });
-        });
+        }, ISDEVFORM ? true : "undefined");
     }
 
     function selectList($list) {
         var $active = $list.find("li.active");
         $list.html("");
+        $list.parent().prev().find(".btn-floating").removeClass("color-teal").addClass("color-white").find("i").html("edit");
         if ($list.attr("rel") === "mult")
             setListMultValue($list.parent().prev().find("input[type=hidden]"), parseInt($active.attr("rel")), $active.text().trim());
         else
@@ -667,14 +680,16 @@ if (typeof formAutoSubmit !== 'function') {
 
     function setListMultValue($id, value, title) {
         var isNew = true;
+        var format = $id.attr("data-format");
         $content = $id.parent().siblings(".listmult-content");
-        $.each($(".listmult-content").find(".listmult-title"), function () {
+        $.each($id.parent().siblings(".listmult-content").find(".listmult-title"), function () {
             if ($(this).text().trim() === title)
                 isNew = false;
         });
 
         if (isNew) {
-            copy("#tpl-" + $id.attr("data-format"), $content, [value, title], "append");
+            $id.parent().siblings(".rest").find("input[type=text]").html("");
+            copy("#tpl-" + format, $content, [value, title], "append");
             setJsonValue($id, value);
         }
     }
