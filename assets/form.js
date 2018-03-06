@@ -517,7 +517,7 @@ if (typeof formAutoSubmit !== 'function') {
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
             var $this = $(this);
             if ([38, 40, 13].indexOf(e.which) > -1) {
-                var $list = $("#list-complete-" + $this.attr("id"));
+                var $list = $this.siblings(".list-complete");
                 if (e.which === 38) {
                     if ($list.find("li.active").prev().length)
                         $list.find("li.active").removeClass("active").prev().addClass("active");
@@ -531,7 +531,7 @@ if (typeof formAutoSubmit !== 'function') {
                 if ($this.val() !== "") {
                     readList($this, $this.attr("data-entity"), $this.attr("data-parent"), $this.val(), $this.attr("id"));
                 } else {
-                    $("#list-complete-" + $this.attr("id")).html("");
+                    $this.siblings(".list-complete").html("");
                     $("#list-" + $this.attr("id")).removeClass("color-white").addClass("color-teal").find("i").html("add");
                 }
             }
@@ -669,6 +669,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function selectList($list) {
+        console.log($list.attr('class'));
         var $active = $list.find("li.active");
         $list.html("");
         $list.parent().prev().find(".btn-floating").removeClass("color-teal").addClass("color-white").find("i").html("edit");
@@ -680,17 +681,24 @@ if (typeof formAutoSubmit !== 'function') {
 
     function setListMultValue($id, value, title) {
         var isNew = true;
-        var format = $id.attr("data-format");
-        $content = $id.parent().siblings(".listmult-content");
-        $.each($id.parent().siblings(".listmult-content").find(".listmult-title"), function () {
-            if ($(this).text().trim() === title)
+        var isTitle = false;
+        var $content = $id.parent().siblings(".listmult-content");
+        var $tpl = $id.parent().siblings(".tpl_list_mult");
+        $.each($id.parent().siblings(".listmult-content").find(".listmult-card"), function () {
+            if ($(this).attr("rel") === value) {
                 isNew = false;
+                if($(this).find(".listmult-title").text().trim() !== title)
+                    isTitle = $(this).find(".listmult-title");
+            }
         });
 
         if (isNew) {
             $id.parent().siblings(".rest").find("input[type=text]").html("");
-            copy("#tpl-" + format, $content, [value, title], "append");
+            copy($tpl, $content, [value, title], "append");
             setJsonValue($id, value);
+
+        } else if(isTitle !== false) {
+            isTitle.text(title);
         }
     }
 

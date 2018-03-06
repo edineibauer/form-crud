@@ -42,7 +42,7 @@
             {/if}
         </div>
 
-        <div id="tpl-list_mult" class="hide listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="__$0__">
+        <div class="tpl_list_mult hide listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="__$0__">
             <div class="col padding-small container" style="width:60px">
                 {$icon}
             </div>

@@ -30,7 +30,6 @@
 
 namespace FormCrud;
 
-use ConnCrud\Read;
 use Entity\Entity;
 use EntityForm\Metadados;
 use Helpers\Template;
@@ -160,7 +159,6 @@ class Form
         $dados = [];
         $values = $values ?? [];
 
-        $info = "";
         $rel = Metadados::getRelevant($this->entity);
         $dic = Metadados::getDicionario($entity, true);
         if (!empty($rel))
@@ -198,7 +196,6 @@ class Form
     {
         if ($data['key'] === "list" || $data['key'] === "selecao") {
             $dic = Metadados::getDicionario($data['relation']);
-            $info = Metadados::getInfo($data['relation']);
             $rel = Metadados::getRelevant($data['relation'], true);
             $type = $rel[1];
             $rel = $rel[0];
@@ -215,7 +212,6 @@ class Form
     {
         if ($data['key'] === "list_mult" || $data['key'] === "extend_mult" || $data['key'] === "selecao_mult") {
             $dic = Metadados::getDicionario($data['relation']);
-            $info = Metadados::getInfo($data['relation']);
             $rel = Metadados::getRelevant($data['relation'], true);
             $type = $rel[1];
             $rel = $rel[0];
@@ -275,35 +271,5 @@ class Form
         $form['column'] = $column;
 
         return $templateExt->getShow("extend", $form);
-    }
-
-    private function setAutocompleteData($table)
-    {
-        $results = $this->getDataBaseResultsFrom($table);
-        if ($results) {
-            $data = array();
-            foreach ($results as $result) {
-                $data[$result['title']] = (isset($result['image']) ? "'{$result['image']}'" : null);
-            }
-            return json_encode($data);
-        }
-
-        return "";
-    }
-
-    private function getDataBaseResultsFrom($table)
-    {
-        $entity = Metadados::getInfo($table);
-
-        if (!empty($entity['title'])) {
-            $table = (defined('PRE') && !preg_match('/^' . PRE . '/i', $table) ? PRE : "") . $table;
-
-            $read = new Read();
-            $read->setSelect(!empty($entity['image']) ? array($entity['title'], $entity['image']) : $entity['title']);
-            $read->exeRead($table);
-            if ($read->getResult()) {
-                return $read->getResult();
-            }
-        }
     }
 }
