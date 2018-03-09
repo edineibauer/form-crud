@@ -1,0 +1,29 @@
+<div class="selecaoUniqueCard row">
+    <div class="row padding-medium color-text-grey font-small">
+        <span class="left">
+            {$nome}
+            {($default === false) ? "*" : ""}
+        </span>
+        <span class="left titleRequired opacity {($parentValue === "")? "" : "hide"}">
+            &nbsp; (Selecione um(a) <b>{$entity|ucfirst}</b> antes)
+        </span>
+    </div>
+    <div class="row">
+        <div class="hide">
+            <input type="hidden" data-model="{$ngmodel}" id="{$ngmodel}" data-format="list"
+                    {($id !== "")? "value='{$id}'" : ''} />
+        </div>
+        <div class="col s12 container relative">
+            <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}" required="required"
+                    {($parentValue === "")? "disabled='disabled'" : ''}
+                    {($title != "")? "value='{$title}'" : ''}
+                    {($size !== false)? "maxlength='{$size}' " : ''}
+                    {($default === false)? 'required="required" ' : ''}
+                   data-entity="{$relation}" data-parent="{$entity}" style="{$form['style']}"
+                   class="form-list selecaoUnique rest {$form['class']}
+                {($parentValue === "")? "disabled" : ''}
+                "/>
+            <div class="col s12 list-complete" rel="one"></div>
+        </div>
+    </div>
+</div>

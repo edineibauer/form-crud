@@ -468,7 +468,10 @@ if (typeof formSubmit !== 'function') {
             }, function (data) {
                 var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
 
-                if ($idReturn.attr("data-format") === "list_mult" || $idReturn.attr("data-format") === "extend_mult") {
+                if (["list_mult", "extend_mult", "selecao_mult", "list", "selecao"].indexOf($idReturn.attr("data-format")) > -1)
+                    checkEntityMultValue($idReturn);
+
+                if (["list_mult", "extend_mult", "selecao_mult"].indexOf($idReturn.attr("data-format")) > -1) {
                     if (!isNaN(data) && data > 0)
                         setListMultValue($idReturn, data, title);
                 } else {
@@ -494,19 +497,18 @@ if (typeof formSubmit !== 'function') {
     }
 }
 
-if (typeof choseList !== 'function') {
-    function choseList(id, nome) {
-
-    }
-}
-
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit(element) {
         $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
-            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
+            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string") {
                 formSubmit($(this).closest(".form-crud"));
-            else if ($(this).val() === "" && $(this).hasClass("form-list"))
+
+            } else if ($(this).val() === "" && $(this).hasClass("form-list")) {
                 $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
+                $.each($(this).parent().next(".multFieldsSelect").find(".selecaoUniqueCard"), function () {
+                    $(this).find(".titleRequired").removeClass("hide").parent().next().find(".form-list").prop("disabled", true).addClass("disabled").val("").trigger("change");
+                });
+            }
 
         }).off("click", ".listButton").on("click", ".listButton", function () {
             openPanel($(this).attr("data-entity"), $(this).siblings('input[type=hidden]'), $(this).siblings('input[type=hidden]').val(), $(this));
@@ -537,7 +539,8 @@ if (typeof formAutoSubmit !== 'function') {
             }
 
         }).off("dblclick", ".form-list").on("dblclick", ".form-list", function () {
-            readList($(this), $(this).attr("data-entity"), $(this).attr("data-parent"), $(this).val(), $(this).attr("id"));
+            if(!$(this).prop("disabled"))
+                readList($(this), $(this).attr("data-entity"), $(this).attr("data-parent"), $(this).val(), $(this).attr("id"));
 
         }).off("focusout", ".form-list").on("focusout", ".form-list", function () {
             $this = $(this);
@@ -651,11 +654,13 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function readList($input, entity, parent, search, id) {
+        var selecao = $input.hasClass("selecaoUnique") ? $input.closest(".multFieldsSelect").prev().prev().find("input[type=hidden]").val() : 0;
         post('form-crud', 'read/list', {
             search: search,
             entity: entity,
             parent: parent,
-            column: id
+            column: id,
+            selecao: selecao
         }, function (data) {
             var $list = $input.siblings(".list-complete");
             $list.html(data);
@@ -669,7 +674,6 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function selectList($list) {
-        console.log($list.attr('class'));
         var $active = $list.find("li.active");
         $list.html("");
         $list.parent().prev().find(".btn-floating").removeClass("color-teal").addClass("color-white").find("i").html("edit");
@@ -677,6 +681,14 @@ if (typeof formAutoSubmit !== 'function') {
             setListMultValue($list.parent().prev().find("input[type=hidden]"), parseInt($active.attr("rel")), $active.text().trim());
         else
             selectListOne($list, $active);
+
+        var lista = $list.siblings(".form-list");
+        if (["list_mult", "extend_mult", "selecao_mult", "list", "selecao"].indexOf($list.parent().prev().find("input[type=hidden]").attr("data-format")) > -1)
+            checkEntityMultValue(lista);
+    }
+
+    function checkEntityMultValue($id) {
+        $id.parent().parent().find(".titleRequired").addClass("hide").parent().next().find(".form-list").val("").removeClass("disabled").prop("disabled", false).parent().prev().find("input[type=hidden]").val("").trigger("click");
     }
 
     function setListMultValue($id, value, title) {

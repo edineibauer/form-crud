@@ -30,6 +30,7 @@
 
 namespace FormCrud;
 
+use ConnCrud\Read;
 use Entity\Entity;
 use EntityForm\Metadados;
 use Helpers\Template;
@@ -101,7 +102,7 @@ class Form
         }
 
         $template = new Template("form-crud");
-        $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($id));
+        $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
         $form['id'] = $id;
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
@@ -127,12 +128,17 @@ class Form
         echo $this->getForm($id, $fields);
     }
 
-    private function readValues($id = null)
+    /**
+     * @param string $entity
+     * @param int $id
+     * @return mixed
+     */
+    private function readValues(string $entity, int $id = null)
     {
         Entity::setError(null);
-        $value = Entity::read($this->entity, $id);
+        $value = Entity::read($entity, $id);
         if (Entity::getError())
-            $value = Entity::read($this->entity);
+            $value = Entity::read($entity);
 
         return Entity::getError() ? null : $this->fixValues($value);
     }
@@ -159,6 +165,7 @@ class Form
         $dados = [];
         $values = $values ?? [];
 
+        $info = "";
         $rel = Metadados::getRelevant($this->entity);
         $dic = Metadados::getDicionario($entity, true);
         if (!empty($rel))
@@ -177,6 +184,7 @@ class Form
                 $data = $this->checkListData($data);
                 $data = $this->checkListMultData($data);
                 $data = $this->checkDateValue($data);
+                $data['mult'] = $this->checkExtendMultSelect($data, $values);
                 $dados[] = $this->processaInput($data, $ngmodel, $values);
             }
         }
@@ -223,7 +231,50 @@ class Form
         return $data;
     }
 
-    private function getIcons($type) {
+    /**
+     * Busca por campos mult relacionais que precisam ser selecionados
+     *
+     * @param array $data
+     * @param array $values
+     * @return string
+     */
+    private function checkExtendMultSelect(array $data, array $values) :string
+    {
+        $mult = "";
+        if (in_array($data['key'], ["list_mult", "extend_mult", "selecao_mult", "list", "extend", "selecao"]) && !empty($data['select'])) {
+
+            $dicionario = \EntityForm\Metadados::getDicionario($data['relation']);
+            foreach ($data['select'] as $select) {
+                foreach ($dicionario as $item) {
+                    if ($item['column'] === $select) {
+                        if(!empty($values[$select])) {
+                            $value_select = $this->readValues($item['relation'], $values[$select]);
+                            $dicSelecao = Metadados::getDicionario($item['relation']);
+                            $relevant = Metadados::getRelevant($item['relation']);
+                            $item['title'] = $value_select[$dicSelecao[$relevant]['column']];
+                            $item['id'] = $values[$select];
+                        } else {
+                            $item['title'] = "";
+                            $item['id'] = "";
+                        }
+
+                        $item['parentValue'] = $values[$data['column']] ? 1 : "";
+                        $item['ngmodel'] = "dados." . $item['column'];
+                        $item['entity'] = $data['relation'];
+                        $tpl = new \Helpers\Template("form-crud");
+                        $mult .= $tpl->getShow("selecaoUnique", $item);
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $mult;
+    }
+
+    private function getIcons($type)
+    {
         switch ($type) {
             case 'email':
                 return "email";

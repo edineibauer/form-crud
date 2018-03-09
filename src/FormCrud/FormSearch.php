@@ -12,6 +12,7 @@ class FormSearch
     private $column;
     private $parent;
     private $search;
+    private $selecao;
     private $result = "";
 
     /**
@@ -19,13 +20,14 @@ class FormSearch
      * @param string $parent
      * @param string $search
      * @return string
-    */
-    public function __construct(string $entity, string $parent, string $search, string $column)
+     */
+    public function __construct(string $entity, string $parent, string $search, string $column, int $selecao = 0)
     {
         $this->entity = $entity;
         $this->parent = $parent;
         $this->search = $search;
         $this->column = $column;
+        $this->selecao = $selecao;
 
         $this->search();
     }
@@ -47,7 +49,11 @@ class FormSearch
 
             $template = new \Helpers\Template("form-crud");
             $where = "WHERE {$column} LIKE '%{$this->search}%'";
-            $data = $this->filter();
+
+            if($this->selecao === 0)
+                $data = $this->filter();
+            else
+                $data = $this->filterSelecao();
 
             $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%'" . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
             $sql = new SqlCommand();
@@ -56,6 +62,16 @@ class FormSearch
             if ($sql->getResult())
                 $this->result = $template->getShow("list-result", ["data" => $sql->getResult(), "column" => $column]);
         }
+    }
+
+    private function filterSelecao() :array
+    {
+        $rel = PRE . $this->parent . "_" . $this->entity . "_" . $this->column;
+
+        return [
+            "join" => "INNER JOIN " . $rel . " ON " . $rel . "." . $this->entity . "_id = " . PRE . $this->entity . ".id",
+            "where" => $rel . "." . $this->parent . "_id = {$this->selecao}"
+        ];
     }
 
     private function filter() :array
