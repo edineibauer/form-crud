@@ -258,6 +258,9 @@ class Form
                             $item['id'] = "";
                         }
 
+                        $item['nome'] = preg_match('/s$/i', $item['nome']) ? substr($item['nome'],0, strlen($item['nome'])-1) : $item['nome'];
+                        $item['genero'] = preg_match('/a$/i', $item['nome']) ? "a" : "o";
+                        $item['parentColumn'] = $data['column'];
                         $item['parentValue'] = $values[$data['column']] ? 1 : "";
                         $item['column'] = $item['column'] . "__" . $data['column'];
                         $item['ngmodel'] = "dados." . $item['column'];

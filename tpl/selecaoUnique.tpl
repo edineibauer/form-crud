@@ -1,11 +1,11 @@
 <div class="selecaoUniqueCard row">
     <div class="row padding-medium color-text-grey font-small">
         <span class="left">
-            {$nome}
+            {$nome} d{$genero} {$parentColumn|ucfirst}
             {($default === false) ? "*" : ""}
         </span>
         <span class="left titleRequired opacity {($parentValue === "")? "" : "hide"}">
-            &nbsp; (Selecione um(a) <b>{$entity|ucfirst}</b> antes)
+            &nbsp; (Selecione um{if $genero === "a"}a{/if} <b>{$parentColumn|ucfirst}</b> antes)
         </span>
     </div>
     <div class="row">
