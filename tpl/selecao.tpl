@@ -12,4 +12,5 @@
                data-entity="{$relation}" data-parent="{$entity}" style="{$form['style']}" class="form-list rest {$form['class']}"/>
         <div class="col s12 list-complete" rel="one"></div>
     </div>
+    <div class="multFieldsSelect">{$mult}</div>
 </div>

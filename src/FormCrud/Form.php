@@ -168,8 +168,8 @@ class Form
         $info = "";
         $rel = Metadados::getRelevant($this->entity);
         $dic = Metadados::getDicionario($entity, true);
-        if (!empty($rel))
-            $dados[] = "<input type='hidden' rel='title' value='{$dic[$rel]['column']}'>";
+
+        $dados[] = "<input type='hidden' rel='title' value='{$dic[$rel]['column']}'>";
 
         foreach ($dic as $i => $data) {
             if ($data['key'] === "identifier" || (!$this->fields && $data['form']) || ($this->fields && in_array($data['column'], $this->fields))) {
@@ -259,9 +259,11 @@ class Form
                         }
 
                         $item['parentValue'] = $values[$data['column']] ? 1 : "";
+                        $item['column'] = $item['column'] . "__" . $data['column'];
                         $item['ngmodel'] = "dados." . $item['column'];
                         $item['entity'] = $data['relation'];
                         $tpl = new \Helpers\Template("form-crud");
+
                         $mult .= $tpl->getShow("selecaoUnique", $item);
 
                         break;

@@ -42,12 +42,11 @@ class FormSearch
 
     private function search()
     {
-        $dicionario = \EntityForm\Metadados::getDicionario($this->entity);
+        $dicionario = \EntityForm\Metadados::getDicionario($this->entity, true);
         $relevant = \EntityForm\Metadados::getRelevant($this->entity);
         if($relevant) {
             $column = $dicionario[$relevant]['column'];
 
-            $template = new \Helpers\Template("form-crud");
             $where = "WHERE {$column} LIKE '%{$this->search}%'";
 
             if($this->selecao === 0)
@@ -59,14 +58,16 @@ class FormSearch
             $sql = new SqlCommand();
             $sql->exeCommand($comando);
 
-            if ($sql->getResult())
+            if ($sql->getResult()) {
+                $template = new \Helpers\Template("form-crud");
                 $this->result = $template->getShow("list-result", ["data" => $sql->getResult(), "column" => $column]);
+            }
         }
     }
 
     private function filterSelecao() :array
     {
-        $rel = PRE . $this->parent . "_" . $this->entity . "_" . $this->column;
+        $rel = PRE . $this->parent . "_" . $this->entity . "_" . explode("__", $this->column)[0];
 
         return [
             "join" => "INNER JOIN " . $rel . " ON " . $rel . "." . $this->entity . "_id = " . PRE . $this->entity . ".id",
