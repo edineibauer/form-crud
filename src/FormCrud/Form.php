@@ -132,11 +132,14 @@ class Form
     }
 
     /**
-     * @param int $id
+     * @param mixed $id
      * @return bool
      */
-    private function notAllowForm(int $id): bool
+    private function notAllowForm($id): bool
     {
+        if(!is_numeric($id))
+            return false;
+
         $rules = json_decode(file_get_contents(PATH_HOME . "vendor/conn/form-crud/rules/rules.json"), true);
 
         if(!empty($rules)) {
@@ -202,7 +205,6 @@ class Form
         $dados = [];
         $values = $values ?? [];
 
-        $info = "";
         $rel = Metadados::getRelevant($this->entity);
         $dic = Metadados::getDicionario($entity, true);
 
