@@ -94,6 +94,9 @@ class Form
 
     public function getForm($id = null, $fields = null)
     {
+        if($this->notAllowForm($id))
+            return "<h2>Autorização Negada</h2>";
+
         if ($id && is_array($id) && !$fields) {
             $this->setFields($id);
             $id = null;
@@ -111,6 +114,11 @@ class Form
 
     }
 
+    public function showForm($id = null, $fields = null)
+    {
+        echo $this->getForm($id, $fields);
+    }
+
     /**
      * Retorna os Scripts do form
      * @return string
@@ -123,9 +131,38 @@ class Form
         return "";
     }
 
-    public function showForm($id = null, $fields = null)
+    /**
+     * @param int $id
+     * @return bool
+    */
+    private function notAllowForm(int $id): bool
     {
-        echo $this->getForm($id, $fields);
+        $rules = json_decode(file_get_contents(PATH_HOME . "vendor/conn/form-crud/rules/rules.json"), true);
+
+        if(!empty($rules)) {
+            $read = new Read();
+            foreach ($rules as $rule) {
+                $entity = $rule[0];
+                $where = "WHERE id = :id";
+
+                if(!empty($rule[1]) && !empty($rule[2])) {
+                    if (is_array($rule[1]) && !isset($rule[2])) {
+                        foreach ($rule as $r) {
+                            if(!empty($r[0]) && !empty($r[1]))
+                                $where .= " && {$r[0]} {$r[1]}";
+                        }
+                    } else {
+                        $where .= " && {$rule[1]} " . (!empty($_SESSION['userlogin'][$rule[2]]) ? $_SESSION['userlogin'][$rule[2]] : $rule[2]);
+                    }
+                }
+
+                $read->exeRead($entity, $where, "id={$id}");
+                if ($read->getResult())
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -247,12 +284,12 @@ class Form
             foreach ($data['select'] as $select) {
                 foreach ($dicionario as $item) {
                     if ($item['column'] === $select) {
-                        if(!empty($values[$select])) {
-                            $value_select = $this->readValues($item['relation'], $values[$select]);
+                        if(!empty($values[$select . "__" . $data['column']])) {
+                            $value_select = $this->readValues($item['relation'], $values[$select . "__" . $data['column']]);
                             $dicSelecao = Metadados::getDicionario($item['relation']);
                             $relevant = Metadados::getRelevant($item['relation']);
                             $item['title'] = $value_select[$dicSelecao[$relevant]['column']];
-                            $item['id'] = $values[$select];
+                            $item['id'] = $values[$select . "__" . $data['column']];
                         } else {
                             $item['title'] = "";
                             $item['id'] = "";
