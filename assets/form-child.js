@@ -7,6 +7,10 @@ $(function() {
             .append('<script src="' + HOME + 'vendor/conn/form-crud/assets/form.min.js" data-info="form-crud" ></script>');
     }
 
+    $(".table-search").prop("disabled", true);
+    setTimeout(function(){
+        $(".table-search").prop("disabled", false);
+    },1000);
     loadMask();
     formAutoSubmit(".form-control");
 });
