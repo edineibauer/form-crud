@@ -324,13 +324,13 @@ if (typeof loadMask !== 'function') {
 
 if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
-        $this.panel(themeWindow('Editar ' + entity, {
+        $this.panel(themeWindow("<i class='statusPanel left' title='sem mudanças'></i><span class='left'>Editar " + ucFirst(entity) + "</span>", {
             lib: 'form-crud',
             file: 'read/form',
             entity: entity,
             id: value
         }, function (idOntab) {
-            if(ISDEVFORM)
+            if (ISDEVFORM)
                 console.log("id ontab retorno: \n" + idOntab);
 
             formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
@@ -384,75 +384,102 @@ if (typeof formGetData !== 'function') {
 
 if (typeof formSubmit !== 'function') {
     var saveTime;
+    var isSavingNew = false;
+
+    function setError($form, erro, t) {
+        t = t || "dados.";
+        $.each(erro, function (c, mensagem) {
+            if (typeof (mensagem) === "object") {
+                setError($form, mensagem, t + c + '.');
+            } else {
+                var $input = $form.find("[data-model='" + (t + c) + "']");
+                if ($input.attr("data-format") === "radio") {
+                    $input.siblings(".md-radio--fake").css("border-color", "red");
+                    $input.parent().siblings(".radio-title").addClass("error-span");
+                } else if ($input.attr("data-format") === "list") {
+                    $input.parent().parent().prev().addClass("error-span");
+                    $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
+                    $input.parent().siblings(".rest").append('<span class="error-span error-message">' + mensagem + '</span>');
+                } else {
+                    $input.siblings('label').addClass("error-span");
+                    $input.siblings('.error-message').remove();
+                    $input.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
+                }
+            }
+        });
+    }
+
+    function cleanError($form) {
+        $form.find(".error-span").removeClass("error-span");
+        $form.find(".md-radio--fake").css("border-color", "initial");
+        $form.find(".radio-title").removeClass("error-span");
+        $form.find(".listButton").removeClass('error-btn');
+        $form.find(".error-message").remove();
+        $form.find("input,textarea,select").removeClass("subErro").siblings('label').removeClass("error-span")
+            .siblings('.error-message').remove();
+    }
+
+    function reloadForm(entity, id) {
+        id = id || null;
+        $("#form_" + entity).closest(".ontab").loading();
+        var fields = $("#fields-" + entity).val();
+        post('form-crud', 'children/form', {entity: entity, id: id, fields: fields}, function (data) {
+            if (data) {
+                var $form = $("#form_" + entity).closest(".form-control");
+                $input = $form.find(":focus");
+                var val = $input.val();
+
+                $form.html(data).find("input[data-model='" + $input.attr("data-model") + "']").focus().val("").val(val);
+                $form.closest(".ontab").loading();
+                isSavingNew = false;
+                statusPanel("salvo", $form);
+            }
+        });
+    }
+
+    function formSave($form) {
+        isSavingNew = true;
+        var dados = formGetData($form);
+        if (dados['dados.id'] !== "")
+            isSavingNew = false;
+
+        if (ISDEVFORM)
+            console.log(dados);
+
+        post('form-crud', $form.attr("data-action"), {
+            entity: $form.attr("data-entity"),
+            dados: dados
+        }, function (data) {
+            cleanError($form);
+            if (isNaN(data)) {
+                setError($form, data[$form.attr("data-entity")]);
+                statusPanel("error", $form);
+            } else if (dados['dados.id'] === "") {
+                reloadForm($form.attr("data-entity"), data);
+            } else {
+                statusPanel("salvo", $form);
+            }
+
+            if (!saveTime)
+                window.onbeforeunload = null;
+        }, ISDEVFORM ? true : "undefined");
+    }
+
+    function statusPanel(status, $form) {
+        var $status = $form.closest(".ontab").find(".ontab-header .ontab-title .statusPanel");
+        if(status === "change") {
+            $status.css("background", "orange").attr("title", "alterações não salvas");
+        } else if(status === "error"){
+            $status.css("background", "red").attr("title", "erros não salvos");
+        } else {
+            $status.css("background", "#32cd32").attr("title", "salvo");
+        }
+    }
 
     function formSubmit($form, $idReturn) {
 
-        function setError($form, erro, t) {
-            t = t || "dados.";
-            $.each(erro, function (c, mensagem) {
-                if (typeof (mensagem) === "object") {
-                    setError($form, mensagem, t + c + '.');
-                } else {
-                    var $input = $form.find("[data-model='" + (t + c) + "']");
-                    if ($input.attr("data-format") === "radio") {
-                        $input.siblings(".md-radio--fake").css("border-color", "red");
-                        $input.parent().siblings(".radio-title").addClass("error-span");
-                    } else if ($input.attr("data-format") === "list") {
-                        $input.parent().parent().prev().addClass("error-span");
-                        $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
-                        $input.parent().siblings(".rest").append('<span class="error-span error-message">' + mensagem + '</span>');
-                    } else {
-                        $input.siblings('label').addClass("error-span");
-                        $input.siblings('.error-message').remove();
-                        $input.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
-                    }
-                }
-            });
-        }
-
-        function cleanError($form) {
-            $form.find(".error-span").removeClass("error-span");
-            $form.find(".md-radio--fake").css("border-color", "initial");
-            $form.find(".radio-title").removeClass("error-span");
-            $form.find(".listButton").removeClass('error-btn');
-            $form.find(".error-message").remove();
-            $form.find("input,textarea,select").removeClass("subErro").siblings('label').removeClass("error-span").siblings('.error-message').remove();
-        }
-
-        function reloadForm(entity, id) {
-            id = id || null;
-            $("#form_" + entity).loading();
-            var fields = $("#fields-" + entity).val();
-            post('form-crud', 'children/form', {entity: entity, id: id, fields: fields}, function (data) {
-                if (data) {
-                    var $form = $("#form_" + entity).closest(".form-control");
-                    $form.replaceWith(data);
-                }
-            });
-        }
-
-        function formSave($form) {
-            var dados = formGetData($form);
-
-            if(ISDEVFORM)
-                console.log(dados);
-
-            post('form-crud', $form.attr("data-action"), {
-                entity: $form.attr("data-entity"),
-                dados: dados
-            }, function (data) {
-                cleanError($form);
-                if (isNaN(data))
-                    setError($form, data[$form.attr("data-entity")]);
-                else if (dados['dados.id'] === "")
-                    reloadForm($form.attr("data-entity"), data);
-
-                if (!saveTime)
-                    window.onbeforeunload = null;
-            }, ISDEVFORM ? true : "undefined");
-        }
-
         clearTimeout(saveTime);
+        statusPanel('change', $form);
 
         window.onbeforeunload = function () {
             clearTimeout(saveTime);
@@ -489,10 +516,12 @@ if (typeof formSubmit !== 'function') {
             }, ISDEVFORM ? true : "undefined");
 
         } else {
-            saveTime = setTimeout(function () {
-                saveTime = null;
-                formSave($form);
-            }, 400);
+            if (!isSavingNew) {
+                saveTime = setTimeout(function () {
+                    saveTime = null;
+                    formSave($form);
+                }, 400);
+            }
         }
     }
 }
@@ -539,7 +568,7 @@ if (typeof formAutoSubmit !== 'function') {
             }
 
         }).off("dblclick", ".form-list").on("dblclick", ".form-list", function () {
-            if(!$(this).prop("disabled"))
+            if (!$(this).prop("disabled"))
                 readList($(this), $(this).attr("data-entity"), $(this).attr("data-parent"), $(this).val(), $(this).attr("id"));
 
         }).off("focusout", ".form-list").on("focusout", ".form-list", function () {
@@ -583,7 +612,7 @@ if (typeof formAutoSubmit !== 'function') {
                                     t.push(e.data);
 
                                 else if (typeof (e.data) === "string")
-                                    $("body").panel(themeNotify(e.data, "warning"));
+                                    toast(e.data, "warning");
                             });
                             $(response.id).val(JSON.stringify(t)).trigger("change");
 
@@ -699,7 +728,7 @@ if (typeof formAutoSubmit !== 'function') {
         $.each($id.parent().siblings(".listmult-content").find(".listmult-card"), function () {
             if ($(this).attr("rel") === value) {
                 isNew = false;
-                if($(this).find(".listmult-title").text().trim() !== title)
+                if ($(this).find(".listmult-title").text().trim() !== title)
                     isTitle = $(this).find(".listmult-title");
             }
         });
@@ -709,7 +738,7 @@ if (typeof formAutoSubmit !== 'function') {
             copy($tpl, $content, [value, title], "append");
             setJsonValue($id, value);
 
-        } else if(isTitle !== false) {
+        } else if (isTitle !== false) {
             isTitle.text(title);
         }
     }
