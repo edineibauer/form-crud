@@ -1,9 +1,17 @@
-.subErro {
+.red-subErro {
     border-bottom-color: red !important;
 }
 
-.error-span {
+.goldenrod-subErro {
+    border-bottom-color: goldenrod !important;
+}
+
+.red-span {
     color: red !important;
+}
+
+.goldenrod-span {
+    color: goldenrod !important;
 }
 
 .error-message {
@@ -13,9 +21,13 @@
     height: 1px;
 }
 
-.error-btn {
+.red-btn {
     background: #ff00008f!important;
     color: white!important;
+}
+.goldenrod-btn {
+    background: goldenrod!important;
+    color: #333333!important;
 }
 
 .list-result-itens li.active {

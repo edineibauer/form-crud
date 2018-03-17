@@ -386,24 +386,25 @@ if (typeof formSubmit !== 'function') {
     var saveTime;
     var isSavingNew = false;
 
-    function setError($form, erro, t) {
+    function setError($form, erro, novo, t) {
         t = t || "dados.";
         $.each(erro, function (c, mensagem) {
             if (typeof (mensagem) === "object") {
-                setError($form, mensagem, t + c + '.');
+                setError($form, mensagem, novo, t + c + '.');
             } else {
+                var color = novo ? "red" : "goldenrod";
                 var $input = $form.find("[data-model='" + (t + c) + "']");
                 if ($input.attr("data-format") === "radio") {
-                    $input.siblings(".md-radio--fake").css("border-color", "red");
-                    $input.parent().siblings(".radio-title").addClass("error-span");
+                    $input.siblings(".md-radio--fake").css("border-color", color);
+                    $input.parent().siblings(".radio-title").addClass(color + "-span");
                 } else if ($input.attr("data-format") === "list") {
-                    $input.parent().parent().prev().addClass("error-span");
+                    $input.parent().parent().prev().addClass(novo + "-span");
                     $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
-                    $input.parent().siblings(".rest").append('<span class="error-span error-message">' + mensagem + '</span>');
+                    $input.parent().siblings(".rest").append('<span class="' + novo + '-span error-message">' + mensagem + '</span>');
                 } else {
-                    $input.siblings('label').addClass("error-span");
+                    $input.siblings('label').addClass(novo + "-span");
                     $input.siblings('.error-message').remove();
-                    $input.addClass("subErro").parent().append('<span class="error-span error-message">' + mensagem + '</span>');
+                    $input.addClass(novo + "-subErro").parent().append('<span class="' + novo + '-span error-message">' + mensagem + '</span>');
                 }
             }
         });
@@ -452,8 +453,8 @@ if (typeof formSubmit !== 'function') {
         }, function (data) {
             cleanError($form);
             if (isNaN(data)) {
-                setError($form, data[$form.attr("data-entity")]);
-                statusPanel("error", $form);
+                setError($form, data[$form.attr("data-entity")], (dados['dados.id'] === ""));
+                statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form);
             } else if (dados['dados.id'] === "") {
                 reloadForm($form.attr("data-entity"), data);
             } else {
