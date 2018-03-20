@@ -1,5 +1,5 @@
 <label for="{$ngmodel}">{$nome} {($default === false) ? "*" : ""}</label>
-<input type="number" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="off" data-format="decimal"
+<input type="number" step="0.01" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="off" data-format="float"
         {($value != "") ? "value='{$value}' " : "" }
         {($size !== false)? "maxlength='{$size}' " : ''}
         {($default === false)? 'required="required" ' : ''}

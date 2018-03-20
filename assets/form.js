@@ -360,6 +360,8 @@ if (typeof formGetData !== 'function') {
         function setDados($this, valor) {
             if ($this.attr("type") === "checkbox") {
                 return checkBox($this, valor);
+            } else if ($this.attr("type") === "html") {
+                return $this.jqteVal();
             } else if ($this.attr("type") === "radio") {
                 if ($this.prop("checked"))
                     return $this.val();
@@ -529,6 +531,11 @@ if (typeof formSubmit !== 'function') {
 
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit(element) {
+        $(element).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
+            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0)
+                formSubmit($(this).closest(".form-crud"));
+        });
+
         $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
             if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string") {
                 formSubmit($(this).closest(".form-crud"));
@@ -578,6 +585,8 @@ if (typeof formAutoSubmit !== 'function') {
                 $(".list-complete").html("");
             }, 50);
         });
+
+        $(".editorHtml").jqte();
 
         if ($(".dropzone").length) {
             $(".dropzone").each(function () {
