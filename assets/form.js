@@ -532,15 +532,15 @@ if (typeof formSubmit !== 'function') {
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit(element) {
         $(element).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
-            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0)
+            if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
                 formSubmit($(this).closest(".form-crud"));
         });
 
         $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
-            if ([13, 37, 38, 39, 40].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string") {
+            if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string") {
                 formSubmit($(this).closest(".form-crud"));
 
-            } else if ($(this).val() === "" && $(this).hasClass("form-list")) {
+            } else if (e.which !== undefined && $(this).val() === "" && $(this).hasClass("form-list")) {
                 $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
                 $.each($(this).parent().next(".multFieldsSelect").find(".selecaoUniqueCard"), function () {
                     $(this).find(".titleRequired").removeClass("hide").parent().next().find(".form-list").prop("disabled", true).addClass("disabled").val("").trigger("change");
