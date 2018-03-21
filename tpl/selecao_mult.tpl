@@ -1,4 +1,4 @@
-<div class="row card">
+<div class="{$form['class']} row card" style="{$form['style']}">
     <div class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
     <div class="row">
         <div class="hide">
@@ -9,8 +9,8 @@
             <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
-                   data-entity="{$relation}" data-parent="{$entity}" style="{$form['style']}"
-                   class="form-list rest {$form['class']}"/>
+                   data-entity="{$relation}" data-parent="{$entity}"
+                   class="form-list rest"/>
             <div class="col s12 list-complete" rel="mult"></div>
         </div>
 

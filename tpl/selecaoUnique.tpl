@@ -1,4 +1,4 @@
-<div class="selecaoUniqueCard row">
+<div class="{$form['class']} selecaoUniqueCard row" style="{$form['style']}">
     <div class="row padding-medium color-text-grey font-small">
         <span class="left">
             {$nome} d{$genero} {$parentColumn|ucfirst}
@@ -19,10 +19,8 @@
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
-                   data-entity="{$relation}" data-parent="{$entity}" style="{$form['style']}"
-                   class="form-list selecaoUnique rest {$form['class']}
-                {($parentValue === "")? "disabled" : ''}
-                "/>
+                   data-entity="{$relation}" data-parent="{$entity}"
+                   class="form-list selecaoUnique rest {($parentValue === "")? "disabled" : ''}"/>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
     </div>

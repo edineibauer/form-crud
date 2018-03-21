@@ -1,4 +1,4 @@
-<div class="row card">
+<div class="{$form['class']} row card" style="{$form['style']}">
     <div class="col container padding-small right" style="width:160px">
         <button class="btn opacity hover-opacity-off color-teal listButton hover-shadow margin-small" id="list-{$relation}" data-entity="{$relation}"><i class="material-icons left padding-right">add</i> <span class="left pd-small">Novo</span></button>
 
