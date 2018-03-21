@@ -389,6 +389,7 @@ if (typeof formSubmit !== 'function') {
     var isSavingNew = false;
 
     function setError($form, erro, novo, t) {
+        isSavingNew = false;
         t = t || "dados.";
         $.each(erro, function (c, mensagem) {
             if (typeof (mensagem) === "object") {
@@ -400,13 +401,13 @@ if (typeof formSubmit !== 'function') {
                     $input.siblings(".md-radio--fake").css("border-color", color);
                     $input.parent().siblings(".radio-title").addClass(color + "-span");
                 } else if ($input.attr("data-format") === "list") {
-                    $input.parent().parent().prev().addClass(novo + "-span");
+                    $input.parent().parent().prev().addClass(color + "-span");
                     $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
                     $input.parent().siblings(".rest").append('<span class="' + novo + '-span error-message">' + mensagem + '</span>');
                 } else {
-                    $input.siblings('label').addClass(novo + "-span");
+                    $input.siblings('label').addClass(color + "-span");
                     $input.siblings('.error-message').remove();
-                    $input.addClass(novo + "-subErro").parent().append('<span class="' + novo + '-span error-message">' + mensagem + '</span>');
+                    $input.addClass(color + "-subErro").parent().append('<span class="' + color + '-span error-message">' + mensagem + '</span>');
                 }
             }
         });
@@ -441,10 +442,8 @@ if (typeof formSubmit !== 'function') {
     }
 
     function formSave($form) {
-        isSavingNew = true;
         var dados = formGetData($form);
-        if (dados['dados.id'] !== "")
-            isSavingNew = false;
+        isSavingNew = (dados['dados.id'] === "");
 
         if (ISDEVFORM)
             console.log(dados);
