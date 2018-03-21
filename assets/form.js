@@ -533,13 +533,24 @@ if (typeof formAutoSubmit !== 'function') {
         $(element).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
                 formSubmit($(this).closest(".form-crud"));
-        });
 
-        $(element).off("keyup change", "input, textarea, select").on("keyup change", "input, textarea, select", function (e) {
+        }).off("keyup", "input, textarea, select").on("keyup", "input, textarea, select", function (e) {
+
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string") {
                 formSubmit($(this).closest(".form-crud"));
 
             } else if (e.which !== undefined && $(this).val() === "" && $(this).hasClass("form-list")) {
+                $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
+                $.each($(this).parent().next(".multFieldsSelect").find(".selecaoUniqueCard"), function () {
+                    $(this).find(".titleRequired").removeClass("hide").parent().next().find(".form-list").prop("disabled", true).addClass("disabled").val("").trigger("change");
+                });
+            }
+
+        }).off("change", "input, textarea, select").on("change", "input, textarea, select", function () {
+            if (typeof($(this).attr("data-model")) === "string") {
+                formSubmit($(this).closest(".form-crud"));
+
+            } else if ($(this).val() === "" && $(this).hasClass("form-list")) {
                 $(this).parent().prev().find("input[type=hidden]").val("").trigger("change");
                 $.each($(this).parent().next(".multFieldsSelect").find(".selecaoUniqueCard"), function () {
                     $(this).find(".titleRequired").removeClass("hide").parent().next().find(".form-list").prop("disabled", true).addClass("disabled").val("").trigger("change");
