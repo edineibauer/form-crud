@@ -414,12 +414,12 @@ if (typeof formSubmit !== 'function') {
     }
 
     function cleanError($form) {
-        $form.find(".error-span").removeClass("error-span");
+        $form.find(".error-span").removeClass("error-span red-span goldenrod-span");
         $form.find(".md-radio--fake").css("border-color", "initial");
-        $form.find(".radio-title").removeClass("error-span");
+        $form.find(".radio-title").removeClass("error-span red-span goldenrod-span");
         $form.find(".listButton").removeClass('error-btn');
         $form.find(".error-message").remove();
-        $form.find("input,textarea,select").removeClass("subErro").siblings('label').removeClass("error-span")
+        $form.find("input,textarea,select").removeClass("red-subErro goldenrod-subErro").siblings('label').removeClass("error-span red-span goldenrod-span")
             .siblings('.error-message').remove();
     }
 
