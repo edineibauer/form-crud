@@ -109,6 +109,7 @@ class Form
         $form['id'] = $id;
         $form['entity'] = $this->entity;
         $form['home'] = defined("HOME") ? HOME : "";
+        $form['cache'] = date("YmdHi");
 
         return $this->scripts() . "<div class='form-control row font-large'>" . $template->getShow("form", $form) . "</div>";
 

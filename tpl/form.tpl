@@ -4,5 +4,5 @@
             {$input}
         {/foreach}
     </div>
-    <script src="{$home}vendor/conn/form-crud/assets/form-child.min.js" defer ></script>
+    <script src="{$home}vendor/conn/form-crud/assets/form-child.min.js?v={$cache}" defer ></script>
 </div>
