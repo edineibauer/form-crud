@@ -403,7 +403,7 @@ if (typeof formSubmit !== 'function') {
                 } else if ($input.attr("data-format") === "list") {
                     $input.parent().parent().prev().addClass(color + "-span");
                     $input.siblings(".listButton").parent().siblings(".rest").find("input[type=text]").siblings('.error-message').remove();
-                    $input.parent().siblings(".rest").append('<span class="' + novo + '-span error-message">' + mensagem + '</span>');
+                    $input.parent().siblings(".rest").append('<span class="' + color + '-span error-message">' + mensagem + '</span>');
                 } else {
                     $input.siblings('label').addClass(color + "-span");
                     $input.siblings('.error-message').remove();
