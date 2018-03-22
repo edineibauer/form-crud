@@ -330,7 +330,7 @@ if (typeof openPanel !== 'function') {
             entity: entity,
             id: value
         }, function (idOntab) {
-            if (ISDEVFORM)
+            if (ISDEV)
                 console.log("id ontab retorno: \n" + idOntab);
 
             formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
@@ -445,7 +445,7 @@ if (typeof formSubmit !== 'function') {
         var dados = formGetData($form);
         isSavingNew = (dados['dados.id'] === "");
 
-        if (ISDEVFORM)
+        if (ISDEV)
             console.log(dados);
 
         post('form-crud', $form.attr("data-action"), {
@@ -464,7 +464,7 @@ if (typeof formSubmit !== 'function') {
 
             if (!saveTime)
                 window.onbeforeunload = null;
-        }, ISDEVFORM ? true : "undefined");
+        }, ISDEV ? true : "undefined");
     }
 
     function statusPanel(status, $form) {
@@ -515,7 +515,7 @@ if (typeof formSubmit !== 'function') {
                 }
 
                 window.onbeforeunload = null;
-            }, ISDEVFORM ? true : "undefined");
+            }, ISDEV ? true : "undefined");
 
         } else {
             if (!isSavingNew) {
@@ -719,7 +719,7 @@ if (typeof formAutoSubmit !== 'function') {
                 $(this).addClass("active");
                 selectList($list);
             });
-        }, ISDEVFORM ? true : "undefined");
+        }, ISDEV ? true : "undefined");
     }
 
     function selectList($list) {
