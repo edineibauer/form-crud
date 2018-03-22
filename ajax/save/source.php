@@ -7,7 +7,7 @@
  * @param array $info
  * @param array $file
  * @return array
-*/
+ */
 function addFile(string $entity, string $column, array $dicionario, array $info, array $file) : array
 {
     $dados['response'] = 1;
@@ -16,24 +16,27 @@ function addFile(string $entity, string $column, array $dicionario, array $info,
         $extensao = pathinfo($file['name'], PATHINFO_EXTENSION);
         \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads");
 
-        foreach ($info["source"] as $type => $i) {
-            if (!empty($i) && $dicionario[$i]['column'] === $column) {
-                \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type);
-                \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y"));
-                \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m"));
+        foreach ($info["source"] as $type => $ids) {
+            if(!empty($ids)) {
+                foreach ($ids as $i) {
+                    if ($dicionario[$i]['column'] === $column) {
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type);
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y"));
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m"));
 
-                $name = "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m") . DIRECTORY_SEPARATOR . \Helpers\Check::name(str_replace(".{$extensao}", "", $file['name'])) . "." . strtolower($extensao);
+                        $name = "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m") . DIRECTORY_SEPARATOR . \Helpers\Check::name(str_replace(".{$extensao}", "", $file['name'])) . "." . strtolower($extensao);
 
-                if ($dicionario[$i]["size"] && strlen($name) > $dicionario[$i]["size"]) {
-                    $dados['data'] = "nome do arquivo muito grande";
-                    $dados['response'] = 2;
-                } else {
-
-                    if (move_uploaded_file($file['tmp_name'], $name)) {
-                        $dados['data']['url'] = $name;
-                        $dados['data']['type'] = $file['type'];
-                        $dados['data']['size'] = $file['size'];
-                        $dados['data']['name'] = $file['name'];
+                        if ($dicionario[$i]["size"] && strlen($name) > $dicionario[$i]["size"]) {
+                            $dados['data'] = "nome do arquivo muito grande";
+                            $dados['response'] = 2;
+                        } else {
+                            if (move_uploaded_file($file['tmp_name'], $name)) {
+                                $dados['data']['url'] = $name;
+                                $dados['data']['type'] = $file['type'];
+                                $dados['data']['size'] = $file['size'];
+                                $dados['data']['name'] = $file['name'];
+                            }
+                        }
                     }
                 }
             }
