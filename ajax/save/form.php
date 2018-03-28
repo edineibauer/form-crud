@@ -1,5 +1,6 @@
 <?php
 $nome = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
+$save = filter_input(INPUT_POST, 'save', FILTER_VALIDATE_BOOLEAN);
 $dados = filter_input(INPUT_POST, 'dados', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 $cont = [];
 
@@ -25,4 +26,4 @@ foreach ($dados as $c => $v) {
         $cont = $v;
 }
 
-$data['data'] = \Entity\Entity::add($nome, $cont);
+$data['data'] = \Entity\Entity::add($nome, $cont, $save);

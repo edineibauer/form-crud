@@ -38,6 +38,8 @@ use Helpers\Template;
 class Form
 {
     private $entity;
+    private $autoSave = true;
+    private $callback;
     private $fields;
     private $children;
     private $design = "input";
@@ -50,6 +52,22 @@ class Form
     {
         if ($entity)
             $this->setEntity($entity);
+    }
+
+    /**
+     * @param mixed $autoSave
+     */
+    public function setAutoSave($autoSave = null)
+    {
+        $this->autoSave = $autoSave === null ? !$this->autoSave : $autoSave;
+    }
+
+    /**
+     * @param mixed $callback
+     */
+    public function setCallback($callback)
+    {
+        $this->callback = $callback;
     }
 
     public function setChildren()
@@ -108,6 +126,8 @@ class Form
         $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
         $form['id'] = $id;
         $form['entity'] = $this->entity;
+        $form['autoSave'] = $this->autoSave;
+        $form['callback'] = $this->callback;
         $form['home'] = defined("HOME") ? HOME : "";
         $form['cache'] = date("YmdHi");
 

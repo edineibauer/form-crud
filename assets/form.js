@@ -441,25 +441,32 @@ if (typeof formSubmit !== 'function') {
         });
     }
 
-    function formSave($form) {
+    function formSave($form, save) {
         var dados = formGetData($form);
         isSavingNew = (dados['dados.id'] === "");
 
         if (ISDEV)
             console.log(dados);
 
-        post('form-crud', $form.attr("data-action"), {
+        post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
-            dados: dados
+            dados: dados,
+            save: typeof (save) !== "undefined" ? save : $form.find("#autoSave").val()
         }, function (data) {
             cleanError($form);
             if (isNaN(data)) {
                 setError($form, data[$form.attr("data-entity")], (dados['dados.id'] === ""));
                 statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form);
+            } else if (data === null && !$form.find("#autoSave").val()) {
+
             } else if (dados['dados.id'] === "") {
                 reloadForm($form.attr("data-entity"), data);
+                if($("#callbackAction").val() !== "")
+                    window[$("#callbackAction").val()]();
             } else {
                 statusPanel("salvo", $form);
+                if($("#callbackAction").val() !== "")
+                    window[$("#callbackAction").val()]();
             }
 
             if (!saveTime)
@@ -770,3 +777,13 @@ if (typeof formAutoSubmit !== 'function') {
 }
 
 Dropzone.autoDiscover = false;
+
+$(function () {
+    $(".form-crud").off("click", "#saveFormButton").on("click", "#saveFormButton", function () {
+        formSave($(this).closest(".form-crud"), true);
+    });
+
+    setTimeout(function () {
+        $("input[type=email], input[type=password]").prop("disabled", false);
+    },100);
+});
