@@ -462,11 +462,11 @@ if (typeof formSubmit !== 'function') {
             } else if (dados['dados.id'] === "") {
                 reloadForm($form.attr("data-entity"), data);
                 if($("#callbackAction").val() !== "")
-                    window[$("#callbackAction").val()]();
+                    window[$("#callbackAction").val()](dados);
             } else {
                 statusPanel("salvo", $form);
                 if($("#callbackAction").val() !== "")
-                    window[$("#callbackAction").val()]();
+                    window[$("#callbackAction").val()](dados);
             }
 
             if (!saveTime)
