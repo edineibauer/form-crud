@@ -42,6 +42,7 @@ class Form
     private $callback;
     private $fields;
     private $children;
+    private $error;
     private $design = "input";
 
     /**
@@ -99,6 +100,14 @@ class Form
         $this->design = $design;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
     public function getFormChildren($id = null, $fields = null)
     {
         $this->setChildren();
@@ -112,27 +121,27 @@ class Form
 
     public function getForm($id = null, $fields = null)
     {
-        if($this->notAllowForm($id))
-            return "<h2>Autorização Negada</h2>";
+        if(Entity::checkPermission($this->entity, $id)) {
+            if ($id && is_array($id) && !$fields) {
+                $this->setFields($id);
+                $id = null;
+            } elseif ($fields && is_array($fields)) {
+                $this->setFields($fields);
+            }
 
-        if ($id && is_array($id) && !$fields) {
-            $this->setFields($id);
-            $id = null;
-        } elseif ($fields && is_array($fields)) {
-            $this->setFields($fields);
+            $template = new Template("form-crud");
+            $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
+            $form['id'] = $id;
+            $form['entity'] = $this->entity;
+            $form['autoSave'] = $this->autoSave;
+            $form['callback'] = $this->callback;
+            $form['home'] = defined("HOME") ? HOME : "";
+            $form['cache'] = date("YmdHi");
+
+            return $this->scripts() . "<div class='form-control row font-large'>" . $template->getShow("form", $form) . "</div>";
         }
 
-        $template = new Template("form-crud");
-        $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
-        $form['id'] = $id;
-        $form['entity'] = $this->entity;
-        $form['autoSave'] = $this->autoSave;
-        $form['callback'] = $this->callback;
-        $form['home'] = defined("HOME") ? HOME : "";
-        $form['cache'] = date("YmdHi");
-
-        return $this->scripts() . "<div class='form-control row font-large'>" . $template->getShow("form", $form) . "</div>";
-
+        return Entity::getError()[$this->entity]['id'] ?? "Permissão Negada";
     }
 
     public function showForm($id = null, $fields = null)
