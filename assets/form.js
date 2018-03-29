@@ -777,13 +777,3 @@ if (typeof formAutoSubmit !== 'function') {
 }
 
 Dropzone.autoDiscover = false;
-
-$(function () {
-    $(".form-crud").off("click", "#saveFormButton").on("click", "#saveFormButton", function () {
-        formSave($(this).closest(".form-crud"), true);
-    });
-
-    setTimeout(function () {
-        $("input[type=email], input[type=password]").prop("disabled", false);
-    },100);
-});
