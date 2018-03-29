@@ -121,7 +121,7 @@ class Form
 
     public function getForm($id = null, $fields = null)
     {
-        if(Entity::checkPermission($this->entity, $id)) {
+        if (Entity::checkPermission($this->entity, $id)) {
             if ($id && is_array($id) && !$fields) {
                 $this->setFields($id);
                 $id = null;
@@ -167,24 +167,24 @@ class Form
      */
     private function notAllowForm($id): bool
     {
-        if(!is_numeric($id))
+        if (!is_numeric($id))
             return false;
 
         $rules = json_decode(file_get_contents(PATH_HOME . "vendor/conn/form-crud/rules/rules.json"), true);
 
-        if(!empty($rules)) {
+        if (!empty($rules)) {
             $read = new Read();
             foreach ($rules as $rule) {
                 $entity = $rule[0];
                 $where = "WHERE id = :id";
 
-                if(!empty($rule[1])) {
+                if (!empty($rule[1])) {
                     if (is_array($rule[1]) && !isset($rule[2])) {
                         foreach ($rule[1] as $r) {
-                            if(!empty($r[0]) && !empty($r[1]))
+                            if (!empty($r[0]) && !empty($r[1]))
                                 $where .= " && {$r[0]} " . (!empty($_SESSION['userlogin'][$r[1]]) ? $_SESSION['userlogin'][$r[1]] : $r[1]);
                         }
-                    } elseif (!empty($rule[2])){
+                    } elseif (!empty($rule[2])) {
                         $where .= " && {$rule[1]} " . (!empty($_SESSION['userlogin'][$rule[2]]) ? $_SESSION['userlogin'][$rule[2]] : $rule[2]);
                     }
                 }
@@ -240,7 +240,12 @@ class Form
 
         $dados[] = "<input type='hidden' rel='title' value='{$dic[$rel]['column']}'>";
 
+        $allowEditLoginSetor = ($entity !== "login" || (!empty($values['id']) && $_SESSION['userlogin']['id'] != $values['id']));
+
         foreach ($dic as $i => $data) {
+            if(!empty($values['id']) && !$allowEditLoginSetor && in_array($data['column'], ["status", "setor", "nivel"]))
+                continue;
+
             if ($data['key'] === "identifier" || (!$this->fields && $data['form']) || ($this->fields && in_array($data['column'], $this->fields))) {
                 $data['path'] = PATH_HOME;
                 $data['home'] = HOME;
@@ -307,7 +312,7 @@ class Form
      * @param array $values
      * @return string
      */
-    private function checkExtendMultSelect(array $data, array $values) :string
+    private function checkExtendMultSelect(array $data, array $values): string
     {
         $mult = "";
         if (in_array($data['key'], ["list_mult", "extend_mult", "selecao_mult", "list", "extend", "selecao"]) && !empty($data['select'])) {
@@ -316,7 +321,7 @@ class Form
             foreach ($data['select'] as $select) {
                 foreach ($dicionario as $item) {
                     if ($item['column'] === $select) {
-                        if(!empty($values[$select . "__" . $data['column']])) {
+                        if (!empty($values[$select . "__" . $data['column']])) {
                             $value_select = $this->readValues($item['relation'], $values[$select . "__" . $data['column']]);
                             $dicSelecao = Metadados::getDicionario($item['relation']);
                             $relevant = Metadados::getRelevant($item['relation']);
@@ -327,7 +332,7 @@ class Form
                             $item['id'] = "";
                         }
 
-                        $item['nome'] = preg_match('/s$/i', $item['nome']) ? substr($item['nome'],0, strlen($item['nome'])-1) : $item['nome'];
+                        $item['nome'] = preg_match('/s$/i', $item['nome']) ? substr($item['nome'], 0, strlen($item['nome']) - 1) : $item['nome'];
                         $item['genero'] = preg_match('/a$/i', $item['nome']) ? "a" : "o";
                         $item['parentColumn'] = $data['column'];
                         $item['parentValue'] = $values[$data['column']] ? 1 : "";
