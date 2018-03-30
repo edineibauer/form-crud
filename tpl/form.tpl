@@ -14,12 +14,14 @@
         {/if}
     </div>
     <script>
-        var $head = $("head");
-        if ($head.find("script[data-info='form-crud']").length === 0) {
-            var ran = Math.floor((Math.random() * 10000));
-            $head.append('<link rel="stylesheet" href="' + HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + ran + '" >\n<script src="' + HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + ran + '" data-info="form-crud"><\/script>');
-        } else {
-            loadForm();
-        }
+        window.onload = function () {
+            var $head = $("head");
+            if ($head.find("script[data-info='form-crud']").length === 0) {
+                var ran = Math.floor((Math.random() * 10000));
+                $head.append('<link rel="stylesheet" href="' + HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + ran + '" >\n<script src="' + HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + ran + '" data-info="form-crud"><\/script>');
+            } else {
+                loadForm();
+            }
+        };
     </script>
 </div>
