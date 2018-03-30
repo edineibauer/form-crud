@@ -1,11 +1,4 @@
-$(function() {
-    if($("head").find("script[data-info='form-crud']").length === 0) {
-        var ran = Math.floor((Math.random() * 10000));
-        $("head")
-            .append('<link rel="stylesheet" href="' + HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + ran + '" >')
-            .append('<script src="' + HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + ran + '" data-info="form-crud" ></script>');
-    }
-
+function loadForm(){
     $(".table-search").prop("disabled", true);
     setTimeout(function(){
         $(".table-search").prop("disabled", false);
@@ -21,4 +14,4 @@ $(function() {
 
     loadMask();
     formAutoSubmit(".form-control");
-});
+}

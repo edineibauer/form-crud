@@ -3,13 +3,24 @@
         {foreach $inputs as $input}
             {$input}
         {/foreach}
-        <input type="hidden" value="{$autoSave}" id="autoSave" />
-        <input type="hidden" value="{$callback}" id="callbackAction" />
+        <input type="hidden" value="{$autoSave}" id="autoSave"/>
+        <input type="hidden" value="{$callback}" id="callbackAction"/>
         {if !$autoSave}
             <div class="col padding-16">
-                <button class="btn color-teal hover-shadow opacity hover-opacity-off" id="saveFormButton"><i class="material-icons left padding-right">save</i>Salvar</button>
+                <button class="btn color-teal hover-shadow opacity hover-opacity-off" id="saveFormButton"><i
+                            class="material-icons left padding-right">save</i>Salvar
+                </button>
             </div>
         {/if}
     </div>
-    <script src="{$home}vendor/conn/form-crud/assets/form-child.min.js?v={$cache}" defer ></script>
+    <script>
+        if ($("head").find("script[data-info='form-crud']").length === 0) {
+            var ran = Math.floor((Math.random() * 10000));
+            $("head")
+                .append('<link rel="stylesheet" href="' + HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + ran + '" >')
+                .append('<script src="' + HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + ran + '" data-info="form-crud"></script>');
+        } else {
+            loadForm();
+        }
+    </script>
 </div>
