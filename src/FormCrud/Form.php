@@ -121,14 +121,14 @@ class Form
 
     public function getForm($id = null, $fields = null)
     {
-        if (Entity::checkPermission($this->entity, $id)) {
-            if ($id && is_array($id) && !$fields) {
-                $this->setFields($id);
-                $id = null;
-            } elseif ($fields && is_array($fields)) {
-                $this->setFields($fields);
-            }
+        if ($id && is_array($id) && !$fields) {
+            $this->setFields($id);
+            $id = null;
+        } elseif ($fields && is_array($fields)) {
+            $this->setFields($fields);
+        }
 
+        if (Entity::checkPermission($this->entity, $id)) {
             $template = new Template("form-crud");
             $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
             $form['id'] = $id;
