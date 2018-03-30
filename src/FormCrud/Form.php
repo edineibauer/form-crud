@@ -380,7 +380,7 @@ class Form
         $template = new Template("form-crud");
 
         if ($data['key'] === "extend") {
-            return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value);
+            return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value, $data);
 
         } else {
 
@@ -394,11 +394,10 @@ class Form
         }
     }
 
-    private function getExtended($column, $table, $ngmodel, $value)
+    private function getExtended($column, $table, $ngmodel, $value, $form)
     {
         $templateExt = new Template("form-crud");
         $form['inputs'] = $this->prepareInputs($table, $ngmodel . $column . ".", $value[$column] ?? []);
-        $form['column'] = $column;
 
         return $templateExt->getShow("extend", $form);
     }
