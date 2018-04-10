@@ -162,43 +162,6 @@ class Form
     }
 
     /**
-     * @param mixed $id
-     * @return bool
-     */
-    private function notAllowForm($id): bool
-    {
-        if (!is_numeric($id))
-            return false;
-
-        $rules = json_decode(file_get_contents(PATH_HOME . "vendor/conn/form-crud/rules/rules.json"), true);
-
-        if (!empty($rules)) {
-            $read = new Read();
-            foreach ($rules as $rule) {
-                $entity = $rule[0];
-                $where = "WHERE id = :id";
-
-                if (!empty($rule[1])) {
-                    if (is_array($rule[1]) && !isset($rule[2])) {
-                        foreach ($rule[1] as $r) {
-                            if (!empty($r[0]) && !empty($r[1]))
-                                $where .= " && {$r[0]} " . (!empty($_SESSION['userlogin'][$r[1]]) ? $_SESSION['userlogin'][$r[1]] : $r[1]);
-                        }
-                    } elseif (!empty($rule[2])) {
-                        $where .= " && {$rule[1]} " . (!empty($_SESSION['userlogin'][$rule[2]]) ? $_SESSION['userlogin'][$rule[2]] : $rule[2]);
-                    }
-                }
-
-                $read->exeRead($entity, $where, "id={$id}");
-                if ($read->getResult())
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param string $entity
      * @param int $id
      * @return mixed
