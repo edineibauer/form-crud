@@ -1,14 +1,13 @@
 <?php
 
 /**
- * @param string $entity
  * @param string $column
  * @param array $dicionario
  * @param array $info
  * @param array $file
  * @return array
  */
-function addFile(string $entity, string $column, array $dicionario, array $info, array $file) : array
+function addFile(string $column, array $dicionario, array $info, array $file) : array
 {
     $dados['response'] = 1;
 
@@ -57,10 +56,10 @@ if(!empty($_FILES['file']) && !empty($info["source"])) {
         $dados = [];
         for($i=0;$i< count($_FILES['file']['name']); $i++) {
             $file = ["name" => $_FILES['file']['name'][$i], "tmp_name" => $_FILES['file']['tmp_name'][$i], "type" => $_FILES['file']['type'][$i], "error" => $_FILES['file']['error'][$i], "size" => $_FILES['file']['size'][$i]];
-            $dados[$i] = addFile($entity, $column, $dicionario, $info, $file);
+            $dados[$i] = addFile($column, $dicionario, $info, $file);
         }
         $data['data'] = json_encode($dados);
     } else {
-        $data['data'] = json_encode([0 => addFile($entity, $column, $dicionario, $info, $_FILES['file'])]);
+        $data['data'] = json_encode([0 => addFile($column, $dicionario, $info, $_FILES['file'])]);
     }
 }
