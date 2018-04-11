@@ -326,7 +326,7 @@ if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
         $this.panel(themeWindow("<i class='statusPanel left' title='sem mudanças'></i><span class='left'>Editar " + ucFirst(entity) + "</span>", {
             lib: 'form-crud',
-            file: 'read/form',
+            file: 'api',
             entity: entity,
             id: value
         }, function (idOntab) {
