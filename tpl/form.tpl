@@ -17,19 +17,17 @@
         (function () {
             var $head = document.getElementsByTagName('head')[0];
             if (document.querySelector("script[data-info='form-crud']") === null) {
-                setTimeout(function () {
-                    var style = document.createElement('link');
-                    style.rel = "stylesheet";
-                    style.href = HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + VERSION;
-                    $head.appendChild(style);
+                var style = document.createElement('link');
+                style.rel = "stylesheet";
+                style.href = HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + VERSION;
+                $head.appendChild(style);
 
-                    var script = document.createElement('script');
-                    script.setAttribute("data-info", "form-crud");
-                    script.src = HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + VERSION;
-                    $head.appendChild(script);
-                },100);
+                var script = document.createElement('script');
+                script.setAttribute("data-info", "form-crud");
+                script.src = HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + VERSION;
+                $head.appendChild(script);
             } else {
-                loadForm();
+                loadForm('#form_{$entity}');
             }
         })();
     </script>
