@@ -432,10 +432,11 @@ if (typeof formSubmit !== 'function') {
                 var $form = $("#form_" + entity).closest(".form-control");
                 $input = $form.find(":focus");
                 var val = $input.val();
-
-                $form.html(data).find("input[data-model='" + $input.attr("data-model") + "']").focus().val("").val(val);
+                $form.replaceWith(data);
+                var $form = $("#form_" + entity).closest(".form-control");
+                $form.find("input[data-model='" + $input.attr("data-model") + "']").focus().val("").val(val);
                 $form.closest(".ontab").loading();
-                isSavingNew = false;
+                isSavingNew = !1;
                 statusPanel("salvo", $form);
             }
         });
