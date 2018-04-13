@@ -1,6 +1,7 @@
 <?php
 $nome = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
 $save = filter_input(INPUT_POST, 'save', FILTER_VALIDATE_BOOLEAN);
+$save = $save ?? true;
 $dados = filter_input(INPUT_POST, 'dados', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 $cont = [];
 
