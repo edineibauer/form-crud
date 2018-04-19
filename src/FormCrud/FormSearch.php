@@ -54,7 +54,7 @@ class FormSearch
             else
                 $data = $this->filterSelecao();
 
-            $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE (" . PRE . $this->entity . ".id LIKE '%{$this->search}%' OR " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%')" . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
+            $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE (" . PRE . $this->entity . ".id LIKE '%{$this->search}%' OR " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%') " . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
             $sql = new SqlCommand();
             $sql->exeCommand($comando);
 

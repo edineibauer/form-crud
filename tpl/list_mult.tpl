@@ -10,7 +10,7 @@
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
         <div class="rest container relative">
-            <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
+            <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
