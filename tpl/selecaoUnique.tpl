@@ -1,4 +1,4 @@
-<div class="{$form['class']} selecaoUniqueCard row" style="{$form['style']}">
+<div class="{$form['class']} selecaoUniqueCard row {($parentValue === "")? "hide" : ""}" style="{$form['style']}">
     <div class="row padding-medium color-text-grey font-small">
         <span class="left">
             {$nome} d{$genero} {$parentColumn|ucfirst}
