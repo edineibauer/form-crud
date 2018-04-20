@@ -11,7 +11,7 @@
                     {($id !== "")? "value='{$id}'" : ''} />
         </div>
         <div class="rest relative">
-            <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
+            <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
