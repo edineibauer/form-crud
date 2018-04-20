@@ -19,7 +19,7 @@
                    class="form-list rest"/>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
-        <div class="multFieldsSelect">{$mult}</div>
+        <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>
     </div>
 </div>
 <div class="clear"><br></div>
