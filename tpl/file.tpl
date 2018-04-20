@@ -1,4 +1,4 @@
-<div class="{$form['class']}" style="{$form['style']}">
+<div class="{$form['class']} form-file" style="{$form['style']}">
     <label for="{$ngmodel}">{$nome} {($default === false) ? "*" : ""}</label>
     {if isset($allow['values'])}
         <form action="{$home}request/post" enctype="multipart/form-data" id="form-{$entity}-{$column}"
