@@ -3,5 +3,6 @@
     <input type="text" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="off" data-format="ie"
             {($value != "") ? "value='{$value}' " : "" }
             {($size !== false)? "maxlength='{$size}' " : ''}
+            {($disabled)? "disabled='disabled' " : ''}
             {($default === false)? 'required="required" ' : ''} class="ie"/>
 </div>

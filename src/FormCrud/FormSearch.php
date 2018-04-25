@@ -4,6 +4,7 @@ namespace FormCrud;
 
 
 use ConnCrud\SqlCommand;
+use EntityForm\Dicionario;
 use EntityForm\Metadados;
 
 class FormSearch
@@ -42,30 +43,21 @@ class FormSearch
 
     private function search()
     {
-        $dicionario = \EntityForm\Metadados::getDicionario($this->entity, true);
-        $relevant = \EntityForm\Metadados::getRelevant($this->entity);
-        if($relevant) {
-            $column = $dicionario[$relevant]['column'];
+        $d = new Dicionario($this->entity);
+        $column = $d->getRelevant()->getColumn();
+        $data = ($this->selecao === 0 ? $this->filter() : $this->filterSelecao());
 
-            $where = "WHERE {$column} LIKE '%{$this->search}%'";
+        $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE (" . PRE . $this->entity . ".id LIKE '%{$this->search}%' OR " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%')" . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
 
-            if($this->selecao === 0)
-                $data = $this->filter();
-            else
-                $data = $this->filterSelecao();
-
-            $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE (" . PRE . $this->entity . ".id LIKE '%{$this->search}%' OR " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%') " . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
-            $sql = new SqlCommand();
-            $sql->exeCommand($comando);
-
-            if ($sql->getResult()) {
-                $template = new \Helpers\Template("form-crud");
-                $this->result = $template->getShow("list-result", ["data" => $sql->getResult(), "column" => $column]);
-            }
+        $sql = new SqlCommand();
+        $sql->exeCommand($comando);
+        if ($sql->getResult()) {
+            $template = new \Helpers\Template("form-crud");
+            $this->result = $template->getShow("list-result", ["data" => $sql->getResult(), "column" => $column]);
         }
     }
 
-    private function filterSelecao() :array
+    private function filterSelecao(): array
     {
         $rel = PRE . $this->parent . "_" . $this->entity . "_" . explode("__", $this->column)[0];
 
@@ -75,7 +67,7 @@ class FormSearch
         ];
     }
 
-    private function filter() :array
+    private function filter(): array
     {
         $dicionario = Metadados::getDicionario($this->parent);
         $filter = [
@@ -83,13 +75,13 @@ class FormSearch
             "where" => ""
         ];
         foreach ($dicionario as $item) {
-            if($item['column'] === $this->column && isset($item['filter']) && !empty($item['filter']) && is_array($item['filter'])) {
+            if ($item['column'] === $this->column && isset($item['filter']) && !empty($item['filter']) && is_array($item['filter'])) {
                 $relationDicionario = Metadados::getDicionario($item['relation']);
                 foreach ($item['filter'] as $f) {
                     $dados = explode(",", $f);
 
                     foreach ($relationDicionario as $column) {
-                        if($column['column'] === $dados[0]) {
+                        if ($column['column'] === $dados[0]) {
                             $relationColumnDic = $column;
                             break;
                         }
@@ -155,16 +147,16 @@ class FormSearch
      * @param array $dados
      * @return string
      */
-    private function filterField(string $entity, string $where, array $dados) :string
+    private function filterField(string $entity, string $where, array $dados): string
     {
-        if(!empty($where))
+        if (!empty($where))
             $where .= " AND ";
 
         $column = (isset($dados[3]) && !empty($dados[3]) && $dados[3] !== "null" ? $dados[3] : $dados[0]);
 
         if (in_array($dados[1], ["%%", "%=", "=%", "!%%", "!%=", "!=%"])) {
             $num = in_array($dados[1], ["!%%", "!%=", "!=%"]) ? 1 : 0;
-            $where .= "{$entity}.{$column} " . ($num === 1 ? "NOT " : "") . "LIKE '" . ($dados[1][$num] === "%" ? "%" : "") . $dados[2] . ($dados[1][$num+1] === "%" ? "%" : "") . "'";
+            $where .= "{$entity}.{$column} " . ($num === 1 ? "NOT " : "") . "LIKE '" . ($dados[1][$num] === "%" ? "%" : "") . $dados[2] . ($dados[1][$num + 1] === "%" ? "%" : "") . "'";
 
         } elseif (in_array($dados[1], ["in", "!in"])) {
             $dados[2] = implode(',', array_map(function ($v)

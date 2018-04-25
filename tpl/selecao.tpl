@@ -9,6 +9,7 @@
             <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
+                    {($disabled)? "disabled='disabled' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>

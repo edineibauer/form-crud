@@ -7,6 +7,7 @@
                     {($key === 0)? "id='{$ngmodel}' data-format='checkbox' " : ''}
                     {($value && $item|in_array:$value) ? "checked='checked' " : "" }
                     {($size !== false)? "maxlength='{$size}' " : ''}
+                    {($disabled)? "disabled='disabled' " : ''}
                     {($default === false)? 'required="required" ' : ''} />
             <div class="font-large padding-medium pointer">{$allow['names'][$key]}</div>
         </label>

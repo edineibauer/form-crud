@@ -1,37 +1,11 @@
 <?php
 
-/**
- * FromCrud (Class)
- *
- * Esta classe tem como objetivo linkar uma entidade a um conjunto de templates para disponibilizar um
- * formulário para operações de edição e criação de uma entidade existente ou nova.
- *
- * Localização das templates, por padrão na pasta "tpl"
- *
- * Os templates são selecionado com base no atributo "input" dos campos de uma entidade.
- *
- * Os Template selecionados devem conter a extensão "tpl" para funcionamento com a biblioteca Smarty
- *      tpl (folder default) ->
- *          input.tpl
- *
- * Templates podem recebem uma personalização "tpl_personalizado" (folder), sendo assim
- * necessário evidenciar a personalização ao instanciar a classe:
- *      $form = new Form('personalizado');
- *
- * ou então setando o design desejado logo após instanciar:
- *      $form = new Form();
- *      $form->setDesign('personalizado');
- *
- * Requer as dependências:
- * Conn-Crud -> para manipulação do Banco
- * Entity -> para controle da entidade
- * Smarty -> motor de template
- */
-
 namespace FormCrud;
 
 use ConnCrud\Read;
 use Entity\Entity;
+use EntityForm\Dicionario;
+use EntityForm\Meta;
 use EntityForm\Metadados;
 use Helpers\Template;
 
@@ -43,16 +17,22 @@ class Form
     private $fields;
     private $children;
     private $error;
-    private $design = "input";
 
     /**
      *
      * @param string $entity
      */
-    public function __construct(string $entity = null)
+    public function __construct(string $entity)
     {
-        if ($entity)
-            $this->setEntity($entity);
+        $this->setEntity($entity);
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    public function setEntity($entity)
+    {
+        $this->entity = $entity;
     }
 
     /**
@@ -85,22 +65,6 @@ class Form
     }
 
     /**
-     * @param string $entity
-     */
-    public function setEntity(string $entity)
-    {
-        $this->entity = $entity;
-    }
-
-    /**
-     * @param mixed $design
-     */
-    public function setDesign($design)
-    {
-        $this->design = $design;
-    }
-
-    /**
      * @return mixed
      */
     public function getError()
@@ -108,214 +72,280 @@ class Form
         return $this->error;
     }
 
-    public function getFormChildren($id = null, $fields = null)
+
+    /**
+     * @param mixed $id
+     * @param mixed $fields
+     * @return string
+     */
+    public function getFormChildren($id = null, $fields = null): string
     {
         $this->setChildren();
         return $this->getForm($id, $fields);
     }
 
+    /**
+     * @param mixed $id
+     * @param mixed $fields
+     */
     public function showFormChildren($id = null, $fields = null)
     {
         echo $this->getFormChildren($id, $fields);
     }
 
-    public function getForm($id = null, $fields = null)
-    {
-        if ($id && is_array($id) && !$fields) {
-            $this->setFields($id);
-            $id = null;
-        } elseif ($fields && is_array($fields)) {
-            $this->setFields($fields);
-        }
-
-        if (Entity::checkPermission($this->entity, $id)) {
-            $template = new Template("form-crud");
-            $form['inputs'] = $this->prepareInputs($this->entity, "dados.", $this->readValues($this->entity, $id));
-            $form['id'] = $id;
-            $form['entity'] = $this->entity;
-            $form['autoSave'] = $this->autoSave;
-            $form['callback'] = $this->callback;
-            $form['home'] = defined("HOME") ? HOME : "";
-            $form['cache'] = date("YmdHi");
-
-            return $this->scripts() . "<div class='form-control row font-large'>" . $template->getShow("form", $form) . "</div>";
-        }
-
-        return Entity::getError()[$this->entity]['id'] ?? "Permissão Negada";
-    }
-
+    /**
+     * @param mixed $id
+     * @param mixed $fields
+     */
     public function showForm($id = null, $fields = null)
     {
         echo $this->getForm($id, $fields);
     }
 
     /**
-     * Retorna os Scripts do form
+     * @param mixed $id
+     * @param mixed $fields
      * @return string
      */
-    private function scripts(): string
+    public function getForm($id = null, $fields = null): string
     {
-        if (!$this->children)
-            return "<input type='hidden' id='fields-{$this->entity}' value='" . ($this->fields ? json_encode($this->fields) : "") . "' />";
+        if ($id && is_array($id) && !$fields)
+            return $this->getForm(null, $fields);
 
-        return "";
-    }
+        $d = new Dicionario($this->entity);
+        if ($fields && is_array($fields))
+            $this->setFields($fields);
 
-    /**
-     * @param string $entity
-     * @param int $id
-     * @return mixed
-     */
-    private function readValues(string $entity, int $id = null)
-    {
-        Entity::setError(null);
-        $value = Entity::read($entity, $id);
-        if (Entity::getError())
-            $value = Entity::read($entity);
+        if ($id && is_numeric($id))
+            $d->setData($id);
+        else
+            $id = null;
 
-        return Entity::getError() ? null : $this->fixValues($value);
-    }
+        if (Entity::checkPermission($d->getEntity(), $id)) {
 
-    private function fixValues($value)
-    {
-        foreach (Metadados::getDicionario($this->entity) as $i => $data) {
-            if ($data['format'] === "datetime" && is_string($value[$data['column']]))
-                $value[$data['column']] = str_replace(' ', 'T', $value[$data['column']]);
+            $time_start = microtime(true);
+
+            $this->turnDicionarioIntoFormFormat($d);
+
+            $form['inputs'] = $this->prepareInputs($d);
+            $form['relevant'] = $d->getRelevant()->getColumn();
+            $form['id'] = $id;
+            $form['entity'] = $d->getEntity();
+            $form['autoSave'] = $this->autoSave;
+            $form['callback'] = $this->callback;
+            $form['home'] = defined("HOME") ? HOME : "";
+            $form['scripts'] = (!$this->children ? "<input type='hidden' id='fields-{$d->getEntity()}' value='" . ($this->fields ? json_encode($this->fields) : "") . "' />" : "");
+
+            $time_end = microtime(true);
+            $execution_time = ($time_end - $time_start);
+
+            $template = new Template("form-crud");
+            return $template->getShow("form", $form) . "<b>" . substr($execution_time, 0, 4) . "</b>s";
         }
 
-        return $value;
+        return "Permissão Negada";
+    }
+
+    private function turnDicionarioIntoFormFormat(Dicionario $d)
+    {
+        foreach ($d->getDicionario() as $meta) {
+            if (!empty($meta->getSelect())) {
+                $metaSelects = [];
+                foreach ($meta->getSelect() as $select) {
+                    $select = $d->search($select . "__" . $meta->getColumn());
+                    $metaSelects[] = $select;
+                    $d->removeMeta($select->getColumn());
+                }
+                $meta->setSelect($metaSelects);
+            }
+        }
     }
 
     /**
-     * @param string $entity
-     * @param string $ngmodel
-     * @param mixed $values
+     * Processa todas as inputs do form uma a uma
      *
+     * @param string $ngmodel
      * @return array
      */
-    private function prepareInputs(string $entity, string $ngmodel, $values = null): array
+    private function prepareInputs(Dicionario $d, string $ngmodel = "dados."): array
     {
-        $dados = [];
-        $values = $values ?? [];
+        $listaInput = [];
+        $template = new Template("form-crud");
 
-        $rel = Metadados::getRelevant($this->entity);
-        $dic = Metadados::getDicionario($entity, true);
+        foreach ($d->getDicionario() as $i => $meta) {
 
-        $dados[] = "<input type='hidden' rel='title' value='{$dic[$rel]['column']}'>";
-
-        $allowEditLoginSetor = ($entity !== "login" || (!empty($values['id']) && $_SESSION['userlogin']['id'] != $values['id']));
-
-        foreach ($dic as $i => $data) {
-            if(!empty($values['id']) && !$allowEditLoginSetor && in_array($data['column'], ["status", "setor", "nivel"]))
+            //pula algumas colunas pré-definidas
+            if (!empty($d->search(0)) && !($d->getEntity() !== "login" || (!empty($d->search(0)) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
                 continue;
 
-            if ($data['key'] === "identifier" || (!$this->fields && $data['form']) || ($this->fields && in_array($data['column'], $this->fields))) {
-                $data['path'] = PATH_HOME;
-                $data['home'] = HOME;
-                $data['entity'] = $entity;
-                $data['value'] = $values[$data['column']] ?? null;
-                $data['ngmodel'] = $ngmodel . $data['column'];
-                if (!$data['form'])
-                    $data['form'] = ['input' => "text", "style" => "", "class" => "", "cols" => "12", "colm" => "", "coll" => ""];
+            //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
+            if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && in_array($meta->getColumn(), $this->fields))) {
+                $input = $this->getBaseInput($d, $meta, $ngmodel);
 
-                $data = $this->checkListData($data);
-                $data = $this->checkListMultData($data);
-                $data = $this->checkDateValue($data);
-                $data['mult'] = $this->checkExtendMultSelect($data, $values);
-                $dados[] = $this->processaInput($data, $ngmodel, $values);
+                if ($meta->getKey() === "extend") {
+                    $listaInput[] = $this->getExtentContent($meta, $input);
+                } else {
+
+                    if ($list = $this->checkListData($meta, $d))
+                        $input = array_merge($input, $list);
+
+                    $listaInput[] = "<div class='col {$input['s']} {$input['m']} {$input['l']} margin-bottom'>" .
+                        $template->getShow($meta->getForm()['input'], $input) . '</div>';
+                }
             }
         }
 
-        return $dados;
+        return $listaInput;
     }
 
-    private function checkDateValue($data)
+    /**
+     * @param Dicionario $d
+     * @param Meta $meta
+     * @param string $ngmodel
+     * @return array
+     */
+    private function getBaseInput(Dicionario $d, Meta $meta, string $ngmodel): array
     {
-        if ($data['format'] === "datetime")
-            $data['value'] = str_replace(' ', 'T', $data['value']);
-
-        return $data;
-    }
-
-    private function checkListData(array $data)
-    {
-        if ($data['key'] === "list" || $data['key'] === "selecao") {
-            $dic = Metadados::getDicionario($data['relation']);
-            $rel = Metadados::getRelevant($data['relation'], true);
-            $type = $rel[1];
-            $rel = $rel[0];
-
-            $data['icon'] = '<i class="material-icons padding-medium">' . $this->getIcons($type) . '</i>';
-            $data['title'] = !empty($rel) && $data['value'] ? $data['value'][$dic[$rel]['column']] : "";
-            $data['id'] = isset($data['value']['id']) ? $data['value']['id'] : "";
+        $icon = "";
+        $dr = "";
+        if(in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
+            $dr = new Dicionario($meta->getRelation());
+            $icon = $this->getIcons($dr->getRelevant()->getFormat());
         }
 
-        return $data;
+        return array_merge($meta->getDados(), [
+            'path' => PATH_HOME,
+            'home' => HOME,
+            'icon' => $icon,
+            'disabled' => preg_match('/disabled/i', $meta->getForm()['class']),
+            'entity' => $d->getEntity(),
+            'value' => $this->getValue($meta, $dr),
+            'ngmodel' => $ngmodel . $meta->getColumn(),
+            'form' => $meta->getForm(),
+            's' => (!empty($meta->getForm()['cols']) ? 's' . $meta->getForm()['cols'] : ""),
+            'm' => (!empty($meta->getForm()['colm']) ? 'm' . $meta->getForm()['colm'] : ""),
+            'l' => (!empty($meta->getForm()['coll']) ? 'l' . $meta->getForm()['coll'] : "")
+        ]);
     }
 
-    private function checkListMultData(array $data)
+    /**
+     * @param Meta $meta
+     */
+    private function getValue(Meta $meta, $dr)
     {
-        if ($data['key'] === "list_mult" || $data['key'] === "extend_mult" || $data['key'] === "selecao_mult") {
-            $dic = Metadados::getDicionario($data['relation']);
-            $rel = Metadados::getRelevant($data['relation'], true);
-            $type = $rel[1];
-            $rel = $rel[0];
+        $v = !empty($meta->getValue()) ? $meta->getValue() : $meta->getDefault();
 
-            $data['icon'] = '<i class="material-icons padding-medium">' . $this->getIcons($type) . '</i>';
-            $data['info']['title'] = (!empty($rel) ? $dic[$rel]['column'] : "");
+        if (in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
+            if (!empty($v)) {
+                $read = new Read();
+                $data = [];
+                foreach (json_decode($v, true) as $item) {
+                    $read->exeRead($meta->getRelation(), "WHERE id = :id", "id={$item}");
+                    if ($read->getResult())
+                        $data[] = ["id" => $read->getResult()[0]['id'], "title" => $read->getResult()[0][$dr->getRelevant()->getColumn()]];
+                }
+                $v = $data;
+            }
+        } elseif($meta->getType() === "json") {
+            $v = json_decode($v, true);
+        } elseif ($meta->getFormat() === "datetime" && !empty($v)) {
+            $v = str_replace(' ', 'T', $v);
+        } elseif (is_numeric($v) && is_float($v)) {
+            $v = (float)$v;
+        } elseif (is_numeric($v)) {
+            $v = (int)$v;
+        } elseif (preg_match('/{\$/i', $v)) {
+            $v = "";
         }
 
-        return $data;
+        return $v;
+    }
+
+    /**
+     * @param Meta $meta
+     * @param string $ngmodel
+     * @return string
+     */
+    private function getExtentContent(Meta $meta, array $input): string
+    {
+        $dic = new Dicionario($meta->getRelation());
+        if (!empty($meta->getValue()))
+            $dic->setData($meta->getValue());
+
+        $input["inputs"] = $this->prepareInputs($dic, $ngmodel . $column . ".");
+
+        return $template->getShow("extend", $input);
+    }
+
+    /**
+     * @param Meta $meta
+     * @param Dicionario $d
+     * @return mixed
+     */
+    private function checkListData(Meta $meta, Dicionario $d)
+    {
+
+        if ($meta->getKey() === "list" || $meta->getKey() === "selecao") {
+            if (!empty($meta->getValue())) {
+                $dr = new Dicionario($meta->getRelation());
+                $dr->setData($meta->getValue());
+
+                return [
+                    "title" => $dr->getRelevant()->getValue(),
+                    "id" => $meta->getValue(),
+                    "mult" => (!empty($meta->getSelect()) ? $this->checkSelecaoUnique($meta) : "")
+                ];
+            } else {
+                return [
+                    "title" => "",
+                    "id" => "",
+                    "mult" => (!empty($meta->getSelect()) ? $this->checkSelecaoUnique($meta) : "")
+                ];
+            }
+        }
+
+        return null;
     }
 
     /**
      * Busca por campos mult relacionais que precisam ser selecionados
      *
-     * @param array $data
-     * @param array $values
+     * @param Meta $meta
+     * @param Dicionario $dicionario
      * @return string
      */
-    private function checkExtendMultSelect(array $data, array $values): string
+    private
+    function checkSelecaoUnique(Meta $meta): string
     {
         $mult = "";
-        if (in_array($data['key'], ["list_mult", "extend_mult", "selecao_mult", "list", "extend", "selecao"]) && !empty($data['select'])) {
 
-            $dicionario = \EntityForm\Metadados::getDicionario($data['relation']);
-            foreach ($data['select'] as $select) {
-                foreach ($dicionario as $item) {
-                    if ($item['column'] === $select) {
-                        if (!empty($values[$select . "__" . $data['column']])) {
-                            $value_select = $this->readValues($item['relation'], $values[$select . "__" . $data['column']]);
-                            $dicSelecao = Metadados::getDicionario($item['relation']);
-                            $relevant = Metadados::getRelevant($item['relation']);
-                            $item['title'] = $value_select[$dicSelecao[$relevant]['column']];
-                            $item['id'] = $values[$select . "__" . $data['column']];
-                        } else {
-                            $item['title'] = "";
-                            $item['id'] = "";
-                        }
+        $tpl = new \Helpers\Template("form-crud");
+        foreach ($meta->getSelect() as $select) {
 
-                        $item['nome'] = preg_match('/s$/i', $item['nome']) ? substr($item['nome'], 0, strlen($item['nome']) - 1) : $item['nome'];
-                        $item['genero'] = preg_match('/a$/i', $item['nome']) ? "a" : "o";
-                        $item['parentColumn'] = $data['column'];
-                        $item['parentValue'] = $values[$data['column']] ? 1 : "";
-                        $item['column'] = $item['column'] . "__" . $data['column'];
-                        $item['ngmodel'] = "dados." . $item['column'];
-                        $item['entity'] = $data['relation'];
-                        $tpl = new \Helpers\Template("form-crud");
-
-                        $mult .= $tpl->getShow("selecaoUnique", $item);
-
-                        break;
-                    }
-                }
+            if (!empty($select->getValue())) {
+                $dr = new Dicionario($select->getRelation());
+                $dr->setData($select->getValue());
+                $tplData = array_merge($select->getDados(), ["title" => $dr->getRelevant()->getValue(), "id" => $select->getValue()]);
+            } else {
+                $tplData = array_merge($select->getDados(), ["title" => "", "id" => ""]);
             }
+
+            $tplData['nome'] = preg_match('/s$/i', $select->getNome()) ? substr($select->getNome(), 0, strlen($select->getNome()) - 1) : $select->getNome();
+            $tplData['genero'] = preg_match('/a$/i', $select->getNome()) ? "a" : "o";
+            $tplData['parentColumn'] = $meta->getColumn();
+            $tplData['parentValue'] = $meta->getValue() ? 1 : "";
+            $tplData['column'] = $select->getColumn();
+            $tplData['ngmodel'] = "dados." . $select->getColumn();
+            $tplData['entity'] = $meta->getRelation();
+
+            $mult .= $tpl->getShow("selecaoUnique", $tplData);
         }
 
         return $mult;
     }
 
-    private function getIcons($type)
+    private
+    function getIcons($type)
     {
         switch ($type) {
             case 'email':
@@ -327,41 +357,11 @@ class Form
             case 'cep':
                 return "location_on";
                 break;
+            case 'valor':
+                return "attach_money";
+                break;
             default:
                 return "folder";
         }
-    }
-
-    /**
-     * @param array $data
-     * @param string $ngmodel
-     * @param mixed $value
-     * @return mixed
-     */
-    private function processaInput(array $data, string $ngmodel, $value)
-    {
-        $template = new Template("form-crud");
-
-        if ($data['key'] === "extend") {
-            return $this->getExtended($data['column'], $data['relation'], $ngmodel, $value, $data);
-
-        } else {
-
-            return '<div class="col '
-                . (!empty($data['form']['cols']) ? 's' . $data['form']['cols'] : "") . ' '
-                . (!empty($data['form']['colm']) ? 'm' . $data['form']['colm'] : "") . ' '
-                . (!empty($data['form']['coll']) ? 'l' . $data['form']['coll'] : "") . ' '
-                . 'margin-bottom">'
-                . $template->getShow($data['form']['input'], $data)
-                . '</div>';
-        }
-    }
-
-    private function getExtended($column, $table, $ngmodel, $value, $form)
-    {
-        $templateExt = new Template("form-crud");
-        $form['inputs'] = $this->prepareInputs($table, $ngmodel . $column . ".", $value[$column] ?? []);
-
-        return $templateExt->getShow("extend", $form);
     }
 }

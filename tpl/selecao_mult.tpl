@@ -9,6 +9,7 @@
             <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
+                    {($disabled)? "disabled='disabled' " : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
             <div class="col s12 list-complete" rel="mult"></div>
@@ -19,7 +20,7 @@
                 {foreach item=data key=i from=$value}
                     <div class="listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="{$data.id}">
                         <div class="col padding-small container" style="width:60px">
-                            {$icon}
+                            <i class="material-icons padding-medium">{$icon}</i>
                         </div>
                         <div class="rest padding-small relative">
                             <div class="right" style="width: 45px; height: 45px">
@@ -27,7 +28,7 @@
                                         class="btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off"><i
                                             class="material-icons">delete</i></button>
                             </div>
-                            <div class="left container padding-medium listmult-title">{$data[$info.title]}</div>
+                            <div class="left container padding-medium listmult-title">{$data.title}</div>
                         </div>
                     </div>
                 {/foreach}
@@ -36,7 +37,7 @@
 
         <div class="tpl_list_mult hide listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="__$0__">
             <div class="col padding-small container" style="width:60px">
-                {$icon}
+                <i class="material-icons padding-medium">{$icon}</i>
             </div>
             <div class="rest padding-small relative">
                 <div class="right" style="width: 45px; height: 45px">

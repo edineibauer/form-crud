@@ -3,6 +3,7 @@
     <input type="text" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="off" data-format="cpf"
             {($value != "") ? "value='{$value}' " : "" }
             {($size !== false)? "maxlength='{$size}' " : ''}
+            {($disabled)? "disabled='disabled' " : ''}
             {($default === false)? 'required="required" ' : ''}
            class="cpf"/>
 </div>

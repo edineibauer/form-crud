@@ -4,6 +4,7 @@
         <input type="checkbox" data-model="{$ngmodel}" id="{$ngmodel}" data-format="switch"
                 {($value !== false && $value === 1) ? "checked='checked' " : "" }
                 {($size !== false)? "maxlength='{$size}' " : ''}
+                {($disabled)? "disabled='disabled' " : ''}
                 {($default === false)? 'required="required" ' : ''}
                class="switchCheck"/>
         <div class="slider"></div>
