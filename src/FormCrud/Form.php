@@ -6,7 +6,6 @@ use ConnCrud\Read;
 use Entity\Entity;
 use EntityForm\Dicionario;
 use EntityForm\Meta;
-use EntityForm\Metadados;
 use Helpers\Template;
 
 class Form
@@ -272,8 +271,9 @@ class Form
         if (!empty($meta->getValue()))
             $dic->setData($meta->getValue());
 
-        $input["inputs"] = $this->prepareInputs($dic, $ngmodel . $column . ".");
+        $input["inputs"] = $this->prepareInputs($dic, $input['ngmodel'] . ".");
 
+        $template = new Template("form-crud");
         return $template->getShow("extend", $input);
     }
 
