@@ -3,6 +3,8 @@
     "description": "criar de forma automática formulários para manipulação de informações de uma tabela",
     "type": "library",
     "license": "MIT",
+    "prefer-stable" : true,
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Edinei J. Bauer",
