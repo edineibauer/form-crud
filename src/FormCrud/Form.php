@@ -121,9 +121,6 @@ class Form
             $id = null;
 
         if (Entity::checkPermission($d->getEntity(), $id)) {
-
-            $time_start = microtime(true);
-
             $this->turnDicionarioIntoFormFormat($d);
 
             $form['inputs'] = $this->prepareInputs($d);
@@ -135,11 +132,8 @@ class Form
             $form['home'] = defined("HOME") ? HOME : "";
             $form['scripts'] = (!$this->children ? "<input type='hidden' id='fields-{$d->getEntity()}' value='" . ($this->fields ? json_encode($this->fields) : "") . "' />" : "");
 
-            $time_end = microtime(true);
-            $execution_time = ($time_end - $time_start);
-
             $template = new Template("form-crud");
-            return $template->getShow("form", $form) . "<b>" . substr($execution_time, 0, 4) . "</b>s";
+            return $template->getShow("form", $form);
         }
 
         return "Permissão Negada";
