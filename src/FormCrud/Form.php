@@ -157,6 +157,7 @@ class Form
     /**
      * Processa todas as inputs do form uma a uma
      *
+     * @param Dicionario $d
      * @param string $ngmodel
      * @return array
      */
@@ -183,7 +184,7 @@ class Form
                         $input = array_merge($input, $list);
 
                     $listaInput[] = "<div class='col {$input['s']} {$input['m']} {$input['l']} margin-bottom'>" .
-                        $template->getShow($meta->getForm()['input'], $input) . '</div>';
+                        $template->getShow($input['form']['input'], $input) . '</div>';
                 }
             }
         }
@@ -214,7 +215,7 @@ class Form
             'entity' => $d->getEntity(),
             'value' => $this->getValue($meta, $dr),
             'ngmodel' => $ngmodel . $meta->getColumn(),
-            'form' => $meta->getForm(),
+            'form' => $meta->getForm() === false ? $this->getFormDefault() : $meta->getForm(),
             's' => (!empty($meta->getForm()['cols']) ? 's' . $meta->getForm()['cols'] : ""),
             'm' => (!empty($meta->getForm()['colm']) ? 'm' . $meta->getForm()['colm'] : ""),
             'l' => (!empty($meta->getForm()['coll']) ? 'l' . $meta->getForm()['coll'] : "")
@@ -222,7 +223,17 @@ class Form
     }
 
     /**
+     * Retorna form default
+     */
+    private function getFormDefault()
+    {
+        return json_decode(file_get_contents(PATH_HOME . (DEV && DOMINIO === "entity-form" ? "" : "vendor/conn/entity-form/") . "entity/input_type.json"), true)['default']['form'];
+    }
+
+    /**
      * @param Meta $meta
+     * @param mixed $dr
+     * @return mixed
      */
     private function getValue(Meta $meta, $dr)
     {
