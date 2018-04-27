@@ -27,4 +27,19 @@ foreach ($dados as $c => $v) {
         $cont = $v;
 }
 
-$data['data'] = \Entity\Entity::add($nome, $cont, $save);
+if ($save) {
+    $d = new \EntityForm\Dicionario($nome);
+    $d->setData($cont);
+    $d->save();
+    $data['data'] = [
+        "id" => $d->search(0)->getValue(),
+        "error" => $d->getError(),
+        "data" => $d->getData()
+    ];
+} else {
+    $data['data'] = [
+        "id" => "",
+        "error" => \Entity\Entity::add($nome, $cont, $save),
+        "data" => ""
+    ];
+}
