@@ -27,19 +27,20 @@ foreach ($dados as $c => $v) {
         $cont = $v;
 }
 
+$d = new \EntityForm\Dicionario($nome);
+$d->setData($cont);
+
 if ($save) {
-    $d = new \EntityForm\Dicionario($nome);
-    $d->setData($cont);
     $d->save();
     $data['data'] = [
-        "id" => $d->search(0)->getValue(),
+        "id" => !empty($d->search(0)->getValue()) ? (int) $d->search(0)->getValue() : "",
         "error" => $d->getError(),
         "data" => $d->getData()
     ];
 } else {
     $data['data'] = [
         "id" => "",
-        "error" => \Entity\Entity::add($nome, $cont, $save),
+        "error" => $d->getError(),
         "data" => ""
     ];
 }
