@@ -14,7 +14,7 @@ class Form
     private $autoSave = true;
     private $callback;
     private $fields;
-    private $children;
+    private $reload = false;
     private $error;
 
     /**
@@ -50,9 +50,12 @@ class Form
         $this->callback = $callback;
     }
 
-    public function setChildren()
+    /**
+     * @param bool $reload
+     */
+    public function setReload(bool $reload = true)
     {
-        $this->children = true;
+        $this->reload = $reload;
     }
 
     /**
@@ -77,9 +80,9 @@ class Form
      * @param mixed $fields
      * @return string
      */
-    public function getFormChildren($id = null, $fields = null): string
+    public function getFormReload($id = null, $fields = null): string
     {
-        $this->setChildren();
+        $this->setReload(true);
         return $this->getForm($id, $fields);
     }
 
@@ -87,9 +90,9 @@ class Form
      * @param mixed $id
      * @param mixed $fields
      */
-    public function showFormChildren($id = null, $fields = null)
+    public function showFormReload($id = null, $fields = null)
     {
-        echo $this->getFormChildren($id, $fields);
+        echo $this->getFormReload($id, $fields);
     }
 
     /**
@@ -130,7 +133,8 @@ class Form
             $form['autoSave'] = $this->autoSave;
             $form['callback'] = $this->callback;
             $form['home'] = defined("HOME") ? HOME : "";
-            $form['scripts'] = (!$this->children ? "<input type='hidden' id='fields-{$d->getEntity()}' value='" . ($this->fields ? json_encode($this->fields) : "") . "' />" : "");
+            $form['reload'] = $this->reload;
+            $form['fields'] = $this->fields;
 
             $template = new Template("form-crud");
             return $template->getShow("form", $form);
