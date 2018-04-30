@@ -10,10 +10,6 @@ if ($name && !empty($name)) {
         if ($name === $file['name']) {
             unset($files[$i]);
             $data['data'] = empty($files) ? null : json_encode(array_values($files));
-
-            if (file_exists(PATH_HOME . $file['url']))
-                unlink(PATH_HOME . $file['url']);
-
             break;
         }
     }
