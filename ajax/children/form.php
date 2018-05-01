@@ -5,4 +5,4 @@ $fields = trim(strip_tags(filter_input(INPUT_POST, 'fields', FILTER_DEFAULT)));
 $fields = !empty($fields) ? json_decode($fields, true) : null;
 
 $form = new \FormCrud\Form($entity);
-$data['data'] = $form->getFormChildren($id ?? null, $fields ?? null);
+$data['data'] = $form->getFormReload($id ?? null, $fields ?? null);

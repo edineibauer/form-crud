@@ -35,7 +35,7 @@ if ($save) {
     $data['data'] = [
         "id" => !empty($d->search(0)->getValue()) ? (int) $d->search(0)->getValue() : "",
         "error" => $d->getError(),
-        "data" => $d->getData()
+        "data" => $d->getDataForm()
     ];
 } else {
     $data['data'] = [
