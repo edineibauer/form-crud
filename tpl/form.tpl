@@ -1,5 +1,5 @@
 {if !$reload}
-    <input type='hidden' id='fields-{$entity}' value='{$fields}' />
+    <input type='hidden' id='fields-{$entity}' value='{($fields) ? ($fields|json_encode) : ""}' />
 {/if}
 <div class='form-control row font-large'>
     <div class="row relative form-crud" id='form_{$entity}' data-entity="{$entity}">

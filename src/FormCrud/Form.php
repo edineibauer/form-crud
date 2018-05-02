@@ -114,10 +114,10 @@ class Form
         if ($id && is_array($id) && !$fields)
             return $this->getForm(null, $fields);
 
-        $d = new Dicionario($this->entity);
         if ($fields && is_array($fields))
             $this->setFields($fields);
 
+        $d = new Dicionario($this->entity);
         if ($id && is_numeric($id))
             $d->setData($id);
         else
