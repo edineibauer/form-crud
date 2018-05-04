@@ -1,6 +1,6 @@
 <div class="{$form['class']}" style="{$form['style']}">
     <label for="{$ngmodel}">{$nome} {($default === false) ? "*" : ""}</label>
-    <select data-model="{$ngmodel}" id="{$ngmodel}" data-format="select"
+    <select data-model="{$ngmodel}" id="{$ngmodel}" data-format="select" class="border-theme"
             {($default === false)? 'required="required" ' : ''}
             {($disabled)? "disabled='disabled' " : ''}>
         <option value="0" {(!$value || ($value && $value !== "")) ? "selected='selected' " : ""}disabled="disabled">

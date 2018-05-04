@@ -12,7 +12,7 @@
             <input type="hidden" value="{$callback}" id="callbackAction"/>
             {if !$autoSave}
                 <div class="col padding-16">
-                    <button class="btn color-teal hover-shadow opacity hover-opacity-off" id="saveFormButton"><i
+                    <button class="btn theme-d2 hover-shadow opacity hover-opacity-off" id="saveFormButton"><i
                                 class="material-icons left padding-right">save</i>Salvar
                     </button>
                 </div>

@@ -2,7 +2,7 @@
     <div class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
     <div class="row">
         <div class="col container right" style="width:92px">
-            <div class="col btn-floating color-teal opacity hover-opacity-off listButton left" id="list-{$relation}" data-entity="{$relation}"
+            <div class="col btn-floating theme-d2 opacity hover-opacity-off listButton left" id="list-{$relation}" data-entity="{$relation}"
                      {($disabled)? "disabled='disabled' " : ''}
                  style="width:41px">
                 <i class="material-icons prefix pointer editList">add</i>

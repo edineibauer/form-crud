@@ -2,7 +2,7 @@
     <div class="row padding-8 color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
     <div class="row">
         <div class="col right" style="width:60px">
-            <div class="col btn-floating color-{($id !== "")? "white" : 'teal'} listButton opacity hover-shadow hover-opacity-off"
+            <div class="col btn-floating {($id !== "")? "color-white" : 'theme-d2'} listButton opacity hover-shadow hover-opacity-off"
                  id="list-{$column}" data-entity="{$relation}"
                     {($disabled)? "disabled='disabled' " : ''}
                  style="width:41px">
