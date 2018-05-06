@@ -14,6 +14,7 @@ class Form
     private $autoSave = true;
     private $callback;
     private $fields;
+    private $saveButton;
     private $reload = false;
     private $error;
 
@@ -24,6 +25,11 @@ class Form
     public function __construct(string $entity)
     {
         $this->setEntity($entity);
+        $this->saveButton = [
+            "class" => "",
+            "icon" => "save",
+            "text" => "Salvar"
+        ];
     }
 
     /**
@@ -74,6 +80,26 @@ class Form
         return $this->error;
     }
 
+    /**
+     * @param string $icon
+     */
+    public function setSaveButtonIcon(string $icon) {
+        $this->saveButton['icon'] = $icon;
+    }
+
+    /**
+     * @param string $text
+     */
+    public function setSaveButtonText(string $text) {
+        $this->saveButton['text'] = $text;
+    }
+
+    /**
+     * @param string $class
+     */
+    public function setSaveButtonClass(string $class) {
+        $this->saveButton['class'] = $class;
+    }
 
     /**
      * @param mixed $id
@@ -135,6 +161,7 @@ class Form
             $form['home'] = defined("HOME") ? HOME : "";
             $form['reload'] = $this->reload;
             $form['fields'] = $this->fields;
+            $form['saveButton'] = $this->saveButton;
 
             $template = new Template("form-crud");
             return $template->getShow("form", $form);
