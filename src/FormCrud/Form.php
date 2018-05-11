@@ -83,21 +83,24 @@ class Form
     /**
      * @param string $icon
      */
-    public function setSaveButtonIcon(string $icon) {
+    public function setSaveButtonIcon(string $icon)
+    {
         $this->saveButton['icon'] = $icon;
     }
 
     /**
      * @param string $text
      */
-    public function setSaveButtonText(string $text) {
+    public function setSaveButtonText(string $text)
+    {
         $this->saveButton['text'] = $text;
     }
 
     /**
      * @param string $class
      */
-    public function setSaveButtonClass(string $class) {
+    public function setSaveButtonClass(string $class)
+    {
         $this->saveButton['class'] = $class;
     }
 
@@ -177,8 +180,10 @@ class Form
                 $metaSelects = [];
                 foreach ($meta->getSelect() as $select) {
                     $select = $d->search($select . "__" . $meta->getColumn());
-                    $metaSelects[] = $select;
-                    $d->removeMeta($select->getColumn());
+                    if ($select) {
+                        $metaSelects[] = $select;
+                        $d->removeMeta($select->getColumn());
+                    }
                 }
                 $meta->setSelect($metaSelects);
             }
@@ -233,7 +238,7 @@ class Form
     {
         $icon = "";
         $dr = "";
-        if(in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
+        if (in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
             $dr = new Dicionario($meta->getRelation());
             $icon = $this->getIcons($dr->getRelevant()->getFormat());
         }
@@ -281,7 +286,7 @@ class Form
                 }
                 $v = $data;
             }
-        } elseif($meta->getType() === "json") {
+        } elseif ($meta->getType() === "json") {
             $v = json_decode($v, true);
         } elseif ($meta->getFormat() === "datetime" && !empty($v)) {
             $v = str_replace(' ', 'T', $v);
