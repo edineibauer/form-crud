@@ -320,9 +320,9 @@ class Form
             $v = json_decode($v, true);
         } elseif ($meta->getFormat() === "datetime" && !empty($v)) {
             $v = str_replace(' ', 'T', $v);
-        } elseif (is_numeric($v) && is_float($v)) {
+        } elseif ($meta->getType() === "float" && is_numeric($v)) {
             $v = (float)$v;
-        } elseif (is_numeric($v)) {
+        } elseif ($meta->getType() === "int" && is_numeric($v)) {
             $v = (int)$v;
         } elseif (preg_match('/{\$/i', $v)) {
             $v = "";
