@@ -3,10 +3,14 @@
 namespace FormCrud;
 
 use ConnCrud\Read;
+use ConnCrud\SqlCommand;
 use Entity\Entity;
 use EntityForm\Dicionario;
 use EntityForm\Meta;
+use Helpers\Helper;
 use Helpers\Template;
+use LinkControl\EntityCreateEntityDatabase;
+use LinkControl\EntityImport;
 
 class Form
 {
@@ -140,6 +144,9 @@ class Form
      */
     public function getForm($id = null, $fields = null): string
     {
+        $this->checkEntityExist();
+        $this->checkIfTableExist();
+
         if ($id && is_array($id) && !$fields)
             return $this->getForm(null, $fields);
 
@@ -171,6 +178,30 @@ class Form
         }
 
         return "Permissão Negada";
+    }
+
+    /**
+     * Verifica se a entidade json existe
+     * se não existir, cria ela
+     */
+    private function checkEntityExist()
+    {
+        if (!file_exists(PATH_HOME . "entity/cache/{$this->entity}.json")) {
+            foreach (Helper::listFolder(PATH_HOME . "vendor/conn") as $lib)
+                new EntityImport($lib);
+        }
+    }
+
+    /**
+     * Verifica se a tabela da entity existe
+     * se não existir, cria ela
+     */
+    private function checkIfTableExist()
+    {
+        $sql = new SqlCommand();
+        $sql->exeCommand("SHOW TABLES LIKE '" . PRE . $this->entity . "'");
+        if ($sql->getErro())
+            new EntityCreateEntityDatabase($this->entity, []);
     }
 
     private function turnDicionarioIntoFormFormat(Dicionario $d)
