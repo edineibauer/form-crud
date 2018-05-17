@@ -42,6 +42,8 @@ class Form
     public function setEntity($entity)
     {
         $this->entity = $entity;
+        $this->checkEntityExist();
+        $this->checkIfTableExist();
     }
 
     /**
@@ -144,9 +146,6 @@ class Form
      */
     public function getForm($id = null, $fields = null): string
     {
-        $this->checkEntityExist();
-        $this->checkIfTableExist();
-
         if ($id && is_array($id) && !$fields)
             return $this->getForm(null, $fields);
 
@@ -200,8 +199,8 @@ class Form
     {
         $sql = new SqlCommand();
         $sql->exeCommand("SHOW TABLES LIKE '" . PRE . $this->entity . "'");
-        if ($sql->getErro())
-            new EntityCreateEntityDatabase($this->entity, []);
+        if (!$sql->getResult())
+            new \EntityForm\EntityCreateEntityDatabase($this->entity, []);
     }
 
     private function turnDicionarioIntoFormFormat(Dicionario $d)
