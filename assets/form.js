@@ -330,9 +330,6 @@ if (typeof openPanel !== 'function') {
             entity: entity,
             id: value
         }, function (idOntab) {
-            if (ISDEV)
-                console.log("id ontab retorno: \n" + idOntab);
-
             formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id);
         }));
     }
@@ -446,9 +443,6 @@ if (typeof formSubmit !== 'function') {
         var dados = formGetData($form);
         isSavingNew = (dados['dados.id'] === "");
 
-        if (ISDEV)
-            console.log(dados);
-
         post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
             dados: dados,
@@ -472,7 +466,7 @@ if (typeof formSubmit !== 'function') {
 
             if (!saveTime)
                 window.onbeforeunload = null;
-        }, ISDEV ? true : "undefined");
+        });
     }
 
     function statusPanel(status, $form) {
@@ -523,7 +517,7 @@ if (typeof formSubmit !== 'function') {
                 }
 
                 window.onbeforeunload = null;
-            }, ISDEV ? true : "undefined");
+            });
 
         } else {
             if (!isSavingNew) {
@@ -635,8 +629,8 @@ if (typeof formAutoSubmit !== 'function') {
 
                             $.each($.parseJSON(response.data), function (i, e) {
                                 if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
-                                        return n.name === file.name;
-                                    }).length === 0)
+                                    return n.name === file.name;
+                                }).length === 0)
                                     t.push(e.data);
 
                                 else if (typeof (e.data) === "string")
@@ -727,7 +721,7 @@ if (typeof formAutoSubmit !== 'function') {
                 $(this).addClass("active");
                 selectList($list);
             });
-        }, ISDEV ? true : "undefined");
+        });
     }
 
     function selectList($list) {
