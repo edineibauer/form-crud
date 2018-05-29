@@ -235,7 +235,7 @@ class Form
         foreach ($d->getDicionario() as $i => $meta) {
 
             //pula algumas colunas pré-definidas
-            if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
+            if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && (empty($_SESSION['userlogin']) || ($_SESSION['userlogin']['id'] != $d->search(0))))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
                 continue;
 
             //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
