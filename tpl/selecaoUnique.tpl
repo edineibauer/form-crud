@@ -2,7 +2,7 @@
     <div class="row padding-medium color-text-grey font-small">
         <span class="left">
             {$nome} d{$genero} {$parentColumn|ucfirst}
-            {($default == false) ? "*" : ""}
+            {($default === false) ? "*" : ""}
         </span>
         <span class="left titleRequired opacity {($parentValue == "")? "" : "hide"}">
             &nbsp; (Selecione um{if $genero == "a"}a{/if} <b>{$parentColumn|ucfirst}</b> antes)
@@ -17,8 +17,8 @@
             <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}" required="required"
                     {($parentValue == "")? "disabled='disabled'" : ''}
                     {($title != "")? "value='{$title}'" : ''}
-                    {($size != false)? "maxlength='{$size}' " : ''}
-                    {($default == false)? 'required="required" ' : ''}
+                    {($size !== false)? "maxlength='{$size}' " : ''}
+                    {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list selecaoUnique rest {($parentValue == "")? "disabled" : ''}"/>
             <div class="col s12 list-complete" rel="one"></div>
