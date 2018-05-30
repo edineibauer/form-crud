@@ -1,5 +1,5 @@
 <div class="{$form['class']} row card" style="{$form['style']}">
-    <div class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
+    <div class="row padding-medium color-text-grey font-small">{$nome} {($default == false) ? "*" : ""}</div>
     <div class="row">
         <div class="hide">
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
@@ -7,8 +7,8 @@
         </div>
         <div class="col s12 container relative">
             <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
-                    {($size !== false)? "maxlength='{$size}' " : ''}
-                    {($default === false)? 'required="required" ' : ''}
+                    {($size != false)? "maxlength='{$size}' " : ''}
+                    {($default == false)? 'required="required" ' : ''}
                     {($disabled)? "disabled='disabled' " : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>

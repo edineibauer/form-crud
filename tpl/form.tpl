@@ -23,7 +23,7 @@
             <script>
                 (function () {
                     var $head = document.getElementsByTagName('head')[0];
-                    if (document.querySelector("script[data-info='form-crud']") === null) {
+                    if (document.querySelector("script[data-info='form-crud']") == null) {
                         var style = document.createElement('link');
                         style.rel = "stylesheet";
                         style.href = HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + VERSION;

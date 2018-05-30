@@ -1,5 +1,5 @@
 <div class="{$form['class']} form-file" style="{$form['style']}">
-    <label for="{$ngmodel}">{$nome} {($default === false) ? "*" : ""}</label>
+    <label for="{$ngmodel}">{$nome} {($default == false) ? "*" : ""}</label>
     {if isset($allow['values'])}
         <form action="{$home}request/post" enctype="multipart/form-data" id="form-{$entity}-{$column}"
               class="dropzone card">
@@ -14,7 +14,7 @@
         </form>
         <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="file"
                 {($value)? "value='{$value|@json_encode}'" : ''}
-                {($size !== false)? "maxlength='{$size}' " : ''} />
+                {($size != false)? "maxlength='{$size}' " : ''} />
     {else}
         <h3>Arquivo não aceita Nenhum Valor</h3>
     {/if}
