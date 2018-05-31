@@ -2221,7 +2221,7 @@ if (typeof loadMask !== 'function') {
 }
 if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
-        $this.panel(themeDashboard("<i class='statusPanel left' title='sem mudanças'></i><span class='left'>Editar " + ucFirst(entity) + "</span>", {
+        $this.panel(themeDashboard("<i class='material-icons left padding-right'>create</i><span class='left'>editando</span>", {
             lib: 'form-crud',
             file: 'api',
             entity: entity,
@@ -2309,13 +2309,18 @@ if (typeof formSubmit !== 'function') {
     }
 
     function statusPanel(status, $form) {
-        var $status = $form.closest(".ontab").find(".ontab-header .ontab-title .statusPanel");
+        var $header = $form.closest(".ontab").find(".ontab-header");
+        $header.find(".ontab-title").css("background", "transparent");
+        var $feed = $form.closest(".ontab").find(".ontab-feedback");
         if (status === "change") {
-            $status.css("background", "orange").attr("title", "alterações não salvas")
+            $feed.text("...").css("color", "#bbb");
+            $header.css("background-color", "#eee");
         } else if (status === "error") {
-            $status.css("background", "red").attr("title", "erros não salvos")
+            $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.4)");
+            $header.css("background-color", "rgba(255,0,0,0.2)");
         } else {
-            $status.css("background", "#32cd32").attr("title", "salvo")
+            $feed.text("Salvo").css("color", "rgba(50,205,50,0.4)");
+            $header.css("background-color", "rgba(50,205,50,0.2)");
         }
     }
 
@@ -2329,8 +2334,7 @@ if (typeof formSubmit !== 'function') {
             var btnClass = $btnSave.attr("class");
             var btnIcon = $btnSave.find("i").text();
             var btnText = $btnSave.text()
-        }
-        else {
+        } else {
             var btnClass = "notHaveButton";
             var btnText = "Salvar";
             var btnIcon = ""
@@ -2347,12 +2351,12 @@ if (typeof formSubmit !== 'function') {
             if (data) {
                 if (data === 'anonimo') {
                     if (callback !== "") {
-                        window[callback](dados);
+                        window[callback](dados)
                     } else {
                         toast("Cadastro Efetuado Com Sucesso! Recarregando...", 3000);
                         setTimeout(function () {
                             location.reload()
-                        }, 3000);
+                        }, 3000)
                     }
                 } else {
                     var $form = $("#form_" + entity).closest(".form-control");
@@ -2366,9 +2370,8 @@ if (typeof formSubmit !== 'function') {
                     isSavingNew = !1;
                     statusPanel("salvo", $form);
                     loadForm("#form_" + entity);
-
                     if (callback !== "")
-                        window[callback](dados);
+                        window[callback](dados)
                 }
             }
         })
@@ -2386,19 +2389,20 @@ if (typeof formSubmit !== 'function') {
             dados: dados,
             save: typeof(save) !== "undefined" ? save : $form.find("#autoSave").val()
         }, function (data) {
+            if(ISDEV)
+                console.log(data);
+
             cleanError($form);
             if (data.error !== null) {
                 setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
                 statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form)
             } else {
                 if (data.id !== null && data.id !== "" && data.id > 0) {
-
                     if (dados['dados.id'] === "") {
                         reloadForm($form.attr("data-entity"), data.id)
                     } else {
                         if ($("#callbackAction").val() !== "")
                             window[$("#callbackAction").val()](dados);
-
                         statusPanel("salvo", $form);
                         $.each(data.data, function (c, e) {
                             var $input = $form.find("input[data-model='dados." + c + "']");
