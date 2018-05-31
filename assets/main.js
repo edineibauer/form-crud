@@ -2220,6 +2220,7 @@ if (typeof loadMask !== 'function') {
     }
 }
 if (typeof openPanel !== 'function') {
+    var p = new RegExp(/s$/i);
     function openPanel(entity, $id, value, $this) {
         $this.panel(themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length-1)) : entity) + "</span>", {
             lib: 'form-crud',
