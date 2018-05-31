@@ -2221,7 +2221,7 @@ if (typeof loadMask !== 'function') {
 }
 if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
-        $this.panel(themeDashboard("<i class='material-icons left padding-right'>create</i><span class='left'>editando</span>", {
+        $this.panel(themeDashboard("<span class='left color-text-grey'>editando</span>", {
             lib: 'form-crud',
             file: 'api',
             entity: entity,
