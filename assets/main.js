@@ -2317,8 +2317,8 @@ if (typeof formSubmit !== 'function') {
             $feed.text("...").css("color", "#bbb");
             $header.css("background-color", "#eee");
         } else if (status === "error") {
-            $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.4)");
-            $header.css("background-color", "rgba(255,0,0,0.2)");
+            $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.2)");
+            $header.css("background-color", "rgba(255,0,0,0.1)");
         } else {
             $feed.text("Salvo").css("color", "rgba(50,205,50,0.4)");
             $header.css("background-color", "rgba(50,205,50,0.2)");
