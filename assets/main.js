@@ -2221,7 +2221,7 @@ if (typeof loadMask !== 'function') {
 }
 if (typeof openPanel !== 'function') {
     function openPanel(entity, $id, value, $this) {
-        $this.panel(themeDashboard("<span class='left color-text-grey'>" + (entity.test(p) ? entity.substr(0, (entity.length-1)) : entity) + "</span>", {
+        $this.panel(themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length-1)) : entity) + "</span>", {
             lib: 'form-crud',
             file: 'api',
             entity: entity,
