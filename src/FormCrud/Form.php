@@ -232,25 +232,26 @@ class Form
         $listaInput = [];
         $template = new Template("form-crud");
 
-        foreach ($d->getDicionario() as $i => $meta) {
+        for ($c = 1; $c < count($d->getDicionario()); $c++) {
+            if($meta = $d->search("indice", $c)) {
+                //pula algumas colunas pré-definidas
+                if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && !empty($_SESSION['userlogin']) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
+                    continue;
 
-            //pula algumas colunas pré-definidas
-            if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && !empty($_SESSION['userlogin']) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
-                continue;
+                //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
+                if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && in_array($meta->getColumn(), $this->fields))) {
+                    $input = $this->getBaseInput($d, $meta, $ngmodel);
 
-            //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
-            if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && in_array($meta->getColumn(), $this->fields))) {
-                $input = $this->getBaseInput($d, $meta, $ngmodel);
+                    if ($meta->getKey() === "extend") {
+                        $listaInput[] = $this->getExtentContent($meta, $input);
+                    } else {
 
-                if ($meta->getKey() === "extend") {
-                    $listaInput[] = $this->getExtentContent($meta, $input);
-                } else {
+                        if ($list = $this->checkListData($meta, $d))
+                            $input = array_merge($input, $list);
 
-                    if ($list = $this->checkListData($meta, $d))
-                        $input = array_merge($input, $list);
-
-                    $listaInput[] = "<div class='col {$input['s']} {$input['m']} {$input['l']} margin-bottom'>" .
-                        $template->getShow($input['form']['input'], $input) . '</div>';
+                        $listaInput[] = "<div class='col {$input['s']} {$input['m']} {$input['l']} margin-bottom'>" .
+                            $template->getShow($input['form']['input'], $input) . '</div>';
+                    }
                 }
             }
         }
