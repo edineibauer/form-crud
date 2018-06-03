@@ -256,6 +256,11 @@ class Form
             }
         }
 
+        //id
+        $meta = $d->search(0);
+        $input = $this->getBaseInput($d, $meta, $ngmodel);
+        $listaInput[] = $template->getShow($input['form']['input'], $input);
+
         return $listaInput;
     }
 
