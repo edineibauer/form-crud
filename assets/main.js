@@ -2221,8 +2221,9 @@ if (typeof loadMask !== 'function') {
 }
 if (typeof openPanel !== 'function') {
     var p = new RegExp(/s$/i);
+
     function openPanel(entity, $id, value, $this) {
-        $this.panel(themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length-1)) : entity) + "</span>", {
+        $this.panel(themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity) + "</span>", {
             lib: 'form-crud',
             file: 'api',
             entity: entity,
@@ -2315,31 +2316,38 @@ if (typeof formSubmit !== 'function') {
         var $feed = $form.closest(".ontab").find(".ontab-feedback");
         if (status === "change") {
             $feed.text("...").css("color", "#bbb");
-            $header.css("background-color", "#eee");
+            $header.css("background-color", "#eee")
         } else if (status === "error") {
             $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.2)");
-            $header.css("background-color", "rgba(255,0,0,0.1)");
+            $header.css("background-color", "rgba(255,0,0,0.1)")
         } else {
             $feed.text("Salvo").css("color", "rgba(50,205,50,0.4)");
-            $header.css("background-color", "rgba(50,205,50,0.2)");
+            $header.css("background-color", "rgba(50,205,50,0.2)")
         }
     }
 
-    function reloadForm(entity, id) {
-        id = id || null;
-        $("#form_" + entity).closest(".ontab").loading();
+    function reloadForm(entity, dados, id) {
+
+        var $form = $("#form_" + entity).closest(".form-control");
+        var $ontab = $form.closest(".ontab");
         var fields = $("#fields-" + entity).val();
         var callback = $("#callbackAction").val();
-        if ($("#form_" + entity).find("#saveFormButton").length) {
+
+        if ((!$ontab.length && $form.find("#saveFormButton").length) || !id)
+            id = null;
+
+        if ($form.find("#saveFormButton").length) {
             var $btnSave = $("#form_" + entity).find("#saveFormButton");
             var btnClass = $btnSave.attr("class");
-            var btnIcon = $btnSave.find("i").text();
+            var btnIcon = $btnSave.find("i").html();
+            $btnSave.find("i").remove();
             var btnText = $btnSave.text()
         } else {
             var btnClass = "notHaveButton";
             var btnText = "Salvar";
             var btnIcon = ""
         }
+
         post('form-crud', 'children/form', {
             entity: entity,
             id: id,
@@ -2350,30 +2358,36 @@ if (typeof formSubmit !== 'function') {
             btnIcon: btnIcon
         }, function (data) {
             if (data) {
-                if (data === 'anonimo') {
-                    if (callback !== "") {
-                        window[callback](dados)
-                    } else {
-                        toast("Cadastro Efetuado Com Sucesso! Recarregando...", 3000);
-                        setTimeout(function () {
-                            location.reload()
-                        }, 3000)
-                    }
+
+                if ($ontab.length) {
+                    $ontab.loading();
+                    statusPanel("salvo", $form);
                 } else {
-                    var $form = $("#form_" + entity).closest(".form-control");
-                    var $ontab = $form.closest(".ontab").loading();
+                    $form.loading();
+                }
+
+                if (id) {
                     var $input = $form.find(":focus");
                     var val = $input.val();
                     var id = $input.attr("id");
                     $form.after(data).remove();
-                    $form = $ontab.find("#form_" + entity);
+                    if ($ontab.length)
+                        $form = $ontab.find("#form_" + entity);
+                    else
+                        $form = $("body").find("#form_" + entity);
+
                     $form.find("input[id='" + id + "']").focus().val("").val(val);
-                    isSavingNew = !1;
-                    statusPanel("salvo", $form);
-                    loadForm("#form_" + entity);
-                    if (callback !== "")
-                        window[callback](dados)
+                } else {
+                    $form.after(data).remove();
                 }
+
+                isSavingNew = !1;
+                loadForm("#form_" + entity);
+
+                if (callback !== "")
+                    window[callback](dados);
+                else if (!$form.closest(".ontab").length || $form.find("#saveFormButton").length)
+                    toast("Dados Salvos!", 3000);
             }
         })
     }
@@ -2390,9 +2404,8 @@ if (typeof formSubmit !== 'function') {
             dados: dados,
             save: typeof(save) !== "undefined" ? save : $form.find("#autoSave").val()
         }, function (data) {
-            if(ISDEV)
+            if (ISDEV)
                 console.log(data);
-
             cleanError($form);
             if (data.error !== null) {
                 setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
@@ -2400,7 +2413,7 @@ if (typeof formSubmit !== 'function') {
             } else {
                 if (data.id !== null && data.id !== "" && data.id > 0) {
                     if (dados['dados.id'] === "") {
-                        reloadForm($form.attr("data-entity"), data.id)
+                        reloadForm($form.attr("data-entity"), dados, data.id)
                     } else {
                         if ($("#callbackAction").val() !== "")
                             window[$("#callbackAction").val()](dados);
