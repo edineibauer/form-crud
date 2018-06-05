@@ -2387,7 +2387,7 @@ if (typeof formSubmit !== 'function') {
                 if (callback !== "")
                     window[callback](dados);
                 else if (!$form.closest(".ontab").length || $form.find("#saveFormButton").length)
-                    toast("Dados Salvos!", 3000);
+                    toast("Cadastro Salvo!", 3000);
             }
         })
     }
