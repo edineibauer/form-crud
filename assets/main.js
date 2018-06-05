@@ -2210,6 +2210,7 @@ if (typeof loadMask !== 'function') {
 
     function loadMask($element) {
         $element.find('.telefone').mask(SPMaskBehavior, spOptions);
+        $element.find('.percent').mask('##0,00%', {reverse: true});
         $element.find(".rg").mask('9999999999', {reverse: !0});
         $element.find(".ie").mask('999.999.999.999', {reverse: !0});
         $element.find(".cpf").mask('999.999.999-99', {reverse: !0});
@@ -2258,7 +2259,7 @@ if (typeof formGetData !== 'function') {
                 if ($this.prop("checked"))
                     return $this.val(); else if (valor)
                     return valor
-            } else if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time') && $this.val() !== "") {
+            } else if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && $this.val() !== "") {
                 return $this.cleanVal()
             } else {
                 return $this.val()
