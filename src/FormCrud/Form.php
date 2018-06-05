@@ -232,7 +232,14 @@ class Form
         $listaInput = [];
         $template = new Template("form-crud");
 
-        for ($c = 1; $c < count($d->getDicionario()); $c++) {
+        $max = 0;
+        foreach ($d->getDicionario() as $m) {
+            if($max < $m->getIndice())
+                $max = $m->getIndice();
+        }
+        $max++;
+
+        for ($c = 1; $c < $max; $c++) {
             if($meta = $d->search("indice", $c)) {
                 //pula algumas colunas pré-definidas
                 if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && !empty($_SESSION['userlogin']) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
@@ -287,7 +294,7 @@ class Form
             'entity' => $d->getEntity(),
             'value' => $this->getValue($meta, $dr),
             'ngmodel' => $ngmodel . $meta->getColumn(),
-            'form' => $meta->getForm() === false ? $this->getFormDefault() : $meta->getForm(),
+            'form' => $meta->getForm() === false ? $this->getFormDefault($meta->getFormat()) : $meta->getForm(),
             's' => (!empty($meta->getForm()['cols']) ? 's' . $meta->getForm()['cols'] : ""),
             'm' => (!empty($meta->getForm()['colm']) ? 'm' . $meta->getForm()['colm'] : ""),
             'l' => (!empty($meta->getForm()['coll']) ? 'l' . $meta->getForm()['coll'] : "")
@@ -295,11 +302,14 @@ class Form
     }
 
     /**
-     * Retorna form default
+     * @param string $format
+     * @return mixed
      */
-    private function getFormDefault()
+    private function getFormDefault(string $format)
     {
-        return json_decode(file_get_contents(PATH_HOME . (DEV && DOMINIO === "entity-form" ? "" : "vendor/conn/entity-form/") . "entity/input_type.json"), true)['default']['form'];
+        $inputs = json_decode(file_get_contents(PATH_HOME . (DEV && DOMINIO === "entity-form" ? "" : "vendor/conn/entity-form/") . "entity/input_type.json"), true);
+
+        return !empty($inputs[$format]['form']) ? array_replace_recursive($inputs['default']['form'], $inputs[$format]['form']) : $inputs['default']['form'];
     }
 
     /**
