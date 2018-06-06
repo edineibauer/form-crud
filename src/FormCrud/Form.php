@@ -18,6 +18,7 @@ class Form
     private $autoSave = true;
     private $callback;
     private $fields;
+    private $defaults;
     private $saveButton;
     private $reload = false;
     private $error;
@@ -63,6 +64,14 @@ class Form
     }
 
     /**
+     * @param array $defaults
+     */
+    public function setDefaults(array $defaults)
+    {
+        $this->defaults = $defaults;
+    }
+
+    /**
      * @param bool $reload
      */
     public function setReload(bool $reload = true)
@@ -71,9 +80,9 @@ class Form
     }
 
     /**
-     * @param mixed $fields
+     * @param array $fields
      */
-    public function setFields($fields)
+    public function setFields(array $fields)
     {
         $this->fields = $fields;
     }
@@ -234,19 +243,19 @@ class Form
 
         $max = 0;
         foreach ($d->getDicionario() as $m) {
-            if($max < $m->getIndice())
+            if ($max < $m->getIndice())
                 $max = $m->getIndice();
         }
         $max++;
 
         for ($c = 1; $c < $max; $c++) {
-            if($meta = $d->search("indice", $c)) {
+            if ($meta = $d->search("indice", $c)) {
                 //pula algumas colunas pré-definidas
                 if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && !empty($_SESSION['userlogin']) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
                     continue;
 
                 //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
-                if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && in_array($meta->getColumn(), $this->fields))) {
+                if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && (in_array($meta->getColumn(), $this->fields) || in_array($meta->getId(), $this->fields)))) {
                     $input = $this->getBaseInput($d, $meta, $ngmodel);
 
                     if ($meta->getKey() === "extend") {
@@ -295,6 +304,7 @@ class Form
             'entity' => $d->getEntity(),
             'value' => $this->getValue($meta, $dr),
             'ngmodel' => $ngmodel . $meta->getColumn(),
+            'autosave' => $this->autoSave,
             'form' => $meta->getForm() === false ? $this->getFormDefault($meta->getFormat()) : $meta->getForm(),
             's' => (!empty($meta->getForm()['cols']) ? 's' . $meta->getForm()['cols'] : ""),
             'm' => (!empty($meta->getForm()['colm']) ? 'm' . $meta->getForm()['colm'] : ""),
@@ -320,7 +330,12 @@ class Form
      */
     private function getValue(Meta $meta, $dr)
     {
-        $v = !empty($meta->getValue()) ? $meta->getValue() : $meta->getDefault();
+        if (!empty($meta->getValue()))
+            $v = $meta->getValue();
+        elseif (!empty($this->defaults) && (!empty($this->defaults[$meta->getColumn()]) || !empty($this->defaults[$meta->getId()])))
+            $v = (!empty($this->defaults[$meta->getColumn()]) ? $this->defaults[$meta->getColumn()] : $this->defaults[$meta->getId()]);
+        else
+            $v = $meta->getDefault();
 
         if (in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
             if (!empty($v)) {
@@ -359,11 +374,11 @@ class Form
         if (!empty($meta->getValue()))
             $dic->setData($meta->getValue());
 
-        if(!empty($meta->getForm()['fields'])) {
+        if (!empty($meta->getForm()['fields'])) {
             foreach ($dic->getDicionario() as $m) {
-                if(!in_array($m->getId(), $meta->getForm()['fields'])) {
+                if (!in_array($m->getId(), $meta->getForm()['fields'])) {
                     $m->setForm(['input' => "hidden", 'cols' => "", 'coll' => "", 'colm' => "", 'class' => "", 'style' => "", 'defaults' => "", 'fields' => ""]);
-                    if((empty($meta->getValue()) || empty($m->getValue())) && !empty($meta->getForm()['defaults'][$m->getId()]))
+                    if ((empty($meta->getValue()) || empty($m->getValue())) && !empty($meta->getForm()['defaults'][$m->getId()]))
                         $m->setValue($meta->getForm()['defaults'][$m->getId()]);
                 }
             }

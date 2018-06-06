@@ -2223,17 +2223,25 @@ if (typeof loadMask !== 'function') {
 if (typeof openPanel !== 'function') {
     var p = new RegExp(/s$/i);
 
-    function openPanel(entity, $id, value, $this) {
-        $this.panel(themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity) + "</span>", {
-            lib: 'form-crud',
-            file: 'api',
-            entity: entity,
-            id: value
-        }, function (idOntab) {
-            if (ISDEV)
-                console.log("id ontab retorno: \n" + idOntab);
-            formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id)
-        }))
+    function openPanel(entity, $id, value, $this, fields, defaults, autosave) {
+        fields = fields || "";
+        defaults = defaults || "";
+        autosave = autosave || 1;
+        $this.panel(
+            themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity) + "</span>", {
+                lib: 'form-crud',
+                file: 'api',
+                entity: entity,
+                id: value,
+                fields: fields,
+                defaults: defaults,
+                autosave: autosave
+            }, function (idOntab) {
+                if (ISDEV)
+                    console.log("id ontab retorno: \n" + idOntab);
+                formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id)
+            })
+        )
     }
 }
 if (typeof formGetData !== 'function') {
@@ -2495,8 +2503,10 @@ if (typeof formAutoSubmit !== 'function') {
             if (typeof($(this).attr("data-model")) === "string")
                 formSubmit($(this).closest(".form-crud"))
         }).off("click", ".listButton").on("click", ".listButton", function () {
-            sessionStorage.setItem("new-panel-title", $(this).parent().next().find(".form-list").val());
-            openPanel($(this).attr("data-entity"), $(this).siblings('input[type=hidden]'), $(this).siblings('input[type=hidden]').val(), $(this))
+            let $this = $(this);
+            let $hidden = $this.siblings('input[type=hidden]');
+            sessionStorage.setItem("new-panel-title",$this.parent().next().find(".form-list").val());
+            openPanel($this.attr("data-entity"), $hidden, $hidden.val(), $this, $this.attr("data-fields"), $this.attr("data-defaults"), $this.attr("data-autosave"))
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault()
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
