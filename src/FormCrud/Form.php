@@ -256,8 +256,9 @@ class Form
                         if ($list = $this->checkListData($meta, $d))
                             $input = array_merge($input, $list);
 
-                        $listaInput[] = "<div class='col {$input['s']} {$input['m']} {$input['l']} margin-bottom'>" .
-                            $template->getShow($input['form']['input'], $input) . '</div>';
+                        $listaInput[] = ($input['form']['input'] !== "hidden" ? "<div class='col margin-bottom {$input['s']} {$input['m']} {$input['l']}'>" : "") .
+                            $template->getShow($input['form']['input'], $input) .
+                            ($input['form']['input'] !== "hidden" ? '</div>' : '');
                     }
                 }
             }
@@ -357,6 +358,17 @@ class Form
         $dic = new Dicionario($meta->getRelation());
         if (!empty($meta->getValue()))
             $dic->setData($meta->getValue());
+
+        if(!empty($meta->getForm()['fields'])) {
+            foreach ($dic->getDicionario() as $m) {
+                if(!in_array($m->getId(), $meta->getForm()['fields'])) {
+                    $m->setForm(['input' => "hidden", 'cols' => "", 'coll' => "", 'colm' => "", 'class' => "", 'style' => "", 'defaults' => "", 'fields' => ""]);
+                    if((empty($meta->getValue()) || empty($m->getValue())) && !empty($meta->getForm()['defaults'][$m->getId()]))
+                        $m->setValue($meta->getForm()['defaults'][$m->getId()]);
+                }
+            }
+        }
+
 
         $input["inputs"] = $this->prepareInputs($dic, $input['ngmodel'] . ".");
 

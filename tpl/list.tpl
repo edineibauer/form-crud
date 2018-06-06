@@ -12,7 +12,7 @@
                     {($id != "")? "value='{$id}'" : ''} />
         </div>
         <div class="rest relative">
-            <input type="text" placeholder="{$nome}" autocomplete="off" id="{$column}"
+            <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($disabled)? "disabled='disabled' " : ''}
