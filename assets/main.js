@@ -2320,18 +2320,13 @@ if (typeof formSubmit !== 'function') {
     }
 
     function statusPanel(status, $form) {
-        var $header = $form.closest(".ontab").find(".ontab-header");
-        $header.find(".ontab-title").css("background", "transparent");
         var $feed = $form.closest(".ontab").find(".ontab-feedback");
         if (status === "change") {
-            $feed.text("...").css("color", "#bbb");
-            $header.css("background-color", "#eee")
+            $feed.text("...").css("color", "#aaa");
         } else if (status === "error") {
-            $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.2)");
-            $header.css("background-color", "rgba(255,0,0,0.1)")
+            $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.4)");
         } else {
             $feed.text("Salvo").css("color", "rgba(50,205,50,0.4)");
-            $header.css("background-color", "rgba(50,205,50,0.2)")
         }
     }
 
