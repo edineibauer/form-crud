@@ -2228,7 +2228,7 @@ if (typeof openPanel !== 'function') {
         defaults = defaults || "";
         autosave = autosave || 1;
         $this.panel(
-            themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity) + "</span>", {
+            themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity).replace('_', ' ').replace('-', ' ') + "</span>", {
                 lib: 'form-crud',
                 file: 'api',
                 entity: entity,
