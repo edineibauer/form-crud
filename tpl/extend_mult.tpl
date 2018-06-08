@@ -1,7 +1,8 @@
 <div class="{$form['class']}" style="{$form['style']}">
-    <div class="row card">
-        <div class="buttonExtenContainer col container padding-small right" style="width:160px">
-            <button class="btn opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-small list-{$relation}"
+    <div class="row border-bottom">
+
+        <div class="buttonExtenContainer col padding-4 right" style="width:125px">
+            <button class="btn opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-0 right list-{$relation}"
                     {($disabled)? "disabled='disabled' " : ''}
                     data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}">
@@ -12,9 +13,12 @@
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="extend_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
-        <div class="rest container padding-xlarge relative">
+        <div class="rest color-grey-light color-text-grey padding-12 container upper relative">
             {$nome}
         </div>
+
+        <div class="col div_new_mult overflow-hidden"></div>
+        <span class="input-bar"></span>
 
         <div class="container listmult-content">
             {if $value}

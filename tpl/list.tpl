@@ -25,6 +25,7 @@
             <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
+        <div class="col div_new_mult overflow-hidden"></div>
         <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>
     </div>
 </div>

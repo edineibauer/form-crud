@@ -2246,10 +2246,12 @@ if (typeof openPanel !== 'function') {
 
     function openExtend(entity, id, $inputCallback, fields, defaults) {
         var $div = $inputCallback.parent().siblings(".div_new_mult");
-        $div.parent().loading();
+        var $bar = $div.siblings(".input-bar");
+        $bar.addClass("input-bar-active");
         fields = fields || "";
         defaults = defaults || "";
-        post('form-crud', 'api', {entity: entity, id: id, fields: fields, defaults: defaults, autosave: false}, function (g) {
+        post('form-crud', 'api', {entity: entity, id: id, fields: fields, defaults: defaults, autosave: false,
+            saveIcon:'done', saveClass: 'right', saveText: 'Adicionar'}, function (g) {
             $div.html(g);
             $div.css("height", $div.find(".form-control").height() + "px");
             setTimeout(function () {
@@ -2511,6 +2513,8 @@ if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit($element) {
         $element.off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
             formSave($(this).closest(".form-crud"), 1)
+        }).off("click", ".closeFormButton").on("click", ".closeFormButton", function () {
+            closeNewMult($(this))
         }).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
                 formSubmit($(this).closest(".form-crud"))
@@ -2730,14 +2734,16 @@ if (typeof formAutoSubmit !== 'function') {
         closeNewMult($id);
     }
 
-    function closeNewMult($id) {
-        $id = (typeof (id) === "undefined" ? $($id) : $id);
-        let $newmult = $id.parent().siblings(".div_new_mult");
+    function closeNewMult($button) {
+        let $newmult = $button.closest(".div_new_mult");
         $newmult.css("height", $newmult.height() + "px");
-        $newmult.css("height", 0);
         setTimeout(function () {
-            $newmult.html("");
-        }, 400);
+            $newmult.css("height", 0);
+            setTimeout(function () {
+                $newmult.html("");
+                $newmult.siblings(".input-bar").removeClass("input-bar-active");
+            }, 399);
+        },1);
     }
 
     function clearSelecaoUnique($list) {

@@ -16,7 +16,7 @@
                     <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
                 </button>
 
-                <button class="btn theme-d2 hover-shadow opacity hover-opacity-off {$saveButton.class}">
+                <button class="btn color-grey-light hover-shadow opacity hover-opacity-off closeFormButton {$saveButton.class}">
                     <i class="material-icons left padding-right">close</i>fechar
                 </button>
             </div>

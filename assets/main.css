@@ -481,6 +481,8 @@
 
 .div_new_mult {
     transition: 0.4s ease-out;
+    background: rgba(200,200,200, 0.1);
+    border-radius: 5px;
     height: 0;
 }
 

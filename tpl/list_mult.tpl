@@ -12,6 +12,7 @@
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="list_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
+        <div class="col div_new_mult overflow-hidden"></div>
         <div class="rest container relative">
             <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
