@@ -13,6 +13,7 @@
                     {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
+            <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
         <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>

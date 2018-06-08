@@ -12,6 +12,7 @@
                     {($disabled)? "disabled='disabled' " : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
+            <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="mult"></div>
         </div>
 
