@@ -2223,25 +2223,39 @@ if (typeof loadMask !== 'function') {
 if (typeof openPanel !== 'function') {
     var p = new RegExp(/s$/i);
 
-    function openPanel(entity, $id, value, $this, fields, defaults, autosave) {
+    function openPanel(entity, $inputCallback, id, $button, fields, defaults, autosave) {
         fields = fields || "";
         defaults = defaults || "";
         autosave = autosave || 1;
-        $this.panel(
+        $button.panel(
             themeDashboard("<span class='left color-text-grey'>" + (p.test(entity) ? entity.substr(0, (entity.length - 1)) : entity).replace('_', ' ').replace('-', ' ') + "</span>", {
                 lib: 'form-crud',
                 file: 'api',
                 entity: entity,
-                id: value,
+                id: id,
                 fields: fields,
                 defaults: defaults,
                 autosave: autosave
             }, function (idOntab) {
                 if (ISDEV)
                     console.log("id ontab retorno: \n" + idOntab);
-                formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $id)
+                formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $inputCallback)
             })
         )
+    }
+
+    function openExtend(entity, id, $inputCallback, fields, defaults) {
+        var $div = $inputCallback.parent().siblings(".div_new_mult");
+        $div.parent().loading();
+        fields = fields || "";
+        defaults = defaults || "";
+        post('form-crud', 'api', {entity: entity, id: id, fields: fields, defaults: defaults, autosave: false}, function (g) {
+            $div.html(g);
+            $div.css("height", $div.find(".form-control").height() + "px");
+            setTimeout(function () {
+                $div.css("height", "auto");
+            }, 400);
+        });
     }
 }
 if (typeof formGetData !== 'function') {
@@ -2315,8 +2329,8 @@ if (typeof formSubmit !== 'function') {
         $form.find(".error-span, .red-span, .goldenrod-span, .red-subErro, .goldenrod-subErro").removeClass("red-subErro error-span red-span goldenrod-span goldenrod-subErro");
         $form.find(".error-message").remove();
         $form.find(".md-radio--fake").css("border-color", "initial");
-        if ($form.find("#saveFormButton").length)
-            $form.find("#saveFormButton").removeClass("disabled").prop("disabled", !1)
+        if ($form.find(".saveFormButton").length)
+            $form.find(".saveFormButton").removeClass("disabled").prop("disabled", !1)
     }
 
     function statusPanel(status, $form) {
@@ -2337,11 +2351,11 @@ if (typeof formSubmit !== 'function') {
         var fields = $("#fields-" + entity).val();
         var callback = $("#callbackAction").val();
 
-        if ((!$ontab.length && $form.find("#saveFormButton").length) || !id)
+        if ((!$ontab.length && $form.find(".saveFormButton").length) || !id)
             id = null;
 
-        if ($form.find("#saveFormButton").length) {
-            var $btnSave = $("#form_" + entity).find("#saveFormButton");
+        if ($form.find(".saveFormButton").length) {
+            var $btnSave = $("#form_" + entity).find(".saveFormButton");
             var btnClass = $btnSave.attr("class");
             var btnIcon = $btnSave.find("i").html();
             $btnSave.find("i").remove();
@@ -2390,7 +2404,7 @@ if (typeof formSubmit !== 'function') {
 
                 if (callback !== "")
                     window[callback](dados);
-                else if (!$form.closest(".ontab").length || $form.find("#saveFormButton").length)
+                else if (!$form.closest(".ontab").length || $form.find(".saveFormButton").length)
                     toast("Cadastro Salvo!", 3000);
             }
         })
@@ -2401,23 +2415,30 @@ if (typeof formSubmit !== 'function') {
         isSavingNew = (dados['dados.id'] === "");
         if (ISDEV)
             console.log(dados);
-        if ($form.find("#saveFormButton").length)
-            $form.find("#saveFormButton").addClass("disabled").prop("disabled", !0);
+        if ($form.find(".saveFormButton").length)
+            $form.find(".saveFormButton").addClass("disabled").prop("disabled", !0);
         post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
             dados: dados,
             save: typeof(save) !== "undefined" ? save : $form.find("#autoSave").val()
         }, function (data) {
+            cleanError($form);
+
             if (ISDEV)
                 console.log(data);
-            cleanError($form);
+
             if (data.error !== null) {
                 setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
                 statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form)
             } else {
                 if (data.id !== null && data.id !== "" && data.id > 0) {
                     if (dados['dados.id'] === "") {
-                        reloadForm($form.attr("data-entity"), dados, data.id)
+                        if($form.closest(".div_new_mult").length) {
+                            var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
+                            setListMultValue($form.closest(".div_new_mult").siblings(".mult_div_button").find("input[type=hidden]"), data.id, title)
+                        } else {
+                            reloadForm($form.attr("data-entity"), dados, data.id)
+                        }
                     } else {
                         if ($("#callbackAction").val() !== "")
                             window[$("#callbackAction").val()](dados);
@@ -2486,7 +2507,7 @@ if (typeof formSubmit !== 'function') {
 }
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit($element) {
-        $element.off("click", "#saveFormButton").on("click", "#saveFormButton", function () {
+        $element.off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
             formSave($(this).closest(".form-crud"), !0)
         }).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
@@ -2502,6 +2523,10 @@ if (typeof formAutoSubmit !== 'function') {
             let $hidden = $this.siblings('input[type=hidden]');
             sessionStorage.setItem("new-panel-title",$this.parent().next().find(".form-list").val());
             openPanel($this.attr("data-entity"), $hidden, $hidden.val(), $this, $this.attr("data-fields"), $this.attr("data-defaults"), $this.attr("data-autosave"))
+        }).off("click", ".extendButton").on("click", ".extendButton", function () {
+            let $this = $(this);
+            let $hidden = $this.siblings('input[type=hidden]');
+            openExtend($this.attr("data-entity"), $hidden.val(), $hidden, $this.attr("data-fields"), $this.attr("data-defaults"))
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault()
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
@@ -2701,6 +2726,17 @@ if (typeof formAutoSubmit !== 'function') {
         } else if (isTitle !== !1) {
             isTitle.text(title)
         }
+        closeNewMult($id);
+    }
+
+    function closeNewMult($id) {
+        $id = (typeof (id) === "undefined" ? $($id) : $id);
+        let $newmult = $id.parent().siblings(".div_new_mult");
+        $newmult.css("height", $newmult.height() + "px");
+        $newmult.css("height", 0);
+        setTimeout(function () {
+            $newmult.html("");
+        }, 400);
     }
 
     function clearSelecaoUnique($list) {
