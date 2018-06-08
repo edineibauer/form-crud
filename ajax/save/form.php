@@ -1,6 +1,5 @@
 <?php
 $nome = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
-$save = filter_input(INPUT_POST, 'save', FILTER_VALIDATE_BOOLEAN);
 $dados = filter_input(INPUT_POST, 'dados', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 $cont = [];
 
@@ -29,17 +28,9 @@ foreach ($dados as $c => $v) {
 $d = new \EntityForm\Dicionario($nome);
 $d->setData($cont);
 
-if ($save) {
-    $d->save();
-    $data['data'] = [
-        "id" => !empty($d->search(0)->getValue()) ? (int) $d->search(0)->getValue() : "",
-        "error" => $d->getError(),
-        "data" => $d->getDataForm()
-    ];
-} else {
-    $data['data'] = [
-        "id" => "",
-        "error" => $d->getError(),
-        "data" => ""
-    ];
-}
+$d->save();
+$data['data'] = [
+    "id" => !empty($d->search(0)->getValue()) ? (int)$d->search(0)->getValue() : "",
+    "error" => $d->getError(),
+    "data" => $d->getDataForm()
+];

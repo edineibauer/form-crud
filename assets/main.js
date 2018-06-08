@@ -2420,8 +2420,7 @@ if (typeof formSubmit !== 'function') {
             $form.find(".saveFormButton").addClass("disabled").prop("disabled", !0);
         post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
-            dados: dados,
-            save: save
+            dados: dados
         }, function (data) {
             cleanError($form);
 
