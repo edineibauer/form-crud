@@ -10,17 +10,16 @@
             {/foreach}
             <input type="hidden" value="{$autoSave}" id="autoSave"/>
             <input type="hidden" value="{$callback}" id="callbackAction"/>
-            {if !$autoSave}
-                <div class="col padding-16">
-                    <button class="btn theme-d2 hover-shadow opacity hover-opacity-off saveFormButton {$saveButton.class}">
-                        <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
-                    </button>
 
-                    <button class="btn theme-d2 hover-shadow opacity hover-opacity-off {$saveButton.class}">
-                        <i class="material-icons left padding-right">close</i>fechar
-                    </button>
-                </div>
-            {/if}
+            <div class="col padding-16">
+                <button class="btn theme-d2 hover-shadow opacity hover-opacity-off saveFormButton {$saveButton.class}">
+                    <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
+                </button>
+
+                <button class="btn theme-d2 hover-shadow opacity hover-opacity-off {$saveButton.class}">
+                    <i class="material-icons left padding-right">close</i>fechar
+                </button>
+            </div>
         </div>
 
         {if !$reload}
