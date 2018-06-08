@@ -2411,6 +2411,7 @@ if (typeof formSubmit !== 'function') {
     }
 
     function formSave($form, save) {
+        save = typeof(save) === "undefined" ? false : true;
         var dados = formGetData($form);
         isSavingNew = (dados['dados.id'] === "");
         if (ISDEV)
@@ -2420,7 +2421,7 @@ if (typeof formSubmit !== 'function') {
         post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
             dados: dados,
-            save: typeof(save) !== "undefined" ? save : $form.find("#autoSave").val()
+            save: save
         }, function (data) {
             cleanError($form);
 
@@ -2428,8 +2429,10 @@ if (typeof formSubmit !== 'function') {
                 console.log(data);
 
             if (data.error !== null) {
-                setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
-                statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form)
+                if(save) {
+                    setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
+                    statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form);
+                }
             } else {
                 if (data.id !== null && data.id !== "" && data.id > 0) {
                     if (dados['dados.id'] === "") {
@@ -2508,7 +2511,7 @@ if (typeof formSubmit !== 'function') {
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit($element) {
         $element.off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
-            formSave($(this).closest(".form-crud"), !0)
+            formSave($(this).closest(".form-crud"), 1)
         }).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
                 formSubmit($(this).closest(".form-crud"))
