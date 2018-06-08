@@ -1,5 +1,5 @@
 <div class="{$form['class']}" style="{$form['style']}">
-    <div class="row padding-8 color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
+    <label for="{$column}" class="row padding-8 color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
         <div class="col right" style="width:60px">
             <div class="col btn-floating {($id != "")? "color-white" : 'theme-d2'} listButton opacity hover-shadow hover-opacity-off"

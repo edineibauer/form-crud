@@ -1,5 +1,5 @@
 <div class="{$form['class']} row card" style="{$form['style']}">
-    <div class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
+    <label for="{$column}" class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
         <div class="col container right" style="width:92px">
             <div class="col btn-floating theme-d2 opacity hover-opacity-off listButton left" id="list-{$relation}"

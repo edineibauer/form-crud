@@ -1,5 +1,5 @@
 <div class="{$form['class']} row card" style="{$form['style']}">
-    <div class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</div>
+    <label for="{$column}" class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
         <div class="hide">
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
