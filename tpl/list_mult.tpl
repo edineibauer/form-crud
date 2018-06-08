@@ -1,14 +1,14 @@
 <div class="{$form['class']} row card" style="{$form['style']}">
     <label for="{$column}" class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
-        <div class="col container right" style="width:92px">
-            <div class="col btn-floating theme-d2 opacity hover-opacity-off listButton left" id="list-{$relation}"
+        <div class="col container buttonExtenContainer right" style="width:92px">
+            <button class="col btn-floating theme-d2 opacity hover-opacity-off extendButton left list-{$relation}"
                  data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                  data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                      {($disabled)? "disabled='disabled' " : ''}
                  style="width:41px">
                 <i class="material-icons prefix pointer editList">add</i>
-            </div>
+            </button>
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="list_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>

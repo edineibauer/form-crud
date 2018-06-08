@@ -1,8 +1,8 @@
 <div class="{$form['class']}" style="{$form['style']}">
     <div class="row card">
-        <div class="col container padding-small right" style="width:160px">
-            <button class="btn opacity hover-opacity-off theme-d2 listButton hover-shadow margin-small"
-                    {($disabled)? "disabled='disabled' " : ''} id="list-{$relation}"
+        <div class="buttonExtenContainer col container padding-small right" style="width:160px">
+            <button class="btn opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-small list-{$relation}"
+                    {($disabled)? "disabled='disabled' " : ''}
                     data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}">
                 <i class="material-icons left padding-right">add</i>

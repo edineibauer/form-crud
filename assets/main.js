@@ -2470,7 +2470,7 @@ if (typeof formSubmit !== 'function') {
                 } else {
                     $idReturn.val(data.id).trigger("change");
                     if (["list", "selecao"].indexOf($idReturn.attr("data-format")) > -1) {
-                        $idReturn.siblings(".listButton").removeClass("color-teal").addClass("color-white").find("i").html("edit");
+                        $idReturn.siblings("button").removeClass("color-teal").addClass("color-white").find("i").html("edit");
                         if ($idReturn.parent().siblings(".multFieldsSelect").length) {
                             var $field = $idReturn.parent().next(".rest").find("input[type=text]");
                             requestPreDataToSelecaoUnique(data.id, $field.attr("data-entity"), $field.attr("id"))
@@ -2554,7 +2554,7 @@ if (typeof formAutoSubmit !== 'function') {
                     }
                 } else if ([37, 39].indexOf(e.which) < 0) {
                     var $list = $this.siblings(".list-complete");
-                    $("#list-" + $this.attr("id")).removeClass("color-white").addClass("color-teal").find("i").html("add");
+                    $list.parent().siblings(".buttonExtenContainer").find("button").removeClass("color-white").addClass("color-teal").find("i").html("add");
                     if ($list.attr("rel") !== "mult")
                         $this.parent().prev().find("input[type=hidden]").val("").trigger("change");
                     clearSelecaoUnique($this);
@@ -2699,10 +2699,9 @@ if (typeof formAutoSubmit !== 'function') {
             $list.parent().prev().find("i").html("add");
             setListMultValue($list.parent().prev().find("input[type=hidden]"), parseInt($active.attr("rel")), $active.text().trim())
         } else {
-            $list.parent().prev().find("i").html("edit");
+            $list.parent().siblings(".buttonExtenContainer").find("button i").html("edit");
             selectListOne($list, $active)
         }
-        var lista = $list.siblings(".form-list")
     }
 
     function checkEntityMultValue($id) {
