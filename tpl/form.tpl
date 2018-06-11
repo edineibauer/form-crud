@@ -1,5 +1,5 @@
 {if !$reload}
-    <input type='hidden' id='fields-{$entity}' value='{($fields) ? ($fields|json_encode) : ""}' />
+    <input type='hidden' class="fields" id='fields-{$entity}' value='{($fields) ? ($fields|json_encode) : ""}' />
 {/if}
 <div class='form-control row font-large'>
     <div class="row relative form-crud" id='form_{$entity}' data-entity="{$entity}">
@@ -16,9 +16,16 @@
                     <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
                 </button>
 
-                <button class="btn color-grey-light hover-shadow opacity hover-opacity-off closeFormButton {$saveButton.class}">
-                    <i class="material-icons left padding-right">close</i>fechar
-                </button>
+                {if $id}
+                    <button class="btn color-grey-light hover-shadow opacity hover-opacity-off deleteFormButton {$saveButton.class}"
+                            rel="{$entity}" data-id="{$id}">
+                        <i class="material-icons left padding-right">delete</i>excluir
+                    </button>
+                {else}
+                    <button class="btn color-grey-light hover-shadow opacity hover-opacity-off closeFormButton {$saveButton.class}">
+                        <i class="material-icons left padding-right">close</i>fechar
+                    </button>
+                {/if}
             </div>
         </div>
 

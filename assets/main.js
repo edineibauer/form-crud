@@ -2515,6 +2515,13 @@ if (typeof formAutoSubmit !== 'function') {
             formSave($(this).closest(".form-crud"), 1)
         }).off("click", ".closeFormButton").on("click", ".closeFormButton", function () {
             closeNewMult($(this))
+        }).off("click", ".closeFormButton").on("click", ".deleteFormButton", function () {
+            if(confirm("Excluir este registro?")) {
+                deleteEntityData($(this).attr("rel"), $(this).attr("data-id"));
+                $form = $(this).closest(".form-control");
+                $form.siblings(".fields").remove();
+                $form.remove();
+            }
         }).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
                 formSubmit($(this).closest(".form-crud"))
