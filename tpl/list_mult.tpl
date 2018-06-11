@@ -1,4 +1,4 @@
-<div class="{$form['class']} row card" style="{$form['style']}">
+<div class="{$form['class']} col" style="{$form['style']}">
     <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
         <div class="col container buttonExtenContainer right" style="width:92px">

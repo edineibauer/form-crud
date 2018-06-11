@@ -2,7 +2,7 @@
     <label for="{$ngmodel}">{$nome} {($default === false) ? "*" : ""}</label>
     {if isset($allow['values'])}
         <form action="{$home}request/post" enctype="multipart/form-data" id="form-{$entity}-{$column}"
-              class="dropzone card">
+              class="dropzone border radius dz-clickable">
             <div class="fallback">
                 <input name="file" class="hide" type="file" multiple
                        accept="{foreach item=name key=i from=$allow['values']}{if $i > 0},{/if}.{$name}{/foreach}"/>
