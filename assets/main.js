@@ -2515,7 +2515,7 @@ if (typeof formAutoSubmit !== 'function') {
             formSave($(this).closest(".form-crud"), 1)
         }).off("click", ".closeFormButton").on("click", ".closeFormButton", function () {
             closeNewMult($(this))
-        }).off("click", ".closeFormButton").on("click", ".deleteFormButton", function () {
+        }).off("click", ".deleteFormButton").on("click", ".deleteFormButton", function () {
             if(confirm("Excluir este registro?")) {
                 deleteEntityData($(this).attr("rel"), $(this).attr("data-id"));
                 $form = $(this).closest(".form-control");

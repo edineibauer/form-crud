@@ -21,7 +21,7 @@
                             rel="{$entity}" data-id="{$id}">
                         <i class="material-icons left padding-right">delete</i>excluir
                     </button>
-                {else}
+                {elseif $saveButton.text === "Adicionar"}
                     <button class="btn color-grey-light hover-shadow opacity hover-opacity-off closeFormButton {$saveButton.class}">
                         <i class="material-icons left padding-right">close</i>fechar
                     </button>
