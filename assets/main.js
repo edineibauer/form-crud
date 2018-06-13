@@ -2247,6 +2247,7 @@ if (typeof openPanel !== 'function') {
     function openExtend(entity, id, $inputCallback, fields, defaults) {
         var $div = $inputCallback.parent().siblings(".div_new_mult");
         var $bar = $div.siblings(".input-bar");
+        $inputCallback.siblings("button").removeClass("theme-d2").css("background", "indianred").find("i").css("transform", "rotateZ(45deg)");
         $bar.addClass("input-bar-active");
         fields = fields || "";
         defaults = defaults || "";
