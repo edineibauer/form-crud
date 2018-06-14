@@ -2386,13 +2386,21 @@ if (typeof formGetData !== 'function') {
 
         var dados = {};
         let $formCopy = $form.clone();
+
+        $form.find("select").each(function(i) {
+            $formCopy.find("select").eq(i).val($(this).val());
+        });
+
         loadMask($formCopy);
         $formCopy.find(".div_new_mult").remove();
         $formCopy.find("input, textarea, select").each(function () {
             if (typeof($(this).attr("data-model")) !== "undefined")
                 dados[$(this).attr("data-model")] = setDados($(this), typeof(dados[$(this).attr("data-model")]) !== "undefined" ? dados[$(this).attr("data-model")] : null)
         });
-        return dados
+
+        console.log(dados);
+
+        return dados;
     }
 }
 if (typeof formSubmit !== 'function') {
@@ -2574,8 +2582,12 @@ if (typeof formSubmit !== 'function') {
                         } else {
                             $.each(data.data, function (c, e) {
                                 var $input = $form.find("input[data-model='dados." + c + "']");
-                                if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled"))
-                                    $input.val(e)
+                                if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled")) {
+                                    $input.val(e);
+                                    if ($input.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && e !== "") {
+                                        $input.trigger("input");
+                                    }
+                                }
                             });
                         }
                     }
