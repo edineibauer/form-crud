@@ -1,5 +1,5 @@
 {if !$reload}
-    <input type='hidden' class="fields" id='fields-{$entity}' value='{($fields) ? ($fields|json_encode) : ""}' />
+    <input type='hidden' class="fields" id='fields-{$entity}' value='{($fields) ? ($fields|json_encode) : ""}'/>
 {/if}
 <div class='form-control row font-large'>
     <div class="row relative form-crud" id='form_{$entity}' data-entity="{$entity}">
@@ -10,24 +10,15 @@
             {/foreach}
             <input type="hidden" value="{$autoSave}" id="autoSave"/>
             <input type="hidden" value="{$callback}" id="callbackAction"/>
+        </div>
 
-            <div class="col padding-16">
+        {if $saveButton.text != "Adicionar" && $saveButton.text != "Atualizar"}
+            <div class="col padding-16 container">
                 <button class="btn theme-d2 hover-shadow opacity hover-opacity-off saveFormButton {$saveButton.class}">
                     <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
                 </button>
-
-                {if $id}
-                    <button class="btn color-grey-light hover-shadow opacity hover-opacity-off deleteFormButton {$saveButton.class}"
-                            rel="{$entity}" data-id="{$id}">
-                        <i class="material-icons left padding-right">delete</i>excluir
-                    </button>
-                {elseif $saveButton.text === "Adicionar"}
-                    <button class="btn color-grey-light hover-shadow opacity hover-opacity-off closeFormButton {$saveButton.class}">
-                        <i class="material-icons left padding-right">close</i>fechar
-                    </button>
-                {/if}
             </div>
-        </div>
+        {/if}
 
         {if !$reload}
             <script>
@@ -44,7 +35,11 @@
                         script.src = HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + VERSION;
                         $head.appendChild(script);
                     } else {
-                        loadForm('#form_{$entity}');
+                        {if $saveButton.text == "Adicionar" || $saveButton.text == "Atualizar"}
+                            loadMask($('#form_{$entity}'));
+                        {else}
+                            loadForm('#form_{$entity}');
+                        {/if}
                     }
                 })();
             </script>

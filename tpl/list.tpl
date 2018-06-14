@@ -1,10 +1,10 @@
-<div class="{$form['class']}" style="{$form['style']}">
+<div class="{$form['class']} radius" style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
     <label for="{$column}" class="row padding-8 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
-    <div class="row">
-        <div class="col buttonExtenContainer right" style="width:60px">
-            <button class="col btn-floating {($id != "")? "color-white" : 'theme-d2'} extendButton opacity hover-shadow hover-opacity-off list-{$column}"
+    <div class="row list_mult_input">
+        <div class="col buttonExtenContainer right" style="width:105px">
+            <button class="col btn-floating {($id != "")? "color-white" : 'theme-d2'} extendButton right opacity hover-shadow hover-opacity-off list-{$column}"
                  data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                  data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                     {($disabled)? "disabled='disabled' " : ''}
@@ -22,10 +22,12 @@
                     {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
-            <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
         <div class="col div_new_mult overflow-hidden"></div>
+        <div class="col container tpl_add_new_mult"></div>
+        <span class="input-bar"></span>
+
         <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>
     </div>
 </div>

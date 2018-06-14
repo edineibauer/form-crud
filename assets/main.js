@@ -2208,16 +2208,16 @@ if (typeof loadMask !== 'function') {
         }
     };
 
-    function loadMask($element) {
-        $element.find('.telefone').mask(SPMaskBehavior, spOptions);
-        $element.find('.percent').mask('##0,00%', {reverse: true});
-        $element.find(".rg").mask('9999999999', {reverse: !0});
-        $element.find(".ie").mask('999.999.999.999', {reverse: !0});
-        $element.find(".cpf").mask('999.999.999-99', {reverse: !0});
-        $element.find(".cnpj").mask('99.999.999/9999-99', {reverse: !0});
-        $element.find(".cep").mask('99999-999', {reverse: !0});
-        $element.find(".valor").mask('#.##0,00', {reverse: !0});
-        $element.find('.date_time').mask('00/00/0000 00:00:00')
+    function loadMask($form) {
+        $form.find('.telefone').mask(SPMaskBehavior, spOptions);
+        $form.find('.percent').mask('##0,00%', {reverse: !0});
+        $form.find(".rg").mask('9999999999', {reverse: !0});
+        $form.find(".ie").mask('999.999.999.999', {reverse: !0});
+        $form.find(".cpf").mask('999.999.999-99', {reverse: !0});
+        $form.find(".cnpj").mask('99.999.999/9999-99', {reverse: !0});
+        $form.find(".cep").mask('99999-999', {reverse: !0});
+        $form.find(".valor").mask('#.##0,00', {reverse: !0});
+        $form.find('.date_time').mask('00/00/0000 00:00:00')
     }
 }
 if (typeof openPanel !== 'function') {
@@ -2239,26 +2239,64 @@ if (typeof openPanel !== 'function') {
             }, function (idOntab) {
                 if (ISDEV)
                     console.log("id ontab retorno: \n" + idOntab);
-                formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), $inputCallback)
+                formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), false, $inputCallback)
             })
         )
     }
 
     function openExtend(entity, id, $inputCallback, fields, defaults) {
-        var $div = $inputCallback.parent().siblings(".div_new_mult");
+        $contexto = $inputCallback.closest(".list_mult_input");
+        var $div = $contexto.find(".div_new_mult");
+
+        if(!$inputCallback.parent().siblings(".div_new_mult").length && $div.html() === "") {
+            let $tpl = $contexto.find(".tpl_add_new_mult");
+            $div.siblings(".input-bar").detach().insertAfter($tpl);
+            $div.detach().insertBefore($tpl);
+        }
         var $bar = $div.siblings(".input-bar");
-        $inputCallback.siblings("button").removeClass("theme-d2").css("background", "indianred").find("i").css("transform", "rotateZ(45deg)");
-        $bar.addClass("input-bar-active");
-        fields = fields || "";
-        defaults = defaults || "";
-        post('form-crud', 'api', {entity: entity, id: id, fields: fields, defaults: defaults, autosave: false,
-            saveIcon:'done', saveClass: 'right', saveText: 'Adicionar'}, function (g) {
-            $div.html(g);
-            $div.css("height", $div.find(".form-control").height() + "px");
+        if($div.html() === "") {
+
+            if(id > 0) {
+                let $editList = $(".tpl_list_mult[rel='" + id + "']");
+                $bar.detach().insertAfter($editList);
+                $div.detach().insertAfter($editList);
+                $editList.find("button:eq(0)").removeClass("color-white").addClass("color-teal").find("i").addClass("rotate").text("done");
+                $editList.find("button:eq(1)").find("i").addClass("rotate").text("close");
+            } else {
+                $inputCallback.siblings("button").removeClass("theme-d2").addClass("color-white").find("i").css("transform", "rotateZ(45deg)");
+                $saveButton = $("<button />").addClass("saveButtonTpmFormListMult btn-floating color-teal opacity hover-opacity-off right transition-ease-40")
+                    .css({"margin-right": "-40px", "z-index":0})
+                    .html('<i class="material-icons prefix pointer">done</i>')
+                    .on("click", function () {
+                        formSave($inputCallback.parent().siblings(".div_new_mult").find(".form-crud"), 1);
+                    }).insertBefore($inputCallback);
+                setTimeout(function () {
+                    $saveButton.css("margin-right", "10px");
+                },10);
+            }
+
             setTimeout(function () {
-                $div.css("height", "auto");
-            }, 400);
-        });
+                $bar.addClass("input-bar-active");
+            },1);
+            fields = fields || "";
+            defaults = defaults || "";
+            post('form-crud', 'api', {
+                entity: entity, id: id, fields: fields, defaults: defaults, autosave: false,
+                saveIcon: 'done', saveClass: 'right', saveText: id > 0 ? 'Atualizar' : 'Adicionar'
+            }, function (g) {
+                $div.html(g);
+                $input = $div.find("input[data-model='dados." + $div.find("input[rel='title']").val() + "']");
+                let vv = $input.val();
+                $input.val("");
+                $input.focus().val(vv);
+                $div.css("height", $div.find(".form-control").height() + "px");
+                setTimeout(function () {
+                    $div.css("height", "auto");
+                }, 400);
+            });
+        } else {
+            formSave($div.find(".form-crud"), 1);
+        }
     }
 }
 if (typeof formGetData !== 'function') {
@@ -2292,7 +2330,10 @@ if (typeof formGetData !== 'function') {
         }
 
         var dados = {};
-        $form.find("input, textarea, select").each(function () {
+        let $formCopy = $form.clone();
+        $formCopy.find(".div_new_mult").remove();
+        loadMask($formCopy);
+        $formCopy.find("input, textarea, select").each(function () {
             if (typeof($(this).attr("data-model")) !== "undefined")
                 dados[$(this).attr("data-model")] = setDados($(this), typeof(dados[$(this).attr("data-model")]) !== "undefined" ? dados[$(this).attr("data-model")] : null)
         });
@@ -2301,11 +2342,15 @@ if (typeof formGetData !== 'function') {
 }
 if (typeof formSubmit !== 'function') {
     var saveTime;
-    var isSavingNew = !1;
 
     function setError($form, erro, novo, t) {
-        isSavingNew = !1;
         t = t || "dados.";
+
+        $.each($form.find(".buttonExtenContainer button"), function () {
+            if(!$(this).hasClass("theme-d2"))
+                $(this).trigger("click");
+        });
+
         $.each(erro, function (c, mensagem) {
             if (typeof(mensagem) === "object") {
                 setError($form, mensagem, novo, t + c + '.')
@@ -2337,14 +2382,14 @@ if (typeof formSubmit !== 'function') {
     }
 
     function statusPanel(status, $form) {
-        var $feed = $form.closest(".ontab").find(".ontab-feedback");
+        /*var $feed = $form.closest(".ontab").find(".ontab-feedback");
         if (status === "change") {
             $feed.text("...").css("color", "#aaa");
         } else if (status === "error") {
             $feed.text("Corrija os Erros").css("color", "rgba(255,0,0,0.4)");
         } else {
             $feed.text("Salvo").css("color", "rgba(50,205,50,0.4)");
-        }
+        }*/
     }
 
     function reloadForm(entity, dados, id) {
@@ -2402,7 +2447,6 @@ if (typeof formSubmit !== 'function') {
                     $form.after(data).remove();
                 }
 
-                isSavingNew = !1;
                 loadForm("#form_" + entity);
 
                 if (callback !== "")
@@ -2414,46 +2458,43 @@ if (typeof formSubmit !== 'function') {
     }
 
     function formSave($form, save) {
-        save = typeof(save) === "undefined" ? false : true;
+        save = save || false;
         var dados = formGetData($form);
-        isSavingNew = (dados['dados.id'] === "");
-        if (ISDEV)
-            console.log(dados);
+
         if ($form.find(".saveFormButton").length)
             $form.find(".saveFormButton").addClass("disabled").prop("disabled", !0);
+
         post('form-crud', "save/form", {
             entity: $form.attr("data-entity"),
             dados: dados
         }, function (data) {
             cleanError($form);
 
-            if (ISDEV)
-                console.log(data);
-
             if (data.error !== null) {
-                if(save) {
+                if(save)
                     setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
-                    statusPanel((dados['dados.id'] === "" ? "error" : "salvo"), $form);
-                }
             } else {
                 if (data.id !== null && data.id !== "" && data.id > 0) {
                     if (dados['dados.id'] === "") {
-                        if($form.closest(".div_new_mult").length) {
-                            var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
-                            setListMultValue($form.closest(".div_new_mult").siblings(".mult_div_button").find("input[type=hidden]"), data.id, title)
-                        } else {
+                        //salva novo
+                        if($form.closest(".div_new_mult").length)
+                            closeSavedNewMult($form, data.id);
+                        else
                             reloadForm($form.attr("data-entity"), dados, data.id)
-                        }
                     } else {
-                        if ($("#callbackAction").val() !== "")
-                            window[$("#callbackAction").val()](dados);
-                        statusPanel("salvo", $form);
-                        $.each(data.data, function (c, e) {
-                            var $input = $form.find("input[data-model='dados." + c + "']");
-                            if (!$input.is(":focus") || $input.prop("disaabled") || $input.hasClass("disabled"))
-                                $input.val(e)
-                        })
+                        //atualiza
+                        if($form.closest(".div_new_mult").length) {
+                            closeSavedNewMult($form, data.id);
+                        } else {
+                            $.each(data.data, function (c, e) {
+                                var $input = $form.find("input[data-model='dados." + c + "']");
+                                if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled"))
+                                    $input.val(e)
+                            });
+                        }
                     }
+                    if ($form.find("#callbackAction").val() !== "")
+                        window[$form.find("#callbackAction").val()](dados);
                 }
             }
             if (!saveTime)
@@ -2461,61 +2502,55 @@ if (typeof formSubmit !== 'function') {
         }, ISDEV ? !0 : "undefined")
     }
 
-    function formSaveReturn($form, $idReturn) {
-        post('form-crud', "save/form", {entity: $form.attr("data-entity"), dados: formGetData($form)}, function (data) {
-            if (data.error !== null) {
-                if ($idReturn.val() === "" && $form.find("input[type=hidden][data-model='dados.id']").val() !== "")
-                    $idReturn.val($form.find("input[type=hidden][data-model='dados.id']").val()).trigger("change")
-            } else if (data.id !== null && data.id !== "" && data.id > 0) {
-                if (["list_mult", "extend_mult", "selecao_mult"].indexOf($idReturn.attr("data-format")) > -1) {
-                    var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
-                    setListMultValue($idReturn, data.id, title)
-                } else {
-                    $idReturn.val(data.id).trigger("change");
-                    if (["list", "selecao"].indexOf($idReturn.attr("data-format")) > -1) {
-                        $idReturn.siblings("button").removeClass("color-teal").addClass("color-white").find("i").html("edit");
-                        if ($idReturn.parent().siblings(".multFieldsSelect").length) {
-                            var $field = $idReturn.parent().next(".rest").find("input[type=text]");
-                            requestPreDataToSelecaoUnique(data.id, $field.attr("data-entity"), $field.attr("id"))
-                        }
-                    }
-                    if ($idReturn.val() !== "" && typeof($form.find("input[type=hidden][rel='title']").val()) === "string") {
-                        var title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
-                        $idReturn.parent().siblings(".rest").find("input[type=text]").val(title)
-                    }
-                }
-            }
-            window.onbeforeunload = null
-        }, ISDEV ? !0 : "undefined")
+    function closeSavedNewMult($form, value) {
+        let title = $form.find("[data-model='dados." + $form.find("input[type=hidden][rel='title']").val() + "']").val();
+        let $mult = $form.closest(".div_new_mult");
+        if($mult.siblings(".buttonExtenContainer").length)
+            var $id = $mult.siblings(".buttonExtenContainer").find("input[type=hidden]");
+        else
+            var $id = $mult.parent().siblings(".buttonExtenContainer").find("input[type=hidden]");
+
+        setListMultValue($id, value, title, $mult.siblings(".tpl_add_new_mult"));
+        closeNewMult($mult);
     }
 
-    function formSubmit($form, $idReturn) {
-        clearTimeout(saveTime);
-        statusPanel('change', $form);
+    function stopReloadWhenSaving($form, feedback) {
         window.onbeforeunload = function () {
             clearTimeout(saveTime);
-            formSave($form);
+            formSave($form, feedback);
             window.onbeforeunload = null;
             return !0
         };
-        if (typeof($idReturn) !== "undefined") {
-            formSaveReturn($form, $idReturn)
-        } else {
-            if (!isSavingNew) {
-                saveTime = setTimeout(function () {
-                    saveTime = null;
-                    formSave($form)
-                }, 400)
-            }
-        }
+    }
+
+    function formSubmit($form, feedback) {
+        feedback = feedback || false ;
+        stopReloadWhenSaving($form, feedback);
+        clearTimeout(saveTime);
+        saveTime = setTimeout(function () {
+            saveTime = null;
+            formSave($form, feedback)
+        }, 400)
     }
 }
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit($element) {
-        $element.off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
+        /* $element.off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
+             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
+                 formSubmit($(this).closest(".form-crud"))
+         }).off("keyup", "input, textarea, select").on("keyup", "input, textarea, select", function (e) {
+             if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
+                 formSubmit($(this).closest(".form-crud"))
+         }).off("change", "input, textarea, select").on("change", "input, textarea, select", function () {
+             if (typeof($(this).attr("data-model")) === "string")
+                 formSubmit($(this).closest(".form-crud"));
+         });*/
+
+        $element.off("keypress", ".jqte_editor, input, textarea, select").on("keypress", ".jqte_editor, input, textarea, select", function (e) {
+            if (e.which !== undefined && e.which === 13)
+                formSubmit($(this).closest(".form-crud"), 1)
+        }).off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
             formSave($(this).closest(".form-crud"), 1)
-        }).off("click", ".closeFormButton").on("click", ".closeFormButton", function () {
-            closeNewMult($(this))
         }).off("click", ".deleteFormButton").on("click", ".deleteFormButton", function () {
             if(confirm("Excluir este registro?")) {
                 deleteEntityData($(this).attr("rel"), $(this).attr("data-id"));
@@ -2523,15 +2558,6 @@ if (typeof formAutoSubmit !== 'function') {
                 $form.siblings(".fields").remove();
                 $form.remove();
             }
-        }).off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
-            if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0)
-                formSubmit($(this).closest(".form-crud"))
-        }).off("keyup", "input, textarea, select").on("keyup", "input, textarea, select", function (e) {
-            if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
-                formSubmit($(this).closest(".form-crud"))
-        }).off("change", "input, textarea, select").on("change", "input, textarea, select", function () {
-            if (typeof($(this).attr("data-model")) === "string")
-                formSubmit($(this).closest(".form-crud"))
         }).off("click", ".listButton").on("click", ".listButton", function () {
             let $this = $(this);
             let $hidden = $this.siblings('input[type=hidden]');
@@ -2540,7 +2566,10 @@ if (typeof formAutoSubmit !== 'function') {
         }).off("click", ".extendButton").on("click", ".extendButton", function () {
             let $this = $(this);
             let $hidden = $this.siblings('input[type=hidden]');
-            openExtend($this.attr("data-entity"), $hidden.val(), $hidden, $this.attr("data-fields"), $this.attr("data-defaults"))
+            if($this.parent().siblings(".div_new_mult").html() === "")
+                openExtend($this.attr("data-entity"), $hidden.val(), $hidden, $this.attr("data-fields"), $this.attr("data-defaults"))
+            else
+                closeNewMult($this.parent().siblings(".div_new_mult"));
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault()
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
@@ -2670,14 +2699,21 @@ if (typeof formAutoSubmit !== 'function') {
         $id.val(JSON.stringify(dataRecovery)).trigger("change")
     }
 
-    function removerListMult(id, value) {
-        var $content = $(id).parent().siblings(".listmult-content");
-        removeJsonValue($(id), value);
-        $content.find(".listmult-card[rel=" + value + "]").remove()
+    function removerListMult(idElemento, id) {
+        var $content = $(idElemento).parent().siblings(".listmult-content");
+        if($content.find(".tpl_list_mult[rel='" + id + "']").find("button:eq(1)").find("i").text() === "delete") {
+            if(confirm("Exclur Relação?")) {
+                removeJsonValue($(idElemento), id);
+                $content.find(".listmult-card[rel=" + id + "]").remove()
+            }
+        } else {
+            closeNewMult($content.find(".div_new_mult"));
+        }
     }
 
     function editListMult(entity, id, value) {
-        openPanel(entity, $(id), value, $(id + "-btn"))
+        let $button = $(id).siblings("button");
+        openExtend(entity, value, $(id), $button.attr("data-fields"), $button.attr("data-defaults"))
     }
 
     function readList($input, entity, parent, search, id) {
@@ -2720,10 +2756,11 @@ if (typeof formAutoSubmit !== 'function') {
         $id.parent().parent().find(".selecaoUniqueCard").removeClass("hide").find(".titleRequired").addClass("hide").parent().next().find(".form-list").val("").removeClass("disabled").prop("disabled", !1).parent().prev().find("input[type=hidden]").val("").trigger("click")
     }
 
-    function setListMultValue($id, value, title) {
+    function setListMultValue($id, value, title, $content) {
         var isNew = !0;
         var isTitle = !1;
-        var $content = $id.parent().siblings(".listmult-content");
+        if(typeof($content) === "undefined")
+            $content = $id.parent().siblings(".listmult-content");
         var $tpl = $id.parent().siblings(".tpl_list_mult");
         $.each($id.parent().siblings(".listmult-content").find(".listmult-card"), function () {
             if (parseInt($(this).attr("rel")) === value) {
@@ -2739,17 +2776,36 @@ if (typeof formAutoSubmit !== 'function') {
         } else if (isTitle !== !1) {
             isTitle.text(title)
         }
-        closeNewMult($id);
     }
 
-    function closeNewMult($button) {
-        let $newmult = $button.closest(".div_new_mult");
+    function closeNewMult($newmult) {
         $newmult.css("height", $newmult.height() + "px");
         setTimeout(function () {
             $newmult.css("height", 0);
+            if($newmult.siblings(".buttonExtenContainer").length)
+                $saveBtn = $newmult.siblings(".buttonExtenContainer").find(".saveButtonTpmFormListMult").css("margin-right", "-40px");
             setTimeout(function () {
-                $newmult.html("");
-                $newmult.siblings(".input-bar").removeClass("input-bar-active");
+
+                if(typeof ($saveBtn) !== "undefined")
+                    $saveBtn.remove();
+                $newmult.html("").siblings(".input-bar").removeClass("input-bar-active");
+
+                if($newmult.siblings(".buttonExtenContainer").length) {
+                    $newmult.siblings(".buttonExtenContainer").find("button").removeClass("color-white").addClass("theme-d2").find("i").css("transform", "rotateZ(0deg)");
+                } else {
+                    $newmult.prev(".tpl_list_mult").find("button:eq(0)").removeClass("color-teal").addClass("color-white").find("i").removeClass("rotate").text("edit");
+                    $newmult.prev(".tpl_list_mult").find("button:eq(1)").find("i").removeClass("rotate").text("delete");
+                }
+
+                setTimeout(function () {
+                    if(!$newmult.siblings(".tpl_add_new_mult").length) {
+                        let $tpl = $newmult.parent().siblings(".tpl_add_new_mult");
+                        $newmult.siblings(".input-bar").detach().insertAfter($tpl);
+                        $newmult.detach().insertBefore($tpl);
+                    } else {
+                        $newmult.siblings(".tpl_add_new_mult").find(".tpl_list_mult").detach().prependTo($newmult.siblings('.listmult-content'));
+                    }
+                }, 300);
             }, 399);
         },1);
     }
