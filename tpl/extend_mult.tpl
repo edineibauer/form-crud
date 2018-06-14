@@ -1,5 +1,5 @@
 <div class="{$form['class']}" style="{$form['style']}">
-    <div class="row list_mult_input border-bottom radius" style="background: rgba(200,200,200, 0.1);">
+    <div class="row list_mult_input border-bottom radius border" style="background: rgba(200,200,200, 0.1);">
 
         <div class="buttonExtenContainer padding-4 right">
             <button class="btn-floating opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-0 right list-{$relation}"
@@ -17,9 +17,7 @@
             {$nome}
         </div>
 
-        <div class="col div_new_mult overflow-hidden"></div>
-        <div class="col container tpl_add_new_mult"></div>
-        <span class="input-bar"></span>
+        <div class="tpl_div_new_mult hide" rel="mult"></div>
 
         <div class="container listmult-content">
             {if $value}
@@ -28,7 +26,7 @@
                         <div class="col padding-small container" style="width:30px">
                             <i class="material-icons padding-8">{$icon}</i>
                         </div>
-                        <div class="rest padding-4 relative">
+                        <div class="rest relative" style="padding-top:4px">
                             <div class="right" style="width: 94px; height: 45px">
                                 <button id="{$entity}-{$column}-btn"
                                         onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})"
@@ -51,7 +49,7 @@
             <div class="col padding-small container" style="width:30px">
                 <i class="material-icons padding-8">{$icon}</i>
             </div>
-            <div class="rest padding-4 relative">
+            <div class="rest relative" style="padding-top:4px">
                 <div class="right" style="width: 94px; height: 45px">
                     <button id="{$entity}-{$column}-btn"
                             onclick="editListMult('{$relation}', '#{$entity}-{$column}', __$0__)"

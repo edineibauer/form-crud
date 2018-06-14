@@ -1,12 +1,12 @@
-<div class="{$form['class']} row card" style="{$form['style']}">
-    <label for="{$column}" class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
+<div class="{$form['class']} row radius border" style="background: rgba(200,200,200, 0.1);{$form['style']}">
+    <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
-        <div class="hide">
+        <div class="hide buttonExtenContainer">
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
         <div class="col s12 container relative">
-            <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
+            <input type="text" placeholder="selecione multiplos valores" autocomplete="nope" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                     {($disabled)? "disabled='disabled' " : ''}
@@ -20,14 +20,15 @@
             {if $value}
                 {foreach item=data key=i from=$value}
                     <div class="listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="{$data.id}">
-                        <div class="col padding-small container" style="width:60px">
-                            <i class="material-icons padding-medium">{$icon}</i>
+                        <div class="col padding-small container" style="width:30px">
+                            <i class="material-icons padding-8">{$icon}</i>
                         </div>
-                        <div class="rest padding-small relative">
+                        <div class="rest relative" style="padding-top:4px">
                             <div class="right" style="width: 45px; height: 45px">
                                 <button onclick="removerListMult('#{$entity}-{$column}', {$data.id})"
-                                        class="btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off"><i
-                                            class="material-icons">delete</i></button>
+                                        class="btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off">
+                                    <i class="material-icons">delete</i>
+                                </button>
                             </div>
                             <div class="left container padding-medium listmult-title">{$data.title}</div>
                         </div>
@@ -37,14 +38,15 @@
         </div>
 
         <div class="tpl_list_mult hide listmult-card" style="border-top: solid 2px #EEE;margin-bottom: 2px!important;" rel="__$0__">
-            <div class="col padding-small container" style="width:60px">
-                <i class="material-icons padding-medium">{$icon}</i>
+            <div class="col padding-small container" style="width:30px">
+                <i class="material-icons padding-8">{$icon}</i>
             </div>
-            <div class="rest padding-small relative">
+            <div class="rest relative" style="padding-top:4px">
                 <div class="right" style="width: 45px; height: 45px">
                     <button onclick="removerListMult('#{$entity}-{$column}', __$0__)"
-                            class="btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off"><i
-                                class="material-icons">delete</i></button>
+                            class="btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off">
+                        <i class="material-icons">delete</i>
+                    </button>
                 </div>
                 <div class="left container padding-medium listmult-title">__$1__</div>
             </div>

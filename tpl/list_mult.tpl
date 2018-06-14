@@ -1,9 +1,8 @@
-<div class="{$form['class']} col" style="{$form['style']}">
+<div class="{$form['class']} col radius border" style="background: rgba(200,200,200, 0.1);{$form['style']}">
     <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row list_mult_input">
-        <div class="col container buttonExtenContainer right" style="width:92px">
-            <button class="col btn-floating theme-d2 opacity hover-opacity-off extendButton right list-{$relation}"
-                    style="margin-right:20px!important"
+        <div class="col buttonExtenContainer right" style="width: 117px;padding-right: 12px;">
+            <button class="btn-floating theme-d2 opacity hover-opacity-off hover-shadow extendButton right list-{$relation}"
                     data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                     {($disabled)? "disabled='disabled' " : ''}
@@ -22,9 +21,7 @@
                    class="form-list rest"/>
             <div class="col s12 list-complete" rel="mult"></div>
         </div>
-        <div class="col div_new_mult overflow-hidden"></div>
-        <div class="col container tpl_add_new_mult"></div>
-        <span class="input-bar"></span>
+        <div class="tpl_div_new_mult hide" rel="mult"></div>
 
         <div class="container listmult-content">
             {if $value}
@@ -33,7 +30,7 @@
                         <div class="col padding-small container" style="width:30px">
                             <i class="material-icons padding-8">{$icon}</i>
                         </div>
-                        <div class="rest padding-4 relative">
+                        <div class="rest relative" style="padding-top:4px">
                             <div class="right" style="width: 94px; height: 45px">
                                 <button id="{$entity}-{$column}-btn"
                                         onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})"
@@ -56,7 +53,7 @@
             <div class="col padding-small container" style="width:30px">
                 <i class="material-icons padding-8">{$icon}</i>
             </div>
-            <div class="rest padding-4 relative">
+            <div class="rest relative" style="padding-top:4px">
                 <div class="right" style="width: 94px; height: 45px">
                     <button id="{$entity}-{$column}-btn"
                             onclick="editListMult('{$relation}', '#{$entity}-{$column}', __$0__)"

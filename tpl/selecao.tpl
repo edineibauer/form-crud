@@ -1,12 +1,12 @@
-<div class="{$form['class']}" style="{$form['style']}">
-    <label for="{$column}" class="row padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
+<div class="{$form['class']} radius border" style="background: rgba(200,200,200, 0.1);{$form['style']}">
+    <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
-        <div class="hide">
+        <div class="hide buttonExtenContainer">
             <input type="hidden" data-model="{$ngmodel}" id="{$ngmodel}" data-format="list"
                     {($id != "")? "value='{$id}'" : ''} />
         </div>
         <div class="col s12 container relative">
-            <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
+            <input type="text" placeholder="selecione um valor" autocomplete="nope" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($disabled)? "disabled='disabled' " : ''}
