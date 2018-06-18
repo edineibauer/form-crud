@@ -2237,8 +2237,6 @@ if (typeof openPanel !== 'function') {
                 defaults: defaults,
                 autosave: autosave
             }, function (idOntab) {
-                if (ISDEV)
-                    console.log("id ontab retorno: \n" + idOntab);
                 formSubmit($("#" + idOntab).find(".ontab-content").find(".form-crud"), false, $inputCallback)
             })
         )
@@ -2397,8 +2395,6 @@ if (typeof formGetData !== 'function') {
             if (typeof($(this).attr("data-model")) !== "undefined")
                 dados[$(this).attr("data-model")] = setDados($(this), typeof(dados[$(this).attr("data-model")]) !== "undefined" ? dados[$(this).attr("data-model")] : null)
         });
-
-        console.log(dados);
 
         return dados;
     }
