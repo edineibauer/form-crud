@@ -2604,7 +2604,7 @@ if (typeof formSubmit !== 'function') {
         else
             var $id = $mult.parent().siblings(".buttonExtenContainer").find("input[type=hidden]");
 
-        if ($mult.siblings(".tpl_div_new_mult").attr("rel") === "mult")
+        if ($mult.parent().siblings(".tpl_div_new_mult").attr("rel") === "mult")
             setListMultValue($id, value, title, $mult.siblings(".tpl_add_new_mult"));
         closeNewMult($mult);
     }
@@ -2852,12 +2852,15 @@ if (typeof formAutoSubmit !== 'function') {
     function setListMultValue($id, value, title, $content) {
         var isNew = !0;
         var isTitle = !1;
+        console.log(title);
         if (typeof($content) === "undefined")
             $content = $id.parent().siblings(".listmult-content");
         var $tpl = $id.parent().siblings(".tpl_list_mult");
         $.each($id.parent().siblings(".listmult-content").find(".listmult-card"), function () {
             if (parseInt($(this).attr("rel")) === value) {
                 isNew = !1;
+                console.log(title);
+                console.log($(this).find(".listmult-title").text().trim());
                 if ($(this).find(".listmult-title").text().trim() !== title)
                     isTitle = $(this).find(".listmult-title")
             }
