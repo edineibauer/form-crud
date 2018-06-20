@@ -8,8 +8,8 @@
                     {($disabled)? "disabled='disabled' " : ''}
                     {($value != "" && $item == $value) ? "checked='checked' " : "" } />
             <span class="md-radio--fake">
-            <span></span>
-        </span>
+                <span></span>
+            </span>
             <div class="left">
                 {$allow['names'][$key]}
             </div>
