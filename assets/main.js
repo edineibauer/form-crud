@@ -3001,6 +3001,10 @@ if (typeof formAutoSubmit !== 'function') {
             $id.val(id);
             if ($list.parent().siblings(".multFieldsSelect").length)
                 requestPreDataToSelecaoUnique(id, $field.attr("data-entity"), $field.attr("id"));
+
+            if ($id.siblings("button").length) {
+                let $btn = $id.siblings("button");
+            }
         }
     }
 }
