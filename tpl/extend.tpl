@@ -1,4 +1,4 @@
-<div class="{$form['class']}" style="{$form['style']}" id="parent_{$column}">
+<div class="col {$form['class']}" style="{$form['style']}" id="parent_{$column}">
     {foreach $inputs as $input}
         {$input}
     {/foreach}

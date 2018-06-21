@@ -2256,10 +2256,9 @@ if (typeof openPanel !== 'function') {
     function animateNewMultButtons($inputHidden) {
         let $btn = $inputHidden.siblings("button");
         let $i = $btn.find("i");
-        if ($btn.hasClass("extendButton"))
-            $btn.removeClass("theme-d2").addClass("color-white");
-        else
+        if (!$btn.hasClass("extendButton"))
             $i.text("add");
+        $btn.removeClass("theme-d2").addClass("color-white");
 
         let $saveButton = $("<button />").addClass("saveButtonTpmFormListMult btn-floating hover-shadow color-teal hover-opacity-off right transition-ease-40")
             .css({"margin-right": "-40px", "z-index": 0, "opacity": 0})
@@ -2482,7 +2481,7 @@ if (typeof formSubmit !== 'function') {
         } else {
             if (status === "error")
                 toast("Corrija o formulário", "error", 2000);
-            else if(status === "parcial")
+            else if (status === "parcial")
                 toast("Salvo Parcialmente", "warning", 2000);
             else if (status !== "change")
                 toast("Salvo", 2000);
@@ -2554,56 +2553,89 @@ if (typeof formSubmit !== 'function') {
         })
     }
 
-    function formSave($form, save) {
-        save = save || false;
-        var dados = formGetData($form);
-        statusPanel("change", $form);
+    function checkSaveExtendsOpen($form) {
+        let time = 0;
+        let close = 0;
+        $form.find(".saveButtonTpmFormListMult").each(function () {
+            formSave($(this).parent().siblings(".div_new_mult").find(".form-crud:eq(0)"), 0);
+        });
+        $form.find(".editListMult").each(function () {
+            if ($(this).hasClass("color-teal"))
+                $(this).trigger("click");
+        });
 
-        if ($form.find(".saveFormButton").length)
-            $form.find(".saveFormButton").addClass("disabled").prop("disabled", !0);
-
-        post('form-crud', "save/form", {
-            entity: $form.attr("data-entity"),
-            dados: dados
-        }, function (data) {
-            cleanError($form);
-
-            if (data.error !== null) {
-                if (save)
-                    setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
-                else
-                    statusPanel("error", $form);
-
-                if (data.id > 0 && $form.closest(".div_new_mult").length)
-                    closeSavedNewMult($form, data.id);
-            } else {
-                statusPanel("salvo", $form);
-                if (data.id !== null && data.id !== "" && data.id > 0) {
-                    if ($form.closest(".div_new_mult").length) {
-                        closeSavedNewMult($form, data.id);
-                    } else {
-                        if (dados['dados.id'] === "") {
-                            reloadForm($form.attr("data-entity"), dados, data.id)
-                        } else {
-                            //atualiza
-                            $.each(data.data, function (c, e) {
-                                var $input = $form.find("input[data-model='dados." + c + "']");
-                                if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled")) {
-                                    $input.val(e);
-                                    if ($input.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && e !== "") {
-                                        $input.trigger("input");
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    if ($form.find("#callbackAction").val() !== "")
-                        window[$form.find("#callbackAction").val()](dados);
+        $form.find(".extendButton, .removerListMult, .listButton").each(function () {
+            if ($(this).hasClass("color-white") && ($(this).find("i").text() === "add" || $(this).find("i").text() === "close")) {
+                $(this).trigger("click");
+                if (close === 0) {
+                    time += 500;
+                    close = 1;
                 }
             }
-            if (!saveTime)
-                window.onbeforeunload = null
-        }, ISDEV ? !0 : "undefined")
+        });
+
+        return time;
+    }
+
+    function formSave($form, save) {
+        save = save || false;
+
+        timeToWait = checkSaveExtendsOpen($form);
+        if (timeToWait > 0)
+            statusPanel("change", $form);
+
+        setTimeout(function () {
+
+            var dados = formGetData($form);
+            statusPanel("change", $form);
+
+            if ($form.find(".saveFormButton").length)
+                $form.find(".saveFormButton").addClass("disabled").prop("disabled", !0);
+
+            post('form-crud', "save/form", {
+                entity: $form.attr("data-entity"),
+                dados: dados
+            }, function (data) {
+                cleanError($form);
+
+                if (data.error !== null) {
+                    if (save)
+                        setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
+
+                    if (data.id > 0 && $form.closest(".div_new_mult").length)
+                        closeSavedNewMult($form, data.id);
+                } else {
+                    if (save)
+                        statusPanel("salvo", $form);
+
+                    if (data.id !== null && data.id !== "" && data.id > 0) {
+                        if ($form.closest(".div_new_mult").length) {
+                            closeSavedNewMult($form, data.id);
+                        } else {
+                            if (dados['dados.id'] === "") {
+                                reloadForm($form.attr("data-entity"), dados, data.id)
+                            } else {
+                                //atualiza
+                                $.each(data.data, function (c, e) {
+                                    var $input = $form.find("input[data-model='dados." + c + "']");
+                                    if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled")) {
+                                        $input.val(e);
+                                        if ($input.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && e !== "") {
+                                            $input.trigger("input");
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        if ($form.find("#callbackAction").val() !== "")
+                            window[$form.find("#callbackAction").val()](dados);
+                    }
+                }
+                if (!saveTime)
+                    window.onbeforeunload = null
+            }, ISDEV ? !0 : "undefined");
+
+        }, timeToWait);
     }
 
     function closeSavedNewMult($form, value) {
@@ -2851,6 +2883,7 @@ if (typeof formAutoSubmit !== 'function') {
             $list.parent().prev().find("i").html("add");
             setListMultValue($list.parent().prev().find("input[type=hidden]"), parseInt($active.attr("rel")), $active.text().trim())
         } else {
+            $list.parent().prev().find("i").html("edit");
             selectListOne($list, $active)
         }
     }
@@ -2889,7 +2922,7 @@ if (typeof formAutoSubmit !== 'function') {
                 "opacity": 0
             });
 
-            $btn.find("i").css("transform", "rotateZ(0deg)");
+            $btn.removeClass("color-white").addClass("theme-d2").find("i").css("transform", "rotateZ(0deg)");
 
             setTimeout(function () {
 

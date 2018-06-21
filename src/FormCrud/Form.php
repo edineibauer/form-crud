@@ -170,7 +170,7 @@ class Form
         if (Entity::checkPermission($d->getEntity(), $id)) {
             $this->turnDicionarioIntoFormFormat($d);
 
-            $form['inputs'] = $this->prepareInputs($d);
+            $form['inputs'] = $this->prepareInputs($d, $this->fields);
             $form['relevant'] = $d->getRelevant()->getColumn();
             $form['id'] = $id;
             $form['entity'] = $d->getEntity();
@@ -233,10 +233,11 @@ class Form
      * Processa todas as inputs do form uma a uma
      *
      * @param Dicionario $d
+     * @param mixed $fields
      * @param string $ngmodel
      * @return array
      */
-    private function prepareInputs(Dicionario $d, string $ngmodel = "dados."): array
+    private function prepareInputs(Dicionario $d, $fields = null, string $ngmodel = "dados."): array
     {
         $listaInput = [];
         $template = new Template("form-crud");
@@ -255,7 +256,7 @@ class Form
                     continue;
 
                 //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
-                if ($meta->getKey() === "identifier" || (!$this->fields && $meta->getForm()['input']) || ($this->fields && (in_array($meta->getColumn(), $this->fields) || in_array($meta->getId(), $this->fields)))) {
+                if ($meta->getKey() === "identifier" || (!$fields && $meta->getForm()['input']) || ($fields && (in_array($meta->getColumn(), $fields) || in_array($meta->getId(), $fields)))) {
                     $input = $this->getBaseInput($d, $meta, $ngmodel);
 
                     if ($meta->getKey() === "extend") {
@@ -384,8 +385,7 @@ class Form
             }
         }
 
-
-        $input["inputs"] = $this->prepareInputs($dic, $input['ngmodel'] . ".");
+        $input["inputs"] = $this->prepareInputs($dic, $meta->getForm()['fields'], $input['ngmodel'] . ".");
 
         $template = new Template("form-crud");
         return $template->getShow("extend", $input);

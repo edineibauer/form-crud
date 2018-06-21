@@ -30,11 +30,11 @@
                             <div class="right" style="width: 94px; height: 45px">
                                 <button id="{$entity}-{$column}-btn"
                                         onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})"
-                                        class="btn-floating hover-shadow color-white opacity hover-opacity-off">
+                                        class="btn-floating hover-shadow color-white opacity hover-opacity-off editListMult">
                                     <i class="material-icons transition-ease-25">edit</i>
                                 </button>
                                 <button onclick="removerListMult('#{$entity}-{$column}', {$data.id})"
-                                        class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0">
+                                        class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0 removerListMult">
                                     <i class="material-icons transition-ease-25">delete</i>
                                 </button>
                             </div>
@@ -53,11 +53,11 @@
                 <div class="right" style="width: 94px; height: 45px">
                     <button id="{$entity}-{$column}-btn"
                             onclick="editListMult('{$relation}', '#{$entity}-{$column}', __$0__)"
-                            class="btn-floating hover-shadow color-white opacity hover-opacity-off">
+                            class="btn-floating hover-shadow color-white opacity hover-opacity-off editListMult">
                         <i class="material-icons transition-ease-25">edit</i>
                     </button>
                     <button onclick="removerListMult('#{$entity}-{$column}', __$0__)"
-                            class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0">
+                            class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0 removerListMult">
                         <i class="material-icons transition-ease-25">delete</i>
                     </button>
                 </div>
