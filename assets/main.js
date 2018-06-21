@@ -2578,7 +2578,7 @@ if (typeof formSubmit !== 'function') {
             savingProccess = 1;
             save = save || false;
 
-            timeToWait = checkSaveExtendsOpen($form);
+            let timeToWait = checkSaveExtendsOpen($form);
             if (timeToWait > 0)
                 statusPanel("change", $form);
 
