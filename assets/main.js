@@ -2200,7 +2200,7 @@ if (typeof loadMaskPlugin !== 'function') {
     loadMaskPlugin()
 }
 if (typeof loadMask !== 'function') {
-    var SPMaskBehavior = function (val) {
+    let SPMaskBehavior = function (val) {
         return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009'
     }, spOptions = {
         onKeyPress: function (val, e, field, options) {
@@ -2221,7 +2221,7 @@ if (typeof loadMask !== 'function') {
     }
 }
 if (typeof openPanel !== 'function') {
-    var p = new RegExp(/s$/i);
+    let p = new RegExp(/s$/i);
 
     function openPanel(entity, $inputCallback, id, $button, fields, defaults, autosave) {
         fields = fields || "";
@@ -2261,7 +2261,7 @@ if (typeof openPanel !== 'function') {
         else
             $i.text("add");
 
-        $saveButton = $("<button />").addClass("saveButtonTpmFormListMult btn-floating hover-shadow color-teal hover-opacity-off right transition-ease-40")
+        let $saveButton = $("<button />").addClass("saveButtonTpmFormListMult btn-floating hover-shadow color-teal hover-opacity-off right transition-ease-40")
             .css({"margin-right": "-40px", "z-index": 0, "opacity": 0})
             .html('<i class="material-icons prefix pointer">done</i>')
             .on("click", function () {
@@ -2323,7 +2323,7 @@ if (typeof openPanel !== 'function') {
         let entity = $button.attr("data-entity");
         let fields = $button.attr("data-fields") || "";
         let defaults = $button.attr("data-defaults") || "";
-        $contexto = $inputHidden.closest(".list_mult_input");
+        let $contexto = $inputHidden.closest(".list_mult_input");
 
         if ($contexto.find(".div_new_mult[rel='" + id + "']").length) {
             if (id > 0)
@@ -2331,7 +2331,7 @@ if (typeof openPanel !== 'function') {
             else
                 closeNewMult($contexto.find(".div_new_mult"));
         } else {
-            var wait = false;
+            let wait = false;
             if ($contexto.find(".div_new_mult").length) {
                 removeAllNewMult($contexto);
                 wait = true;
@@ -2382,10 +2382,10 @@ if (typeof formGetData !== 'function') {
             }
         }
 
-        var dados = {};
+        let dados = {};
         let $formCopy = $form.clone();
 
-        $form.find("select").each(function(i) {
+        $form.find("select").each(function (i) {
             $formCopy.find("select").eq(i).val($(this).val());
         });
 
@@ -2408,7 +2408,7 @@ if (typeof formSubmit !== 'function') {
         if (novo)
             statusPanel("error", $form);
         else
-            statusPanel("salvo", $form);
+            statusPanel("parcial", $form);
 
         $.each(erro, function (c, mensagem) {
             if (typeof(mensagem) === "object") {
@@ -2443,41 +2443,50 @@ if (typeof formSubmit !== 'function') {
     var timeInfoStatus = null;
 
     function statusPanel(status, $form) {
-        if (timeInfoStatus) {
-            clearTimeout(timeInfoStatus);
-            var $status = $form.find(".infoStatusForm");
+        if ($form.find(".saveFormButton ").length) {
+            if (timeInfoStatus) {
+                clearTimeout(timeInfoStatus);
+                var $status = $form.find(".infoStatusForm");
+            } else {
+                var $status = $("<div />")
+                    .addClass("infoStatusForm transition-ease-25 relative upper left")
+                    .css("opacity", 0)
+                    .insertAfter($form.find(".saveFormButton "));
+                var $status2 = $("<span />")
+                    .addClass("bico col font-medium font-bold padding-medium transition-ease-20 z-depth-2 opacity radius")
+                    .appendTo($status);
+
+                setTimeout(function () {
+                    $status.css({"transform": "translateX(92px)", "opacity": 1});
+                    $status2.css("transform", "translateY(-15px)").removeClass("opacity bico");
+                }, 10);
+            }
+
+            $status2 = $status.find("span").removeClass("color-text-red color-text-teal")
+            if (status === "error") {
+                $status2.text("Corrija os Erros").addClass("color-text-red");
+            } else if (status === "change") {
+                $status2.text("Enviando");
+            } else {
+                $status2.text("Salvo").addClass("color-text-teal");
+            }
+
+            timeInfoStatus = setTimeout(function () {
+                $status.css({"transform": "translateX(0)", "opacity": 0})
+                    .find("span").css("transform", "translateY(0)").removeClass("color-text-red color-text-teal").addClass("opacity bico");
+                timeInfoStatus = null;
+                setTimeout(function () {
+                    $status.remove();
+                }, 300);
+            }, 1500);
         } else {
-            var $status = $("<div />")
-                .addClass("infoStatusForm transition-ease-25 relative upper left")
-                .css("opacity", 0)
-                .insertAfter($form.find(".saveFormButton "));
-            var $status2 = $("<span />")
-                .addClass("bico col font-medium font-bold padding-medium transition-ease-20 z-depth-2 opacity radius")
-                .appendTo($status);
-
-            setTimeout(function () {
-                $status.css({"transform": "translateX(92px)", "opacity": 1});
-                $status2.css("transform", "translateY(-15px)").removeClass("opacity bico");
-            }, 10);
+            if (status === "error")
+                toast("Corrija o formulário", "error", 2000);
+            else if(status === "parcial")
+                toast("Salvo Parcialmente", "warning", 2000);
+            else if (status !== "change")
+                toast("Salvo", 2000);
         }
-
-        $status2 = $status.find("span").removeClass("color-text-red color-text-teal")
-        if (status === "error") {
-            $status2.text("Corrija os Erros").addClass("color-text-red");
-        } else if (status === "change") {
-            $status2.text("Enviando");
-        } else {
-            $status2.text("Salvo").addClass("color-text-teal");
-        }
-
-        timeInfoStatus = setTimeout(function () {
-            $status.css({"transform": "translateX(0)", "opacity": 0})
-                .find("span").css("transform", "translateY(0)").removeClass("color-text-red color-text-teal").addClass("opacity bico");
-            timeInfoStatus = null;
-            setTimeout(function () {
-                $status.remove();
-            }, 300);
-        }, 1500);
     }
 
     function reloadForm(entity, dados, id) {
@@ -2562,20 +2571,21 @@ if (typeof formSubmit !== 'function') {
             if (data.error !== null) {
                 if (save)
                     setError($form, data.error[$form.attr("data-entity")], (dados['dados.id'] === ""));
+                else
+                    statusPanel("error", $form);
+
+                if (data.id > 0 && $form.closest(".div_new_mult").length)
+                    closeSavedNewMult($form, data.id);
             } else {
                 statusPanel("salvo", $form);
                 if (data.id !== null && data.id !== "" && data.id > 0) {
-                    if (dados['dados.id'] === "") {
-                        //salva novo
-                        if ($form.closest(".div_new_mult").length)
-                            closeSavedNewMult($form, data.id);
-                        else
-                            reloadForm($form.attr("data-entity"), dados, data.id)
+                    if ($form.closest(".div_new_mult").length) {
+                        closeSavedNewMult($form, data.id);
                     } else {
-                        //atualiza
-                        if ($form.closest(".div_new_mult").length) {
-                            closeSavedNewMult($form, data.id);
+                        if (dados['dados.id'] === "") {
+                            reloadForm($form.attr("data-entity"), dados, data.id)
                         } else {
+                            //atualiza
                             $.each(data.data, function (c, e) {
                                 var $input = $form.find("input[data-model='dados." + c + "']");
                                 if (!$input.is(":focus") || $input.prop("disabled") || $input.hasClass("disabled")) {
@@ -2650,7 +2660,7 @@ if (typeof formAutoSubmit !== 'function') {
         }).off("click", ".deleteFormButton").on("click", ".deleteFormButton", function () {
             if (confirm("Excluir este registro?")) {
                 deleteEntityData($(this).attr("rel"), $(this).attr("data-id"));
-                $form = $(this).closest(".form-control");
+                let $form = $(this).closest(".form-control");
                 $form.siblings(".fields").remove();
                 $form.remove();
             }
@@ -2662,10 +2672,10 @@ if (typeof formAutoSubmit !== 'function') {
         }).off("keypress keydown", "button").on("keypress keydown", "button", function (e) {
             e.preventDefault()
         }).off("keyup", ".form-list").on("keyup", ".form-list", function (e) {
-            var $this = $(this);
+            let $this = $(this);
             if (e.which !== 17) {
                 if ([38, 40, 13].indexOf(e.which) > -1) {
-                    var $list = $this.siblings(".list-complete");
+                    let $list = $this.siblings(".list-complete");
                     if (e.which === 38) {
                         if ($list.find("li.active").prev().length)
                             $list.find("li.active").removeClass("active").prev().addClass("active")
@@ -2676,13 +2686,13 @@ if (typeof formAutoSubmit !== 'function') {
                         if ($list.html().length) {
                             selectList($list);
                         } else {
-                            var $btnBox = $this.parent().siblings(".buttonExtenContainer");
-                            var inputHidde = $btnBox.find('input[type=hidden]');
+                            let $btnBox = $this.parent().siblings(".buttonExtenContainer");
+                            let inputHidde = $btnBox.find('input[type=hidden]');
                             openExtend($btnBox.find(".listButton"), inputHidde.val(), inputHidde, $this.val());
                         }
                     }
                 } else if ([37, 39].indexOf(e.which) < 0) {
-                    var $list = $this.siblings(".list-complete");
+                    let $list = $this.siblings(".list-complete");
                     $list.parent().siblings(".buttonExtenContainer").find("button").find("i").html("add");
                     if ($list.attr("rel") !== "mult")
                         $this.parent().prev().find("input[type=hidden]").val("");
@@ -2692,7 +2702,7 @@ if (typeof formAutoSubmit !== 'function') {
                         readList($this, $this.attr("data-entity"), $this.attr("data-parent"), $this.val(), $this.attr("id"))
                     } else {
                         $this.siblings(".list-complete").html("");
-                        if($this.parent().siblings(".div_new_mult").length)
+                        if ($this.parent().siblings(".div_new_mult").length)
                             closeNewMult($this.parent().siblings(".div_new_mult"));
                     }
                 }
@@ -2701,16 +2711,15 @@ if (typeof formAutoSubmit !== 'function') {
             if (!$(this).prop("disabled") && $(this).val() === "")
                 readList($(this), $(this).attr("data-entity"), $(this).attr("data-parent"), $(this).val(), $(this).attr("id"))
         }).off("focusout", ".form-list").on("focusout", ".form-list", function () {
-            $this = $(this);
             setTimeout(function () {
                 $(".list-complete").html("")
             }, 50)
         }).find(".editorHtml").jqte();
         if ($element.find(".dropzone").length) {
             $element.find(".dropzone").each(function () {
-                var $this = $(this);
-                var $file = $this.siblings("input[type=hidden]");
-                var type = $file.attr("data-format");
+                let $this = $(this);
+                let $file = $this.siblings("input[type=hidden]");
+                let type = $file.attr("data-format");
                 new Dropzone("#" + $this.attr("id"), {
                     acceptedFiles: $this.find("input[type=file]").attr("accept"),
                     uploadMultiple: type === "files",
@@ -2727,7 +2736,7 @@ if (typeof formAutoSubmit !== 'function') {
                     init: function () {
                         this.on("success", function (file, response) {
                             response = $.parseJSON(response);
-                            var t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
+                            let t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
                             t = $.grep(t, function () {
                                 return !0
                             });
@@ -2750,9 +2759,9 @@ if (typeof formAutoSubmit !== 'function') {
                             })
                         });
                         if ($file.val() !== "") {
-                            var myDropzone = this;
+                            let myDropzone = this;
                             $.each($.parseJSON($file.val()), function (i, e) {
-                                var mockFile = {
+                                let mockFile = {
                                     name: e.name,
                                     size: e.size,
                                     type: e.type,
@@ -2774,7 +2783,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function setJsonValue($id, value) {
-        var dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
+        let dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
             return !0
         });
         if ($.inArray(value, dataRecovery) === -1)
@@ -2783,7 +2792,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function removeJsonValue($id, value) {
-        var dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
+        let dataRecovery = $.grep(($id.val() !== "" ? $.parseJSON($id.val()) : []), function () {
             return !0
         });
         dataRecovery.removeItem(value);
@@ -2791,7 +2800,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function removerListMult(idElemento, id) {
-        var $content = $(idElemento).parent().siblings(".listmult-content");
+        let $content = $(idElemento).parent().siblings(".listmult-content");
         let $listcard = $content.find(".listmult-card[rel='" + id + "']");
         if ($listcard.find("button:eq(1)").find("i").text() === "delete" || $listcard.find("button:eq(0)").find("i").text() === "delete") {
             if (confirm("Exclur Relação?")) {
@@ -2809,7 +2818,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function readList($input, entity, parent, search, id) {
-        var selecao = $input.hasClass("selecaoUnique") ? $input.closest(".multFieldsSelect").prev().prev().find("input[type=hidden]").val() : 0;
+        let selecao = $input.hasClass("selecaoUnique") ? $input.closest(".multFieldsSelect").prev().prev().find("input[type=hidden]").val() : 0;
         post('form-crud', 'read/list', {
             search: search,
             entity: entity,
@@ -2817,12 +2826,12 @@ if (typeof formAutoSubmit !== 'function') {
             column: id,
             selecao: selecao
         }, function (data) {
-            var $list = $input.siblings(".list-complete");
+            let $list = $input.siblings(".list-complete");
             $list.html(data);
             if (data !== "") {
                 if ($list.find("li.active").text().trim().toLowerCase() === $input.val().trim().toLowerCase())
                     selectList($list);
-                else if($list.parent().siblings(".div_new_mult").length)
+                else if ($list.parent().siblings(".div_new_mult").length)
                     closeNewMult($list.parent().siblings(".div_new_mult"));
 
                 $(".list-option").off("mousedown").on("mousedown", function () {
@@ -2835,7 +2844,7 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function selectList($list) {
-        var $active = $list.find("li.active");
+        let $active = $list.find("li.active");
         $list.html("");
         $list.siblings(".form-list").val("").focus();
         if ($list.attr("rel") === "mult") {
@@ -2851,11 +2860,11 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function setListMultValue($id, value, title, $content) {
-        var isNew = !0;
-        var isTitle = !1;
+        let isNew = !0;
+        let isTitle = !1;
         if (typeof($content) === "undefined")
             $content = $id.parent().siblings(".listmult-content");
-        var $tpl = $id.parent().siblings(".tpl_list_mult");
+        let $tpl = $id.parent().siblings(".tpl_list_mult");
         $.each($id.parent().siblings(".listmult-content").find(".listmult-card"), function () {
             if (parseInt($(this).attr("rel")) == value) {
                 isNew = !1;
@@ -2872,30 +2881,10 @@ if (typeof formAutoSubmit !== 'function') {
         }
     }
 
-    function animateHeightCloseExtend($div) {
-        $div.css("height", $div.height() + "px");
-        animateNewMultButtonsClose($div);
-        setTimeout(function () {
-            $div.css("height", 0);
-
-            setTimeout(function () {
-                $div.html("");
-                $div.siblings(".input-bar").removeClass("input-bar-active");
-
-                if ($div.siblings(".buttonExtenContainer").length) {
-                    $div.siblings(".buttonExtenContainer").find("button").removeClass("color-white").addClass("theme-d2").find("i").css("transform", "rotateZ(0deg)");
-                } else {
-                    $div.prev(".listmult-card").find("button:eq(0)").removeClass("color-teal").addClass("color-white").find("i").removeClass("rotate").text("edit");
-                    $div.prev(".listmult-card").find("button:eq(1)").find("i").removeClass("rotate").text("delete");
-                }
-            }, 390);
-        }, 10);
-    }
-
     function animateNewMultButtonsClose($div) {
         let $btn = $div.siblings(".buttonExtenContainer").find(".listButton, .extendButton");
         if ($div.siblings(".buttonExtenContainer").length) {
-            $saveBtn = $div.siblings(".buttonExtenContainer").find(".saveButtonTpmFormListMult").css({
+            var $saveBtn = $div.siblings(".buttonExtenContainer").find(".saveButtonTpmFormListMult").css({
                 "margin-right": "-40px",
                 "opacity": 0
             });
@@ -2904,7 +2893,7 @@ if (typeof formAutoSubmit !== 'function') {
 
             setTimeout(function () {
 
-                if ($btn.hasClass('listButton'))
+                if ($btn.hasClass('listButton') && $btn.siblings("input[type=hidden]").val() !== "")
                     $btn.find("i").text("edit");
                 else
                     $btn.removeClass("color-white").addClass("theme-d2");
@@ -2927,7 +2916,7 @@ if (typeof formAutoSubmit !== 'function') {
 
     function animateCloseHeightNewMult($div, closebarInstant) {
         $div.css("height", $div.height() + "px");
-        $bar = $div.siblings(".input-bar");
+        var $bar = $div.siblings(".input-bar");
 
         if (typeof (closebarInstant) !== "undefined")
             $bar.remove();
@@ -2963,16 +2952,16 @@ if (typeof formAutoSubmit !== 'function') {
     }
 
     function clearSelecaoUnique($list) {
-        var entity = $list.attr("data-entity");
-        var field = $list.attr("id");
-        var $mult = $("#multFieldsSelect-" + entity + "-" + field);
+        let entity = $list.attr("data-entity");
+        let field = $list.attr("id");
+        let $mult = $("#multFieldsSelect-" + entity + "-" + field);
         $mult.find(".titleRequired").removeClass("hide");
         $mult.children().addClass("disabled");
         $mult.find("input[type=text]").prop("disabled", 1)
     }
 
     function requestPreDataToSelecaoUnique(id, entity, field) {
-        var $mult = $("#multFieldsSelect-" + entity + "-" + field);
+        let $mult = $("#multFieldsSelect-" + entity + "-" + field);
         $mult.find(".titleRequired").addClass("hide");
         $mult.children().removeClass("disabled hide");
         $mult.find("input[type=text]").prop("disabled", !1);
@@ -2982,7 +2971,7 @@ if (typeof formAutoSubmit !== 'function') {
         post("form-crud", "read/selecaoUniquePreData", {id: id, entity: entity, field: field}, function (g) {
             if (g) {
                 $.each(g, function (column, data) {
-                    var $c = $mult.find("#" + column);
+                    let $c = $mult.find("#" + column);
                     if ($c.length) {
                         $c.val(data.text);
                         $mult.find("input[id='dados." + column + "']").val(data.id)
@@ -3001,19 +2990,14 @@ if (typeof formAutoSubmit !== 'function') {
             $id.val(id);
             if ($list.parent().siblings(".multFieldsSelect").length)
                 requestPreDataToSelecaoUnique(id, $field.attr("data-entity"), $field.attr("id"));
-
-            if ($id.siblings("button").length) {
-                let $btn = $id.siblings("button");
-            }
         }
     }
 }
 
 function loadForm(element) {
-    var $element = $(element);
-    loadMask($element);
-    formAutoSubmit($element)
+    loadMask($(element));
+    formAutoSubmit($(element))
 }
 
 Dropzone.autoDiscover = !1;
-loadForm('.form-crud')
+loadForm('.form-crud');
