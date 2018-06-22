@@ -262,6 +262,8 @@ class Form
                     if ($meta->getKey() === "extend") {
                         $listaInput[] = $this->getExtentContent($meta, $input);
                     } else {
+                        if ($allow = $this->checkCheckBoxData($meta, $d))
+                            $input['allow'] = $allow;
 
                         if ($list = $this->checkListData($meta, $d))
                             $input = array_merge($input, $list);
@@ -396,6 +398,43 @@ class Form
      * @param Dicionario $d
      * @return mixed
      */
+    private function checkCheckBoxData(Meta $meta, Dicionario $d)
+    {
+        if ($meta->getFormat() === "checkbox_mult") {
+            $filter = "WHERE id > 0";
+            if(!empty($meta->getFilter())) {
+                foreach ($meta->getFilter() as $item) {
+                    $item = explode(',', $item);
+                    if(preg_match('/\$_SESSION/i', $item[2])) {
+                        $ss = explode("[", $item[2]);
+                        $item[2] = $_SESSION[str_replace(["'", '"'], '', explode(']', $ss[1])[0])][str_replace(["'", '"'], '', explode(']', $ss[2])[0])];
+
+                    }
+                    $filter .= " && {$item[0]} {$item[1]} {$item[2]}";
+                }
+            }
+            $read = new Read();
+            $tpl = new Template(DOMINIO);
+            $read->exeRead(PRE . $meta->getRelation(), $filter);
+            if($read->getResult()) {
+                if(empty($meta->getTemplate()))
+                    $dd = new Dicionario($meta->getRelation());
+                foreach ($read->getResult() as $item) {
+                    $allow['names'][] = !empty($meta->getTemplate()) ? $tpl->getShow($meta->getTemplate(), $item) : $item[$dd->getRelevant()->getColumn()];
+                    $allow['values'][] = $item['id'];
+                }
+                return $allow;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Meta $meta
+     * @param Dicionario $d
+     * @return mixed
+     */
     private function checkListData(Meta $meta, Dicionario $d)
     {
 
@@ -428,8 +467,7 @@ class Form
      * @param Dicionario $dicionario
      * @return string
      */
-    private
-    function checkSelecaoUnique(Meta $meta): string
+    private function checkSelecaoUnique(Meta $meta): string
     {
         $mult = "";
 
@@ -458,8 +496,7 @@ class Form
         return $mult;
     }
 
-    private
-    function getIcons($type)
+    private function getIcons($type)
     {
         switch ($type) {
             case 'email':
