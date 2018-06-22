@@ -2521,11 +2521,12 @@ if (typeof formSubmit !== 'function') {
         }, function (data) {
             if (data) {
 
-                if ($ontab.length)
+                if ($ontab.length) {
                     $ontab.loading();
-                else
+                    toast("Cadastro Salvo");
+                } else {
                     $form.loading();
-
+                }
                 if (id) {
                     var $input = $form.find(":focus");
                     var val = $input.val();
@@ -2543,7 +2544,6 @@ if (typeof formSubmit !== 'function') {
 
                 loadForm("#form_" + entity);
                 statusPanel("salvo", $form);
-                toast("Cadastro Salvo");
             }
         })
     }
