@@ -294,7 +294,7 @@ class Form
     {
         $icon = "";
         $dr = "";
-        if (in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
+        if (in_array($meta->getFormat(), ["extend_mult", "list_mult", "selecao_mult", "checkbox_mult"])) {
             $dr = new Dicionario($meta->getRelation());
             $icon = $this->getIcons($dr->getRelevant()->getFormat());
         }
@@ -340,7 +340,7 @@ class Form
         else
             $v = $meta->getDefault();
 
-        if (in_array($meta->getKey(), ["extend_mult", "list_mult", "selecao_mult"])) {
+        if (in_array($meta->getFormat(), ["extend_mult", "list_mult", "selecao_mult"])) {
             if (!empty($v)) {
                 $read = new Read();
                 $data = [];
@@ -348,6 +348,17 @@ class Form
                     $read->exeRead($meta->getRelation(), "WHERE id = :id", "id={$item}");
                     if ($read->getResult())
                         $data[] = ["id" => $read->getResult()[0]['id'], "title" => $read->getResult()[0][$dr->getRelevant()->getColumn()]];
+                }
+                $v = $data;
+            }
+        } elseif ($meta->getFormat() === "checkbox_mult") {
+            if (!empty($v)) {
+                $data = [];
+                $read = new Read();
+                foreach (json_decode($v, true) as $item) {
+                    $read->exeRead($meta->getRelation(), "WHERE id = :id", "id={$item}");
+                    if ($read->getResult())
+                        $data[] = $read->getResult()[0]['id'];
                 }
                 $v = $data;
             }

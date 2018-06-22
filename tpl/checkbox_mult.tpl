@@ -2,16 +2,13 @@
     <label for="{$column}"
            class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
-        <div class="hide buttonExtenContainer">
-            <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
-                    {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
-        </div>
-
+        <input type="hidden" class="idsCheckboxMult" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
+                {($value)? "value='{$value|json_encode}'" : ''} />
         <div class="container listmult-content">
             {if $allow['values']}
                 {foreach key=key item=item from=$allow['values']}
                     <label class="col s12">
-                        <input type="checkbox" data-model="{$ngmodel}" value="{$item}"
+                        <input type="checkbox" value="{$item}" class="checkboxmult"
                                 {($key == 0)? "id='{$ngmodel}' data-format='checkbox' " : ''}
                                 {($value && $item|in_array:$value) ? "checked='checked' " : "" }
                                 {($size !== false)? "maxlength='{$size}' " : ''}

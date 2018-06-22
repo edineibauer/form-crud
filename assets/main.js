@@ -2521,12 +2521,10 @@ if (typeof formSubmit !== 'function') {
         }, function (data) {
             if (data) {
 
-                if ($ontab.length) {
+                if ($ontab.length)
                     $ontab.loading();
-                    statusPanel("salvo", $form);
-                } else {
+                else
                     $form.loading();
-                }
 
                 if (id) {
                     var $input = $form.find(":focus");
@@ -2544,6 +2542,8 @@ if (typeof formSubmit !== 'function') {
                 }
 
                 loadForm("#form_" + entity);
+                statusPanel("salvo", $form);
+                toast("Cadastro Salvo");
             }
         })
     }
@@ -2578,7 +2578,7 @@ if (typeof formSubmit !== 'function') {
             savingProccess = 1;
             save = save || false;
 
-            let timeToWait = checkSaveExtendsOpen($form);
+            timeToWait = checkSaveExtendsOpen($form);
             if (timeToWait > 0)
                 statusPanel("change", $form);
 
@@ -2701,6 +2701,14 @@ if (typeof formAutoSubmit !== 'function') {
                 $form.siblings(".fields").remove();
                 $form.remove();
             }
+        }).off("change", ".checkboxmult").on("change", ".checkboxmult", function () {
+            let $id = $(this).parent().parent().siblings(".idsCheckboxMult");
+            if($(this).is(":checked")) {
+                setJsonValue($id, $(this).val());
+            } else {
+                removeJsonValue($id, $(this).val());
+            }
+
         }).off("click", ".extendButton").on("click", ".extendButton", function () {
             openExtend($(this), 0, $(this).siblings('input[type=hidden]'))
         }).off("click", ".listButton").on("click", ".listButton", function () {
