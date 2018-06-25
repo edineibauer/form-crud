@@ -1,4 +1,4 @@
-<div class="{$form['class']} col radius border" style="background: rgba(200,200,200, 0.1);{$form['style']}">
+<div class="{$form['class']} col radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);{$form['style']}">
     <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row list_mult_input">
         <div class="col buttonExtenContainer right" style="width: 117px;padding-right: 12px;">

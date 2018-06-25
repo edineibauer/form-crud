@@ -1,4 +1,4 @@
-<div class="{$form['class']}" style="{$form['style']}">
+<div class="{$form['class']}" {$form['atributos']} style="{$form['style']}">
     <label class="col">
         <span class="col">{$nome} {($default === false) ? "*" : ""}</span>
         <input type="range" data-model="{$ngmodel}" id="{$ngmodel}" data-format="range"

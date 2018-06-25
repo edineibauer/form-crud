@@ -1,5 +1,5 @@
 <div class="col s12"><br></div>
-<div class="{$form['class']}" style="{$form['style']}">
+<div class="{$form['class']}" {$form['atributos']} style="{$form['style']}">
     <div>{$nome} {($default === false) ? "*" : ""}</div>
     {foreach key=key item=item from=$allow['values']}
         <label class="col s12">

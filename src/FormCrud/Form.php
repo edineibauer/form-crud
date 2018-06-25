@@ -428,10 +428,10 @@ class Form
             $tpl = new Template(DOMINIO);
             $read->exeRead(PRE . $meta->getRelation(), $filter);
             if($read->getResult()) {
-                if(empty($meta->getTemplate()))
+                if(empty($meta->getForm()['template']))
                     $dd = new Dicionario($meta->getRelation());
                 foreach ($read->getResult() as $item) {
-                    $allow['names'][] = !empty($meta->getTemplate()) ? $tpl->getShow($meta->getTemplate(), $item) : $item[$dd->getRelevant()->getColumn()];
+                    $allow['names'][] = !empty($meta->getForm()['template']) ? $tpl->getShow($meta->getForm()['template'], $item) : $item[$dd->getRelevant()->getColumn()];
                     $allow['values'][] = $item['id'];
                 }
                 return $allow;

@@ -1,4 +1,4 @@
-<div class="{$form['class']} radius border" style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
+<div class="{$form['class']} radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
     <label for="{$column}" class="row padding-8 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
