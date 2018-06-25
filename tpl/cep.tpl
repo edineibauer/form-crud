@@ -1,7 +1,7 @@
 <div class="col relative {$form['class']}" style="{$form['style']}">
     <label class="col">
         <span class="col">{$nome} {($default === false) ? "*" : ""}</span>
-        <input type="text" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="off" data-format="cep"
+        <input type="text" data-model="{$ngmodel}" id="{$ngmodel}" autocomplete="nope" data-format="cep"
                 {($value != "") ? "value='{$value}' " : "" }
                 {($size !== false)? "maxlength='{$size}' " : ''}
                 {($disabled)? "disabled='disabled' " : ''}

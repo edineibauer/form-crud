@@ -2488,7 +2488,7 @@ if (typeof formSubmit !== 'function') {
         }
     }
 
-    function reloadForm(entity, dados, id) {
+    function reloadForm(entity, id) {
 
         var $form = $("#form_" + entity).closest(".form-control");
         var $ontab = $form.closest(".ontab");
@@ -2573,8 +2573,9 @@ if (typeof formSubmit !== 'function') {
     }
 
     var savingProccess = !1;
+
     function formSave($form, save) {
-        if(!savingProccess) {
+        if (!savingProccess) {
             savingProccess = 1;
             save = save || false;
 
@@ -2608,7 +2609,7 @@ if (typeof formSubmit !== 'function') {
                                 closeSavedNewMult($form, data.id);
                             } else {
                                 if (dados['dados.id'] === "") {
-                                    reloadForm($form.attr("data-entity"), dados, data.id)
+                                    reloadForm($form.attr("data-entity"), data.id)
                                 } else {
                                     //atualiza
                                     $.each(data.data, function (c, e) {
@@ -2676,6 +2677,49 @@ if (typeof formSubmit !== 'function') {
         }, 400)
     }
 }
+
+function checkInputUnique($this, val) {
+    if ($this.parent().parent().hasClass("loadData")) {
+        let n = $this.attr("data-model").split(".");
+        let $form = $this.closest(".form-crud");
+        let entity = $this.parent().parent().attr("data-entity");
+        let column = $this.attr("data-model");
+        let model = "dados.";
+        if(n.length > 1) {
+            $form = $this.closest(".extend_parent");
+            column = n[n.length-1];
+            $.each(n, function (i, e) {
+                if(i > 0 && i < (n.length-1)) {
+                    model += e + ".";
+                }
+            });
+        }
+        if ($this.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && val !== "")
+            val = $this.cleanVal();
+
+        post("form-crud", "autocomplete/form", {
+            entity: entity,
+            column: column,
+            val: val,
+            id: $this.closest(".form-crud").find("input[data-model='dados.id']").val()
+        }, function (g) {
+            if (g) {
+                $.each(g.content, function (col, value) {
+                    if(col !== column) {
+                        let $input = $form.find("[data-model='" + model + col + "']");
+                        if ($input.length) {
+                            $input.val(value);
+                            if ($input.is('.telefone, .rg, .ie, .cpf, .cnpj, .cep, .valor, .date_time, .percent') && value !== "") {
+                                $input.trigger("input");
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+}
+
 if (typeof formAutoSubmit !== 'function') {
     function formAutoSubmit($element) {
         /* $element.off("keyup change", ".jqte_editor").on("keyup change", ".jqte_editor", function (e) {
@@ -2691,7 +2735,10 @@ if (typeof formAutoSubmit !== 'function') {
 
         $element.off("keypress", ".jqte_editor, input, textarea, select").on("keypress", ".jqte_editor, input, textarea, select", function (e) {
             if (e.which !== undefined && e.which === 13 && !$(this).hasClass("form-list"))
-                formSubmit($(this).closest(".form-crud"), 1)
+                formSubmit($(this).closest(".form-crud"), 1);
+        }).off("keyup", "input").on("keyup", "input", function (e) {
+            if (e.which !== undefined && [13, 37, 38, 39, 40, 116].indexOf(e.which) < 0 && typeof($(this).attr("data-model")) === "string")
+                checkInputUnique($(this), $(this).val());
         }).off("click", ".saveFormButton").on("click", ".saveFormButton", function () {
             formSave($(this).closest(".form-crud"), 1)
         }).off("click", ".deleteFormButton").on("click", ".deleteFormButton", function () {
@@ -2703,7 +2750,7 @@ if (typeof formAutoSubmit !== 'function') {
             }
         }).off("change", ".checkboxmult").on("change", ".checkboxmult", function () {
             let $id = $(this).parent().parent().siblings(".idsCheckboxMult");
-            if($(this).is(":checked")) {
+            if ($(this).is(":checked")) {
                 setJsonValue($id, $(this).val());
             } else {
                 removeJsonValue($id, $(this).val());
