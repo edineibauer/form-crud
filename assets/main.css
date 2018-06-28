@@ -54,6 +54,8 @@
 }
 
 .dropzone {
+    float: left;
+    width: 100%;
     min-height: 100px;
     padding: 10px;
     background: #f9f9f9;
