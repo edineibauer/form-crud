@@ -36,9 +36,10 @@
                         $head.appendChild(script);
                     } else {
                         {if $saveButton.text == "Adicionar" || $saveButton.text == "Atualizar"}
-                            loadMask($('#form_{$entity}'));
+                        loadMask($('#form_{$entity}'));
+                        loadFormFiles($('#form_{$entity}'));
                         {else}
-                            loadForm('#form_{$entity}');
+                        loadForm('#form_{$entity}');
                         {/if}
                     }
                 })();

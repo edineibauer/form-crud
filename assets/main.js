@@ -2219,6 +2219,76 @@ if (typeof loadMask !== 'function') {
         $form.find(".valor").mask('#.##0,00', {reverse: !0});
         $form.find('.date_time').mask('00/00/0000 00:00:00')
     }
+
+    function loadFormFiles($element) {
+        $element.find(".editorHtml").jqte();
+
+        if ($element.find(".dropzone").length) {
+            $element.find(".dropzone").each(function () {
+                let $this = $(this);
+                let $file = $this.siblings("input[type=hidden]");
+                let type = $file.attr("data-format");
+                new Dropzone("#" + $this.attr("id"), {
+                    acceptedFiles: $this.find("input[type=file]").attr("accept"),
+                    uploadMultiple: type === "files",
+                    maxFiles: type === "files" ? 20 : 1,
+                    addRemoveLinks: !0,
+                    maxFilesize: 500,
+                    dictDefaultMessage: "Selecione ou Arraste Arquivos",
+                    dictCancelUpload: "Cancelar",
+                    dictRemoveFile: "Excluir",
+                    dictInvalidFileType: "Tipo não Permitido",
+                    dictFileTooBig: "Máximo de 500MB",
+                    dictResponseError: "Erro ao Salvar",
+                    dictMaxFilesExceeded: "Máximo de Uploads Atingido",
+                    init: function () {
+                        this.on("success", function (file, response) {
+                            response = $.parseJSON(response);
+                            let t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
+                            t = $.grep(t, function () {
+                                return !0
+                            });
+                            $.each($.parseJSON(response.data), function (i, e) {
+                                if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
+                                    return n.name === file.name
+                                }).length === 0)
+                                    t.push(e.data); else if (typeof(e.data) === "string")
+                                    toast(e.data, "warning")
+                            });
+                            $(response.id).val(JSON.stringify(t)).trigger("change")
+                        }).on("removedfile", function (file) {
+                            post('form-crud', 'delete/source', {
+                                entity: $this.find("input[name=entity]").val(),
+                                column: $this.find("input[name=column]").val(),
+                                name: file.name,
+                                files: $file.val()
+                            }, function (data) {
+                                $file.val(data).trigger("change")
+                            })
+                        });
+                        if ($file.val() !== "") {
+                            let myDropzone = this;
+                            $.each($.parseJSON($file.val()), function (i, e) {
+                                let mockFile = {
+                                    name: e.name,
+                                    size: e.size,
+                                    type: e.type,
+                                    status: Dropzone.ADDED,
+                                    url: e.url,
+                                    accepted: !0
+                                };
+                                myDropzone.emit("addedfile", mockFile);
+                                if (e.type.match(/image.*/))
+                                    myDropzone.emit("thumbnail", mockFile, HOME + e.url);
+                                myDropzone.emit("complete", mockFile);
+                                myDropzone.files.push(mockFile)
+                            })
+                        }
+                    }
+                })
+            })
+        }
+    }
 }
 if (typeof openPanel !== 'function') {
     let p = new RegExp(/s$/i);
@@ -2806,72 +2876,7 @@ if (typeof formAutoSubmit !== 'function') {
             setTimeout(function () {
                 $(".list-complete").html("")
             }, 50)
-        }).find(".editorHtml").jqte();
-        if ($element.find(".dropzone").length) {
-            $element.find(".dropzone").each(function () {
-                let $this = $(this);
-                let $file = $this.siblings("input[type=hidden]");
-                let type = $file.attr("data-format");
-                new Dropzone("#" + $this.attr("id"), {
-                    acceptedFiles: $this.find("input[type=file]").attr("accept"),
-                    uploadMultiple: type === "files",
-                    maxFiles: type === "files" ? 20 : 1,
-                    addRemoveLinks: !0,
-                    maxFilesize: 500,
-                    dictDefaultMessage: "Selecione ou Arraste Arquivos",
-                    dictCancelUpload: "Cancelar",
-                    dictRemoveFile: "Excluir",
-                    dictInvalidFileType: "Tipo não Permitido",
-                    dictFileTooBig: "Máximo de 500MB",
-                    dictResponseError: "Erro ao Salvar",
-                    dictMaxFilesExceeded: "Máximo de Uploads Atingido",
-                    init: function () {
-                        this.on("success", function (file, response) {
-                            response = $.parseJSON(response);
-                            let t = $file.val() !== "" ? $.parseJSON($file.val()) : [];
-                            t = $.grep(t, function () {
-                                return !0
-                            });
-                            $.each($.parseJSON(response.data), function (i, e) {
-                                if (e.response === 1 && e.data.name === file.name && $.grep(t, function (n) {
-                                    return n.name === file.name
-                                }).length === 0)
-                                    t.push(e.data); else if (typeof(e.data) === "string")
-                                    toast(e.data, "warning")
-                            });
-                            $(response.id).val(JSON.stringify(t)).trigger("change")
-                        }).on("removedfile", function (file) {
-                            post('form-crud', 'delete/source', {
-                                entity: $this.find("input[name=entity]").val(),
-                                column: $this.find("input[name=column]").val(),
-                                name: file.name,
-                                files: $file.val()
-                            }, function (data) {
-                                $file.val(data).trigger("change")
-                            })
-                        });
-                        if ($file.val() !== "") {
-                            let myDropzone = this;
-                            $.each($.parseJSON($file.val()), function (i, e) {
-                                let mockFile = {
-                                    name: e.name,
-                                    size: e.size,
-                                    type: e.type,
-                                    status: Dropzone.ADDED,
-                                    url: e.url,
-                                    accepted: !0
-                                };
-                                myDropzone.emit("addedfile", mockFile);
-                                if (e.type.match(/image.*/))
-                                    myDropzone.emit("thumbnail", mockFile, HOME + e.url);
-                                myDropzone.emit("complete", mockFile);
-                                myDropzone.files.push(mockFile)
-                            })
-                        }
-                    }
-                })
-            })
-        }
+        });
     }
 
     function setJsonValue($id, value) {
@@ -3089,7 +3094,8 @@ if (typeof formAutoSubmit !== 'function') {
 
 function loadForm(element) {
     loadMask($(element));
-    formAutoSubmit($(element))
+    formAutoSubmit($(element));
+    loadFormFiles($(element))
 }
 
 Dropzone.autoDiscover = !1;
