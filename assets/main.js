@@ -2234,7 +2234,7 @@ if (typeof loadMask !== 'function') {
                     maxFiles: type === "files" ? 20 : 1,
                     addRemoveLinks: !0,
                     maxFilesize: 500,
-                    dictDefaultMessage: "Selecione ou Arraste Arquivos",
+                    dictDefaultMessage: type === "files" ? "Selecione Arquivos" : "Selecione um Arquivo",
                     dictCancelUpload: "Cancelar",
                     dictRemoveFile: "Excluir",
                     dictInvalidFileType: "Tipo não Permitido",
