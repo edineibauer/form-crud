@@ -333,7 +333,10 @@ class Form
      */
     private function getValue(Meta $meta, $dr)
     {
-        if (!empty($meta->getValue()))
+
+        if ($meta->getValue() == "0")
+            $v = 0;
+        elseif (!empty($meta->getValue()))
             $v = $meta->getValue();
         elseif (!empty($this->defaults) && (!empty($this->defaults[$meta->getColumn()]) || !empty($this->defaults[$meta->getId()])))
             $v = (!empty($this->defaults[$meta->getColumn()]) ? $this->defaults[$meta->getColumn()] : $this->defaults[$meta->getId()]);
