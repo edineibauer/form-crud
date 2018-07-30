@@ -414,7 +414,7 @@ class Form
      */
     private function checkCheckBoxData(Meta $meta, Dicionario $d)
     {
-        if ($meta->getFormat() === "checkbox_mult") {
+        if ($meta->getFormat() === "checkbox_mult" || $meta->getFormat() === "checkbox_rel") {
             $filter = "WHERE id > 0";
             if(!empty($meta->getFilter())) {
                 foreach ($meta->getFilter() as $item) {
