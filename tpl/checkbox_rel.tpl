@@ -1,6 +1,6 @@
 <div class="{$form['class']} row radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);{$form['style']}">
     <label for="{$column}"
-           class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
+           class="col padding-medium color-text-grey font-small color-grey-light">{$nome} {($default === false) ? "*" : ""}</label>
     <div class="row">
         <input type="hidden" class="idCheckboxRel" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="checkboxrel"
                 {($value)? "value='{$value}'" : ''} />
