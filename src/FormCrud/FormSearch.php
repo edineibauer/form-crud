@@ -46,14 +46,31 @@ class FormSearch
         $d = new Dicionario($this->entity);
         $column = $d->getRelevant()->getColumn();
         $data = ($this->selecao === 0 ? $this->filter() : $this->filterSelecao());
+        $fieldShow = [];
 
-        $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE (" . PRE . $this->entity . ".id LIKE '%{$this->search}%' OR " . PRE . $this->entity . ".{$column} LIKE '%{$this->search}%')" . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
+        $where = "";
+        foreach (['identifier', 'title', 'link', 'email', 'tel', 'cpf', 'cnpj', 'cep'] as $item) {
+            if (!empty($d->getInfo()[$item]) && !empty($c = $d->search($d->getInfo()[$item]))) {
+                $where .= (!empty($where) ? " OR " : "") . PRE . $this->entity . ".{$c->getColumn()} LIKE '%{$this->search}%'";
+                $fieldShow[] = [$c->getColumn(), $c->getNome()];
+            }
+        }
+
+        $comando = "SELECT " . PRE . $this->entity . ".* FROM " . PRE . $this->entity . (!empty($data['join']) ? " {$data['join']}" : "") . " WHERE " . (!empty($where) ? "({$where})" : "") . (!empty($data['where']) ? " AND {$data['where']}" : "") . " ORDER BY " . PRE . $this->entity . ".{$column} LIMIT 7";
 
         $sql = new SqlCommand();
         $sql->exeCommand($comando);
         if ($sql->getResult()) {
             $template = new \Helpers\Template("form-crud");
-            $this->result = $template->getShow("list-result", ["data" => $sql->getResult(), "column" => $column]);
+            $dataResult = $sql->getResult();
+            if(!empty($this->search) && is_string($this->search)) {
+                foreach ($dataResult as $i => $r) {
+                    foreach ($fieldShow as $item) {
+                        $dataResult[$i][$item[0]] = ucwords(str_replace(strtolower($this->search), "<b>" . strtolower($this->search) . "</b>", strtolower($r[$item[0]])));
+                    }
+                }
+            }
+            $this->result = $template->getShow("list-result", ["data" => $dataResult, "fields" => $fieldShow]);
         }
     }
 
