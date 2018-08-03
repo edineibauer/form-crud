@@ -7,4 +7,4 @@ $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $read = new \ConnCrud\Read();
 $read->exeRead($entity, "WHERE {$column} = :m" . ($id > 0 ? " && id != {$id}" : ""), "m={$value}");
 if ($read->getResult())
-    $data['data']['content'] = $read->getResult()[0];
+    $data['data'] = $read->getResult()[0];
