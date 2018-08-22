@@ -452,7 +452,7 @@ class Form
     private function checkListData(Meta $meta, Dicionario $d)
     {
 
-        if ($meta->getKey() === "list" || $meta->getKey() === "selecao") {
+        if ($meta->getKey() === "list" || $meta->getKey() === "selecao" || $meta->getKey() === "extend_add") {
             if (!empty($meta->getValue())) {
                 $dr = new Dicionario($meta->getRelation());
                 $dr->setData($meta->getValue());

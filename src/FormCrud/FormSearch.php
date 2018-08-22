@@ -104,7 +104,7 @@ class FormSearch
                         }
                     }
 
-                    if (in_array($relationColumnDic['key'], ['list', 'selecao', 'extend'])) {
+                    if (in_array($relationColumnDic['key'], ['list', 'selecao', 'extend', 'extend_add'])) {
                         $filter = $this->filterFieldList($filter, $relationColumnDic['relation'], $relationDicionario, $relationColumnDic, $dados);
 
                     } elseif (in_array($relationColumnDic['key'], ['selecao_mult', 'list_mult', 'extend_mult'])) {
