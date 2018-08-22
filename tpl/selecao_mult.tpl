@@ -30,7 +30,11 @@
                                     <i class="material-icons">delete</i>
                                 </button>
                             </div>
-                            <div class="left container padding-medium listmult-title">{$data.title}</div>
+                            <div class="left container padding-medium listmult-title">
+                                {foreach key=k item=it from=$data.valores}
+                                    <small class="color-text-grey">{$k}:</small> {$it}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {/foreach}
+                            </div>
                         </div>
                     </div>
                 {/foreach}

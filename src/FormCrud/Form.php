@@ -345,12 +345,20 @@ class Form
 
         if (in_array($meta->getFormat(), ["extend_mult", "list_mult", "selecao_mult"])) {
             if (!empty($v)) {
+                $d = new Dicionario($meta->getRelation());
                 $read = new Read();
                 $data = [];
+                $i = 0;
                 foreach (json_decode($v, true) as $item) {
                     $read->exeRead($meta->getRelation(), "WHERE id = :id", "id={$item}");
-                    if ($read->getResult())
-                        $data[] = ["id" => $read->getResult()[0]['id'], "title" => $read->getResult()[0][$dr->getRelevant()->getColumn()]];
+                    if ($read->getResult()){
+                        $i ++;
+                        $data[$i] = ["id" => $read->getResult()[0]['id'], "valores" => []];
+                        foreach (['title', 'link', 'email', 'tel', 'cpf', 'cnpj', 'cep'] as $item) {
+                            if (!empty($d->getInfo()[$item]) && !empty($c = $d->search($d->getInfo()[$item])))
+                                $data[$i]["valores"][ucwords(str_replace(['_', '-'], ' ', strtolower($c->getColumn())))] = $read->getResult()[0][$c->getColumn()];
+                        }
+                    }
                 }
                 $v = $data;
             }

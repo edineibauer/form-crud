@@ -38,7 +38,11 @@
                                     <i class="material-icons transition-ease-25">delete</i>
                                 </button>
                             </div>
-                            <div class="left container padding-8 font-light listmult-title">{$data.title}</div>
+                            <div class="left container padding-8 font-light listmult-title">
+                                {foreach key=k item=it from=$data.valores}
+                                    <small class="color-text-grey">{$k}:</small> {$it}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {/foreach}
+                            </div>
                         </div>
                     </div>
                 {/foreach}

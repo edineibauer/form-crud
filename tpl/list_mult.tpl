@@ -26,7 +26,7 @@
         <div class="container listmult-content">
             {if $value}
                 {foreach item=data key=i from=$value}
-                    <div class="listmult-card" style="border-top: solid 2px #DDD;margin-bottom: 2px!important;" rel="{$data.id}">
+                    <div class="listmult-card" style="{if $i>1}border-top: solid 1px #DDD;{/if}margin-bottom: 2px!important;" rel="{$data.id}">
                         <div class="col padding-small container" style="width:30px">
                             <i class="material-icons padding-8">{$icon}</i>
                         </div>
@@ -42,14 +42,18 @@
                                     <i class="material-icons transition-ease-25">delete</i>
                                 </button>
                             </div>
-                            <div class="left container padding-8 font-light listmult-title">{$data.title}</div>
+                            <div class="left container padding-8 font-light listmult-title">
+                                {foreach key=k item=it from=$data.valores}
+                                    <small class="color-text-grey">{$k}:</small> {$it}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {/foreach}
+                            </div>
                         </div>
                     </div>
                 {/foreach}
             {/if}
         </div>
 
-        <div class="tpl_list_mult hide listmult-card" style="border-top: solid 2px #DDD;margin-bottom: 2px!important;" rel="__$0__">
+        <div class="tpl_list_mult hide listmult-card" style="border-top: solid 1px #DDD;margin-bottom: 2px!important;" rel="__$0__">
             <div class="col padding-small container" style="width:30px">
                 <i class="material-icons padding-8">{$icon}</i>
             </div>
