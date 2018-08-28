@@ -5,10 +5,10 @@
     <div class="row list_mult_input">
         <div class="col buttonExtenContainer right" style="width:105px">
             <button class="btn-floating {($id != "")? "color-white" : 'theme-d2'} listButton right transition-ease-25 opacity hover-shadow hover-opacity-off list-{$column}"
-                 data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
-                 data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
+                    data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
+                    data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                     {($disabled)? "disabled='disabled' " : ''}
-                 style="width:41px">
+                    style="width:41px">
                 <i class="material-icons prefix pointer editList transition-ease-25">{($id != "")? "edit" : 'add'}</i>
             </button>
             <input type="hidden" data-model="{$ngmodel}" id="{$ngmodel}" data-format="list"

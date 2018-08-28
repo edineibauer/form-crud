@@ -10,7 +10,7 @@
                 <i class="material-icons prefix pointer editList">add</i>
             </button>
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="list_mult"
-                    {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
+                    {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 1},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
         <div class="rest container relative">
             <input type="text" placeholder="{$nome}" autocomplete="nope" id="{$column}"
@@ -53,7 +53,7 @@
             {/if}
         </div>
 
-        <div class="tpl_list_mult hide listmult-card" style="border-top: solid 1px #DDD;margin-bottom: 2px!important;" rel="__$0__">
+        <div class="tpl_list_mult hide listmult-card transition-easy" style="border-top: solid 1px #DDD;margin-bottom: 2px!important;" rel="__$0__">
             <div class="col padding-small container" style="width:30px">
                 <i class="material-icons padding-8">{$icon}</i>
             </div>

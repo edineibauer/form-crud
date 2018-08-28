@@ -3,7 +3,7 @@
     <div class="row">
         <div class="hide buttonExtenContainer">
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
-                    {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 0},{/if}{$id.id}{/foreach}]'" : ''} />
+                    {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 1},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
         <div class="col s12 container relative">
             <input type="text" placeholder="selecione multiplos valores" autocomplete="nope" id="{$column}"

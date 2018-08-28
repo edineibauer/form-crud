@@ -6,7 +6,7 @@
                   class="dropzone border radius dz-clickable">
                 <div class="fallback">
                     <input name="file" class="hide" type="file" multiple
-                           accept="{foreach item=name key=i from=$allow['values']}{if $i > 0},{/if}.{$name}{/foreach}"/>
+                           accept="{foreach item=name key=i from=$allow['values']}{if $i > 1},{/if}.{$name}{/foreach}"/>
                 </div>
                 <input type="hidden" name="file" value="save/source"/>
                 <input type="hidden" name="lib" value="form-crud"/>
