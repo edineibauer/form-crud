@@ -29,4 +29,3 @@
         <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>
     </div>
 </div>
-<div class="clear"><br></div>
