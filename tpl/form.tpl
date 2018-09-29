@@ -13,7 +13,7 @@
         </div>
 
         {if $saveButton.text != "Adicionar" && $saveButton.text != "Atualizar"}
-            <div class="col padding-16 container">
+            <div class="col padding-16 container parent-save-form">
                 <button class="btn theme-d2 hover-shadow opacity hover-opacity-off saveFormButton {$saveButton.class}">
                     <i class="material-icons left padding-right">{$saveButton.icon}</i>{$saveButton.text}
                 </button>

@@ -1,10 +1,10 @@
-<div class="{$form['class']} radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
+<div class="{$form['class']} parent-input parent-relation radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
     <label for="{$column}" class="row padding-8 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
     <div class="row list_mult_input">
-        <div class="col buttonExtenContainer right" style="width:105px">
-            <button class="btn-floating {($id != "")? "color-white" : 'theme-d2'} listButton right transition-ease-25 opacity hover-shadow hover-opacity-off list-{$column}"
+        <div class="col buttonExtenContainer right">
+            <button class="btn btnRelation {($id != "")? "color-white" : 'theme-d2'} listButton right transition-ease-25 opacity hover-shadow hover-opacity-off list-{$column}"
                     data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                     {($disabled)? "disabled='disabled' " : ''}

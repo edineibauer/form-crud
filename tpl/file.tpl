@@ -1,12 +1,12 @@
-<div class="{$form['class']} form-file" {$form['atributos']} style="{$form['style']}">
+<div class="{$form['class']} parent-input col form-file" {$form['atributos']} style="{$form['style']}">
     <label class="col">
         <span class="col">{$nome} {($default === false) ? "*" : ""}</span>
         {if isset($allow['values'])}
-            <form action="{$home}set.php" enctype="multipart/form-data" id="form-{$entity}-{$column}"
+            <form action="{$home}set" enctype="multipart/form-data" id="form-{$entity}-{$column}"
                   class="dropzone border radius dz-clickable">
                 <div class="fallback">
                     <input name="file" class="hide" type="file" multiple
-                           accept="{foreach item=name key=i from=$allow['values']}{if $i > 1},{/if}.{$name}{/foreach}"/>
+                           accept="{foreach item=name key=i from=$allow['values']}{if $i > 0},{/if}.{$name}{/foreach}"/>
                 </div>
                 <input type="hidden" name="file" value="save/source"/>
                 <input type="hidden" name="lib" value="form-crud"/>

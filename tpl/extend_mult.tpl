@@ -1,4 +1,4 @@
-<div class="{$form['class']}" {$form['atributos']} style="{$form['style']}">
+<div class="{$form['class']} parent-input parent-relation" {$form['atributos']} style="{$form['style']}">
     <div class="row list_mult_input border-bottom radius border" style="background: rgba(200,200,200, 0.1);">
 
         <div class="buttonExtenContainer padding-4 right">

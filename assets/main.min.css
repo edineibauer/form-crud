@@ -1,4 +1,39 @@
-.extendButton i{
+.btnRelation {
+    padding: 5px 15px;
+    border-radius: 3px;
+    padding-top: 9px;
+    padding-bottom: 2px;
+}
+
+.buttonExtenContainer {
+    width: 225px;
+    padding-left: 4px;
+}
+
+.saveButtonTpmFormListMult {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.focus-blur {
+    transition: all 0.2s ease;
+    filter: blur(7px);
+}
+
+.focus-blur:after {
+    content: '';
+    height: 100%;
+    min-height: 80px;
+    width: 100%;
+    min-width: 50px;
+    display: block;
+    z-index: 9999999;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.extendButton i {
     transition-duration: 0.4s;
 }
 
@@ -22,16 +57,19 @@
     z-index: 0;
     margin-left: -80px;
 }
+
 .infoStatusForm span.bico:before {
     left: 0px;
     top: 19px;
     opacity: 0;
 }
+
 .infoStatusForm span {
     background: #f9f9f9;
     z-index: 2;
-    color:#777777;
+    color: #777777;
 }
+
 .infoStatusForm span:before {
     content: "";
     opacity: 1;
@@ -43,9 +81,9 @@
     border-top: solid 16px #f9f9f9;
     border-top-left-radius: 23px;
     transition: all .4s ease-in-out;
-    -webkit-box-shadow: -3px 3px 7px -3px rgba(61,61,61,1);
-    -moz-box-shadow:-3px 3px 7px -3px rgba(61,61,61,1);
-    box-shadow: -3px 3px 7px -3px rgba(61,61,61,1);
+    -webkit-box-shadow: -3px 3px 7px -3px rgba(61, 61, 61, 1);
+    -moz-box-shadow: -3px 3px 7px -3px rgba(61, 61, 61, 1);
+    box-shadow: -3px 3px 7px -3px rgba(61, 61, 61, 1);
     z-index: 1;
 }
 
@@ -345,7 +383,7 @@
 
 .div_new_mult {
     transition: 0.4s ease-out;
-    background: rgba(200,200,200, 0.1);
+    background: rgba(200, 200, 200, 0.1);
     border-radius: 5px;
     height: 0;
 }

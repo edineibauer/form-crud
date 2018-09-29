@@ -268,7 +268,7 @@ class Form
                         if ($list = $this->checkListData($meta, $d))
                             $input = array_merge($input, $list);
 
-                        $listaInput[] = ($input['form']['input'] !== "hidden" ? "<div class='col margin-bottom {$input['s']} {$input['m']} {$input['l']}'>" : "") .
+                        $listaInput[] = ($input['form']['input'] !== "hidden" ? "<div class='col margin-bottom relative {$input['s']} {$input['m']} {$input['l']}'>" : "") .
                             $template->getShow($input['form']['input'], $input) .
                             ($input['form']['input'] !== "hidden" ? '</div>' : '');
                     }

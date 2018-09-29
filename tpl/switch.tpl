@@ -1,4 +1,4 @@
-<div class="{$form['class']}" {$form['atributos']} style="{$form['style']}">
+<div class="parent-input col {$form['class']}" {$form['atributos']} style="max-height: 74px;{$form['style']}">
     <label class="col">
         <span class="col">{$nome} {($default === false) ? "*" : ""}</span>
         <div class="switch switch-squad">
