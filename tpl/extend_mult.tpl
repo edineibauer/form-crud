@@ -2,12 +2,12 @@
     <div class="row list_mult_input border-bottom radius border" style="background: rgba(200,200,200, 0.1);">
 
         <div class="buttonExtenContainer padding-4 right">
-            <button class="btn-floating opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-0 right list-{$relation}"
-                    style="margin-right:20px!important"
+            <button class="btn btnRelation margin-right opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-0 right list-{$relation}"
+                    style="margin-right:5px!important"
                     {($disabled)? "disabled='disabled' " : ''}
                     data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}">
-                <i class="material-icons left">add</i>
+                <i class="material-icons">add</i>
             </button>
 
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="extend_mult"
