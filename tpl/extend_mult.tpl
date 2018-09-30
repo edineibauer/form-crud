@@ -19,10 +19,10 @@
 
         <div class="tpl_div_new_mult hide" rel="mult"></div>
 
-        <div class="container listmult-content">
+        <div class="col listmult-content">
             {if $value}
                 {foreach item=data key=i from=$value}
-                    <div class="listmult-card" style="border-top: solid 2px #DDD;margin-bottom: 2px!important;" rel="{$data.id}">
+                    <div class="listmult-card col" style="border-top: solid 2px #DDD;padding:0 5px" rel="{$data.id}">
                         <div class="col padding-small container" style="width:30px">
                             <i class="material-icons padding-8">{$icon}</i>
                         </div>
@@ -30,8 +30,9 @@
                             <div class="right" style="width: 94px; height: 45px">
                                 <button id="{$entity}-{$column}-btn"
                                         onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})"
-                                        class="btn-floating hover-shadow color-white opacity hover-opacity-off editListMult">
-                                    <i class="material-icons transition-ease-25">edit</i>
+                                        class="btn btnRelation hover-shadow padding-medium color-white opacity hover-opacity-off editListMult">
+                                    <i class="material-icons transition-ease-25 left">edit</i>
+                                    <span class="editListMultSpan" style="padding-left:10px">editar</span>
                                 </button>
                                 <button onclick="removerListMult('#{$entity}-{$column}', {$data.id})"
                                         class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0 removerListMult">
@@ -49,16 +50,17 @@
             {/if}
         </div>
 
-        <div class="tpl_list_mult hide listmult-card" style="border-top: solid 2px #DDD;margin-bottom: 2px!important;" rel="__$0__">
+        <div class="tpl_list_mult hide listmult-card col" style="border-top: solid 2px #DDD;padding:0 5px" rel="__$0__">
             <div class="col padding-small container" style="width:30px">
                 <i class="material-icons padding-8">{$icon}</i>
             </div>
             <div class="rest relative" style="padding-top:4px">
-                <div class="right" style="width: 94px; height: 45px">
+                <div class="right" style="width: 170px; height: 45px">
                     <button id="{$entity}-{$column}-btn"
                             onclick="editListMult('{$relation}', '#{$entity}-{$column}', __$0__)"
-                            class="btn-floating hover-shadow color-white opacity hover-opacity-off editListMult">
-                        <i class="material-icons transition-ease-25">edit</i>
+                            class="btn btnRelation hover-shadow padding-medium color-white opacity hover-opacity-off editListMult">
+                        <i class="material-icons transition-ease-25 left">edit</i>
+                        <span class="editListMultSpan" style="padding-left:10px">editar</span>
                     </button>
                     <button onclick="removerListMult('#{$entity}-{$column}', __$0__)"
                             class="btn-floating color-hover-text-red hover-shadow color-white opacity hover-opacity-off margin-0 removerListMult">

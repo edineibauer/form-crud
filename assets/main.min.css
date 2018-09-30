@@ -37,6 +37,11 @@
     transition-duration: 0.4s;
 }
 
+.form-list {
+    margin-bottom: 0;
+    padding: 14px 10px 8px 20px;
+}
+
 .rotate {
     transform: rotateZ(360deg);
 }
