@@ -27,12 +27,12 @@
                     if (document.querySelector("script[data-info='form-crud']") == null) {
                         var style = document.createElement('link');
                         style.rel = "stylesheet";
-                        style.href = HOME + 'vendor/conn/form-crud/assets/main.min.css?v=' + VERSION;
+                        style.href = HOME + VENDOR + 'form-crud/assets/main.min.css?v=' + VERSION;
                         $head.appendChild(style);
 
                         var script = document.createElement('script');
                         script.setAttribute("data-info", "form-crud");
-                        script.src = HOME + 'vendor/conn/form-crud/assets/main.min.js?v=' + VERSION;
+                        script.src = HOME + VENDOR + 'form-crud/assets/main.min.js?v=' + VERSION;
                         $head.appendChild(script);
                     } else {
                         {if $saveButton.text == "Adicionar" || $saveButton.text == "Atualizar"}
