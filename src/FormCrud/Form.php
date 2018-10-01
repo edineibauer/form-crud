@@ -9,8 +9,7 @@ use EntityForm\Dicionario;
 use EntityForm\Meta;
 use Helpers\Helper;
 use Helpers\Template;
-use LinkControl\EntityCreateEntityDatabase;
-use LinkControl\EntityImport;
+use EntityForm\EntityImport;
 
 class Form
 {
