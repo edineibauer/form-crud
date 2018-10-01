@@ -195,7 +195,7 @@ class Form
     private function checkEntityExist()
     {
         if (!file_exists(PATH_HOME . "entity/cache/{$this->entity}.json")) {
-            foreach (Helper::listFolder(PATH_HOME . "vendor/conn") as $lib)
+            foreach (Helper::listFolder(PATH_HOME . VENDOR) as $lib)
                 new EntityImport($lib);
         }
     }
@@ -321,7 +321,7 @@ class Form
      */
     private function getFormDefault(string $format)
     {
-        $inputs = json_decode(file_get_contents(PATH_HOME . (DEV && DOMINIO === "entity-form" ? "" : "vendor/conn/entity-form/") . "entity/input_type.json"), true);
+        $inputs = json_decode(file_get_contents(PATH_HOME . (DOMINIO === "entity-form" ? "" : VENDOR . "entity-form/") . "entity/input_type.json"), true);
 
         return !empty($inputs[$format]['form']) ? array_replace_recursive($inputs['default']['form'], $inputs[$format]['form']) : $inputs['default']['form'];
     }
