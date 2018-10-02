@@ -35,14 +35,14 @@
             <div class="col listmult-content">
                 {if $value}
                     {foreach item=data key=i from=$value}
-                        <div class="listmult-card col padding-right"
+                        <div class="listmult-card col"
                              style="{if $i>1}border-top: solid 1px #DDD;{/if}padding:0 5px"
                              rel="{$data.id}">
                             <div class="col padding-small container" style="width:30px">
                                 <i class="material-icons padding-8">{$icon}</i>
                             </div>
                             <div class="rest relative" style="padding-top:4px">
-                                <div class="right" style="width: 94px; height: 45px">
+                                <div class="right" style="width: 170px; height: 45px">
                                     <button id="{$entity}-{$column}-btn"
                                             onclick="editListMult('{$relation}', '#{$entity}-{$column}', {$data.id})"
                                             class="btn btnRelation hover-shadow padding-medium color-white opacity hover-opacity-off editListMult">
