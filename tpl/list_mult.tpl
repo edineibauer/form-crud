@@ -1,5 +1,5 @@
 <div class="{$form['class']} parent-input parent-relation col" {$form['atributos']} style="{$form['style']}">
-    <label for="{$column}" class="col padding-8 color-text-grey font-small">
+    <label for="{$column}" class="col padding-4 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
     <div class="col radius border" style="background: rgba(200,200,200, 0.1);">
