@@ -68,7 +68,7 @@
 
             {*TEMPLATE PARA NOVAS RELAÇÕES*}
             <div class="tpl_list_mult hide listmult-card col transition-easy"
-                 style="border-top: solid 1px #DDD;padding:0 5px" rel="__$0__">
+                 style="border-bottom: solid 1px #DDD;padding:0 5px" rel="__$0__">
                 <div class="col padding-small container" style="width:30px">
                     <i class="material-icons padding-8">{$icon}</i>
                 </div>
