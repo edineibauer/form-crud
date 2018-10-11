@@ -1,12 +1,14 @@
-<div class="{$form['class']} parent-input parent-relation row radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);{$form['style']}">
-    <label for="{$column}" class="col padding-medium color-text-grey font-small">{$nome} {($default === false) ? "*" : ""}</label>
-    <div class="row">
+<div class="{$form['class']} parent-input parent-relation row" {$form['atributos']} style="{$form['style']}">
+    <label for="{$column}" class="col padding-4 color-text-grey font-small">
+        {$nome} {($default === false) ? "*" : ""}
+    </label>
+    <div class="col radius border" style="background: rgba(200,200,200, 0.1);">
         <div class="hide buttonExtenContainer">
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="selecao_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 1},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
-        <div class="col s12 container relative">
-            <input type="text" placeholder="selecione multiplos valores" autocomplete="off" id="{$column}"
+        <div class="col s12 container relative padding-0">
+            <input type="text" placeholder="pesquisar..." autocomplete="off" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                     {($disabled)? "disabled='disabled' " : ''}

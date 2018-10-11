@@ -1,5 +1,5 @@
 <div class="{$form['class']} parent-input parent-relation col" {$form['atributos']} style="{$form['style']}">
-    <label for="{$column}" class="col padding-0 padding-bottom color-text-grey">
+    <label for="{$column}" class="col padding-8 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
     <div class="col radius border" style="background: rgba(200,200,200, 0.1);">
@@ -19,7 +19,7 @@
 
             {*INPUT DE PESQUISA*}
             <div class="rest relative">
-                <input type="text" placeholder="pesquise..." autocomplete="off" id="{$column}"
+                <input type="text" placeholder="pesquisar..." autocomplete="off" id="{$column}"
                         {($size !== false)? "maxlength='{$size}' " : ''}
                         {($default === false)? 'required="required" ' : ''}
                         {($disabled)? "disabled='disabled' " : ''}

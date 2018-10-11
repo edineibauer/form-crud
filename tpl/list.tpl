@@ -1,11 +1,11 @@
-<div class="{$form['class']} parent-input parent-relation radius border" {$form['atributos']} style="background: rgba(200,200,200, 0.1);padding-left:10px!important;{$form['style']}">
-    <label for="{$column}" class="row padding-8 color-text-grey font-small">
+<div class="{$form['class']} parent-input parent-relation col" {$form['atributos']} style="{$form['style']}">
+    <label for="{$column}" class="col padding-8 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
-    <div class="row list_mult_input">
+    <div class="col list_mult_input radius border" style="background: rgba(200,200,200, 0.1);">
         <div class="col buttonExtenContainer right padding-4">
             <button class="btn btnRelation theme-d2 opacity hover-opacity-off hover-shadow extendButton right list-{$column}"
-                    data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
+                    rel="single" data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
                     {($disabled)? "disabled='disabled' " : ''}>
                 <i class="material-icons prefix pointer editList transition-ease-25">{($id != "")? "edit" : 'add'}</i>
@@ -14,7 +14,7 @@
                     {($id != "")? "value='{$id}'" : ''} />
         </div>
         <div class="rest relative">
-            <input type="text" placeholder="pesquise..." autocomplete="off" id="{$column}"
+            <input type="text" placeholder="pesquisar..." autocomplete="off" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($disabled)? "disabled='disabled' " : ''}
