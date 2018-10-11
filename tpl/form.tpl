@@ -5,9 +5,13 @@
     <div class="row relative form-crud" id='form_{$entity}' data-entity="{$entity}">
         <div class="panel">
             <input type='hidden' rel='title' value='{$relevant}'>
+            <input style="display:none">
+            <input type="password" style="display:none">
+
             {foreach $inputs as $input}
                 {$input}
             {/foreach}
+
             <input type="hidden" value="{$autoSave}" id="autoSave"/>
             <input type="hidden" value="{$callback}" id="callbackAction"/>
         </div>

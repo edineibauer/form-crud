@@ -6,13 +6,12 @@
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 1},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
         <div class="col s12 container relative">
-            <input type="text" placeholder="selecione multiplos valores" autocomplete="nope" id="{$column}"
+            <input type="text" placeholder="selecione multiplos valores" autocomplete="off" id="{$column}"
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                     {($disabled)? "disabled='disabled' " : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
-            <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="mult"></div>
         </div>
 

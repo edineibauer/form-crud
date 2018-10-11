@@ -6,14 +6,13 @@
                     {($id != "")? "value='{$id}'" : ''} />
         </div>
         <div class="col s12 container relative">
-            <input type="text" placeholder="selecione um valor" autocomplete="nope" id="{$column}"
+            <input type="text" placeholder="selecione um valor" autocomplete="off" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}
                     {($disabled)? "disabled='disabled' " : ''}
                     {($default === false)? 'required="required" ' : ''}
                    data-entity="{$relation}" data-parent="{$entity}"
                    class="form-list rest"/>
-            <span class="input-bar"></span>
             <div class="col s12 list-complete" rel="one"></div>
         </div>
         <div class="multFieldsSelect" id="multFieldsSelect-{$relation}-{$column}">{$mult}</div>

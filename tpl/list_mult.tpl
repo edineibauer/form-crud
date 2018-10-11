@@ -19,7 +19,7 @@
 
             {*INPUT DE PESQUISA*}
             <div class="rest relative">
-                <input type="text" placeholder="pesquise..." autocomplete="nope" id="{$column}"
+                <input type="text" placeholder="pesquise..." autocomplete="off" id="{$column}"
                         {($size !== false)? "maxlength='{$size}' " : ''}
                         {($default === false)? 'required="required" ' : ''}
                         {($disabled)? "disabled='disabled' " : ''}
