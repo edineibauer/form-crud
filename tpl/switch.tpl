@@ -1,5 +1,5 @@
 <div class="parent-input col {$form['class']}" {$form['atributos']} style="max-height: 74px;{$form['style']}">
-    <label class="col">
+    <label class="col" style="width: auto">
         <span class="col">{$nome} {($default === false) ? "*" : ""}</span>
         <div class="switch switch-squad">
             <input type="checkbox" data-model="{$ngmodel}" id="{$ngmodel}" data-format="switch"
