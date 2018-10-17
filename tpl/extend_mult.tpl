@@ -1,7 +1,7 @@
 <div class="{$form['class']} parent-input parent-relation" {$form['atributos']} style="{$form['style']}">
     <div class="row list_mult_input border-bottom radius border" style="background: rgba(200,200,200, 0.1);">
 
-        <div class="buttonExtenContainer padding-4 right">
+        <div class="buttonExtenContainer padding-4 right div-blur">
             <button class="btn btnRelation margin-right opacity hover-opacity-off theme-d2 extendButton hover-shadow margin-0 right list-{$relation}"
                     style="margin-right:5px!important"
                     {($disabled)? "disabled='disabled' " : ''}
@@ -13,7 +13,7 @@
             <input type="hidden" data-model="{$ngmodel}" id="{$entity}-{$column}" data-format="extend_mult"
                     {($value)? "value='[{foreach item=id key=i from=$value}{if $i > 1},{/if}{$id.id}{/foreach}]'" : ''} />
         </div>
-        <div class="left color-text-grey padding-12 container upper relative">
+        <div class="left color-text-grey padding-12 container upper relative div-blur rest">
             {$nome}
         </div>
 

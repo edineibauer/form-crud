@@ -3,7 +3,7 @@
         {$nome} {($default === false) ? "*" : ""}
     </label>
     <div class="col list_mult_input radius border" style="background: rgba(200,200,200, 0.1);">
-        <div class="col buttonExtenContainer right padding-4">
+        <div class="col buttonExtenContainer right padding-4 div-blur">
             <button class="btn btnRelation theme-d2 listButton right transition-ease-25 opacity hover-shadow hover-opacity-off list-{$column}"
                     rel="single" data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                     data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
@@ -13,7 +13,7 @@
             <input type="hidden" data-model="{$ngmodel}" id="{$ngmodel}" data-format="list"
                     {($id != "")? "value='{$id}'" : ''} />
         </div>
-        <div class="rest relative">
+        <div class="rest relative div-blur">
             <input type="text" placeholder="pesquisar..." autocomplete="off" id="{$column}"
                     {($title != "")? "value='{$title}'" : ''}
                     {($size !== false)? "maxlength='{$size}' " : ''}

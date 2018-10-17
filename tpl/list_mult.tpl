@@ -6,7 +6,7 @@
         <div class="row list_mult_input">
 
             {*BOTÕES DE AÇÃO*}
-            <div class="col buttonExtenContainer right padding-4">
+            <div class="col buttonExtenContainer right padding-4 div-blur">
                 <button class="btn btnRelation theme-d2 opacity hover-opacity-off hover-shadow extendButton right list-{$relation}"
                         data-entity="{$relation}" data-fields='{$form['fields']|@json_encode}'
                         data-defaults='{$form['defaults']|@json_encode}' data-autosave="{$autosave}"
@@ -18,7 +18,7 @@
             </div>
 
             {*INPUT DE PESQUISA*}
-            <div class="rest relative">
+            <div class="rest relative div-blur">
                 <input type="text" placeholder="pesquisar..." autocomplete="off" id="{$column}"
                         {($size !== false)? "maxlength='{$size}' " : ''}
                         {($default === false)? 'required="required" ' : ''}
