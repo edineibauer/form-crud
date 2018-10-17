@@ -1,4 +1,4 @@
-<div class="{$form['class']} parent-input parent-relation row" {$form['atributos']} style="{$form['style']}">
+<div class="{$form['class']} parent-input row" {$form['atributos']} style="{$form['style']}">
     <label for="{$column}" class="col padding-4 color-text-grey font-small">
         {$nome} {($default === false) ? "*" : ""}
     </label>
