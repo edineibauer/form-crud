@@ -11,7 +11,7 @@
   ],
   "require": {
     "php": "^7.1",
-    "conn/entity": "1.9.*"
+    "conn/entity": "*"
   },
   "autoload": {
     "psr-0": {
