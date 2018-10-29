@@ -859,7 +859,8 @@
     outline: none;
     word-wrap: break-word;
     -ms-word-wrap: break-word;
-    resize: vertical
+    resize: vertical;
+    cursor: auto;
 }
 
 .jqte_editor div, .jqte_editor p {
