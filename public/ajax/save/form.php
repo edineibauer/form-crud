@@ -26,7 +26,7 @@ if($dados && is_array($dados)) {
             $cont = $v;
     }
 
-    $d = new \EntityForm\Dicionario($nome);
+    $d = new \Entity\Dicionario($nome);
     $d->setData($cont);
 
     $d->save();

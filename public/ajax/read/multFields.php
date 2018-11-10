@@ -3,7 +3,7 @@ $entity = trim(strip_tags(filter_input(INPUT_POST, 'entity', FILTER_DEFAULT)));
 $entityRelation = trim(strip_tags(filter_input(INPUT_POST, 'entityRelation', FILTER_DEFAULT)));
 $column = trim(strip_tags(filter_input(INPUT_POST, 'column', FILTER_DEFAULT)));
 
-$dicionario = \EntityForm\Metadados::getDicionario($entity);
+$dicionario = \Entity\Metadados::getDicionario($entity);
 
 $field = null;
 foreach ($dicionario as $dados) {
@@ -18,7 +18,7 @@ foreach ($dicionario as $dados) {
 
 if($field) {
 
-    $dicionario = \EntityForm\Metadados::getDicionario($entityRelation);
+    $dicionario = \Entity\Metadados::getDicionario($entityRelation);
     foreach ($field['select'] as $select) {
         foreach ($dicionario as $item) {
             if($item['column'] === $select) {

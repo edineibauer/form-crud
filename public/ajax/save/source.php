@@ -47,8 +47,8 @@ function addFile(string $column, array $dicionario, array $info, array $file) : 
 
 $entity = trim(strip_tags(filter_input(INPUT_POST, "entity", FILTER_DEFAULT)));
 $column = trim(strip_tags(filter_input(INPUT_POST, "column", FILTER_DEFAULT)));
-$dicionario = \EntityForm\Metadados::getDicionario($entity);
-$info = \EntityForm\Metadados::getInfo($entity);
+$dicionario = \Entity\Metadados::getDicionario($entity);
+$info = \Entity\Metadados::getInfo($entity);
 
 if(!empty($_FILES['file']) && !empty($info["source"])) {
     $data['id'] = "#" . $entity . "-" . $column;

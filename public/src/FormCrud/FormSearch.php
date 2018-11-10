@@ -4,8 +4,8 @@ namespace FormCrud;
 
 
 use ConnCrud\SqlCommand;
-use EntityForm\Dicionario;
-use EntityForm\Metadados;
+use Entity\Dicionario;
+use Entity\Metadados;
 
 class FormSearch
 {
