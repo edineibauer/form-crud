@@ -1,3 +1,11 @@
+.dropzone-extension {
+    position: absolute;
+    top: 55px;
+    left: 26px;
+    z-index: 11;
+    color: white;
+}
+
 .dz-preview, .dz-preview img {
     width: auto!important;
 }
