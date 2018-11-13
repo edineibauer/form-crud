@@ -29,7 +29,7 @@
             <div class="dz-size" data-dz-size></div>
             <div class="dz-filename padding-8"><span class="font-medium padding-medium border radius z-depth-2" style="display: inline-flex" data-dz-name></span></div>
             <div class="col padding-8">
-                <a href="{$home}{$value[0]['url']}" download target="_blank" class="btn-float dropzone-btn-download hover-shadow radius border z-depth-2 padding-small color-white pointer" style="display: inline-flex"><i class="material-icons">get_app</i></a>
+                <a href="" data-dz-url download target="_blank" class="btn-float dropzone-btn-download hover-shadow radius border z-depth-2 padding-small color-white pointer" style="display: inline-flex"><i class="material-icons">get_app</i></a>
                 <span data-dz-remove class="btn-float color-hover-text-red hover-shadow radius border z-depth-2 padding-small color-white pointer" style="display: inline-flex">
                     <i class="material-icons">delete</i>
                 </span>
@@ -39,6 +39,5 @@
         <div class="dz-error-message align-center"><span data-dz-errormessage></span></div>
         <div class="dz-success-mark"><span><i class="material-icons color-text-green font-jumbo">done_outline</i></span></div>
         <div class="dz-error-mark"><span><i class="material-icons color-text-red font-jumbo">close</i></span></div>
-        {*<a class="dz-remove" href="javascript:undefined;" data-dz-remove>Excluir</a>*}
     </div>
 </div>
