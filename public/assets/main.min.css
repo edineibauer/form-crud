@@ -1,6 +1,9 @@
-.dz-preview img {
-    max-height: 120px!important;
+.dz-preview, .dz-preview img {
     width: auto!important;
+}
+
+.dz-preview img {
+    max-height: 120px !important;
 }
 
 .btnRelation {
