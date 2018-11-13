@@ -25,7 +25,7 @@
 
 <div class="dropzone-template hide">
     <div class="dz-preview dz-file-preview card left padding-small padding-8">
-        <img data-dz-thumbnail src="{$home}{$vendor}form-crud/public/assets/img/file.png"/>
+        <img data-dz-thumbnail/>
         <div class="dz-details">
             <div class="dz-size" data-dz-size></div>
             <div class="dz-filename padding-8"><span class="font-medium padding-medium border radius z-depth-2" style="display: inline-flex" data-dz-name></span></div>

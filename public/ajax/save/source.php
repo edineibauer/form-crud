@@ -19,11 +19,12 @@ function addFile(string $column, array $dicionario, array $info, array $file) : 
             if(!empty($ids)) {
                 foreach ($ids as $i) {
                     if ($dicionario[$i]['column'] === $column) {
-                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type);
-                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y"));
-                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m"));
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . "form");
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . "form" . DIRECTORY_SEPARATOR . date("Y"));
+                        \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "uploads" . DIRECTORY_SEPARATOR . "form" . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m"));
 
-                        $name = "uploads" . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m") . DIRECTORY_SEPARATOR . \Helpers\Check::name(str_replace(".{$extensao}", "", $file['name'])) . "." . strtolower($extensao);
+                        $nameFile = \Helpers\Check::name(str_replace(".{$extensao}", "", $file['name'])) . "." . strtolower($extensao);
+                        $name = "uploads" . DIRECTORY_SEPARATOR . "form" . DIRECTORY_SEPARATOR . date("Y") . DIRECTORY_SEPARATOR . date("m") . DIRECTORY_SEPARATOR . $nameFile;
 
                         if ($dicionario[$i]["size"] && strlen($name) > $dicionario[$i]["size"]) {
                             $dados['data'] = "nome do arquivo muito grande";
