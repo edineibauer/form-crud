@@ -384,6 +384,11 @@ class Form
             $v = "";
         }
 
+        if(!empty($meta->getForm()['template'])) {
+            $tpl = new Template();
+            $v = $tpl->getShow($meta->getForm()['template'], ['value' => $v]);
+        }
+
         return $v;
     }
 
