@@ -274,7 +274,7 @@ class Form
 
                     $listaInput[] = (!in_array($input['form']['input'], ["hidden", "hiddenField"]) ? "<div class='col margin-bottom relative {$input['s']} {$input['m']} {$input['l']}'>" : "") .
                         $template->getShow($input['form']['input'], $input) .
-                        ($input['form']['input'] !== "hidden" ? '</div>' : '');
+                        (!in_array($input['form']['input'], ["hidden", "hiddenField"]) ? '</div>' : '');
                 }
             }
         }
