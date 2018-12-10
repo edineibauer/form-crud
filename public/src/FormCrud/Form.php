@@ -254,23 +254,27 @@ class Form
                 if (!empty($d->search(0)) && !($d->getEntity() !== "usuarios" || (!empty($d->search(0)) && !empty($_SESSION['userlogin']) && $_SESSION['userlogin']['id'] != $d->search(0))) && in_array($meta->getColumn(), ["status", "setor", "nivel"]))
                     continue;
 
-                //Se for ID ou se tem Form struct ou se Tem uma lista setada e a input esta nesta lista
-                if ($meta->getKey() === "identifier" || (!$fields && $meta->getForm()['input']) || ($fields && (in_array($meta->getColumn(), $fields) || in_array($meta->getId(), $fields)))) {
-                    $input = $this->getBaseInput($d, $meta, $ngmodel);
+                //esconde input
+                if($meta->getForm() === false || ($fields && !in_array($meta->getColumn(), $fields) && !in_array($meta->getId(), $fields))) {
+                    $meta->setForm(['input' => 'hiddenField', 'cols' => '12', 'atributos' => '', 'template' => '', 'coll' => '', 'colm' => '', 'class' => '', 'style' => '', 'defaults' => '', 'fields' => '']);
+                    if(empty($d->search(0)->getValue()) && isset($this->defaults[$meta->getId()]) && $this->defaults[$meta->getId()] !== "")
+                        $meta->setValue($this->defaults[$meta->getId()], false);
+                }
 
-                    if ($meta->getKey() === "extend") {
-                        $listaInput[] = $this->getExtentContent($meta, $input);
-                    } else {
-                        if ($allow = $this->checkCheckBoxData($meta, $d))
-                            $input['allow'] = $allow;
+                $input = $this->getBaseInput($d, $meta, $ngmodel);
 
-                        if ($list = $this->checkListData($meta, $d))
-                            $input = array_merge($input, $list);
+                if ($meta->getKey() === "extend") {
+                    $listaInput[] = $this->getExtentContent($meta, $input);
+                } else {
+                    if ($allow = $this->checkCheckBoxData($meta, $d))
+                        $input['allow'] = $allow;
 
-                        $listaInput[] = ($input['form']['input'] !== "hidden" ? "<div class='col margin-bottom relative {$input['s']} {$input['m']} {$input['l']}'>" : "") .
-                            $template->getShow($input['form']['input'], $input) .
-                            ($input['form']['input'] !== "hidden" ? '</div>' : '');
-                    }
+                    if ($list = $this->checkListData($meta, $d))
+                        $input = array_merge($input, $list);
+
+                    $listaInput[] = (!in_array($input['form']['input'], ["hidden", "hiddenField"]) ? "<div class='col margin-bottom relative {$input['s']} {$input['m']} {$input['l']}'>" : "") .
+                        $template->getShow($input['form']['input'], $input) .
+                        ($input['form']['input'] !== "hidden" ? '</div>' : '');
                 }
             }
         }
