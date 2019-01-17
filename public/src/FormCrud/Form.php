@@ -398,29 +398,33 @@ class Form
 
     /**
      * @param Meta $meta
-     * @param string $ngmodel
+     * @param array $input
      * @return string
      */
     private function getExtentContent(Meta $meta, array $input): string
     {
-        $dic = new Dicionario($meta->getRelation());
-        if (!empty($meta->getValue()))
-            $dic->setData($meta->getValue());
+        if($meta->getForm()['input'] !== "hiddenField") {
+            $dic = new Dicionario($meta->getRelation());
+            if (!empty($meta->getValue()))
+                $dic->setData($meta->getValue());
 
-        if (!empty($meta->getForm()['fields'])) {
-            foreach ($dic->getDicionario() as $m) {
-                if (!in_array($m->getId(), $meta->getForm()['fields'])) {
-                    $m->setForm(['input' => "hidden", 'cols' => "", 'coll' => "", 'colm' => "", 'class' => "", 'style' => "", 'defaults' => "", 'fields' => ""]);
-                    if ((empty($meta->getValue()) || empty($m->getValue())) && !empty($meta->getForm()['defaults'][$m->getId()]))
-                        $m->setValue($meta->getForm()['defaults'][$m->getId()]);
+            if (!empty($meta->getForm()['fields'])) {
+                foreach ($dic->getDicionario() as $m) {
+                    if (!in_array($m->getId(), $meta->getForm()['fields'])) {
+                        $m->setForm(['input' => "hidden", 'cols' => "", 'coll' => "", 'colm' => "", 'class' => "", 'style' => "", 'defaults' => "", 'fields' => ""]);
+                        if ((empty($meta->getValue()) || empty($m->getValue())) && !empty($meta->getForm()['defaults'][$m->getId()]))
+                            $m->setValue($meta->getForm()['defaults'][$m->getId()]);
+                    }
                 }
             }
+
+            $input["inputs"] = $this->prepareInputs($dic, $meta->getForm()['fields'], $input['ngmodel'] . ".");
+
+            $template = new Template("form-crud");
+            return $template->getShow("extend", $input);
+        } else {
+            return "";
         }
-
-        $input["inputs"] = $this->prepareInputs($dic, $meta->getForm()['fields'], $input['ngmodel'] . ".");
-
-        $template = new Template("form-crud");
-        return $template->getShow("extend", $input);
     }
 
     /**
