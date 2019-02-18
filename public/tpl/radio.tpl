@@ -1,4 +1,3 @@
-<div class="col"><br></div>
 <div class="parent-input {$form['class']}" {$form['atributos']} style="{$form['style']}">
     <div class="radio-title">{$nome} {($default === false) ? "*" : ""}</div>
     {foreach key=key item=item from=$allow['values']}
